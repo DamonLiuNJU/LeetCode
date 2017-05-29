@@ -2,14 +2,13 @@ package com.Liuweiting;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Comparator;
 
 /**
  * https://leetcode.com/problems/queue-reconstruction-by-height/#/description
  * Created by DamonLiu on 2017/5/29.
  */
-public class Q406QueueReconstructionbyHeight {
+public class Q406_Queue_Reconstruction_by_Height {
 
     public int[][] reconstructQueue(int[][] people) {
         Arrays.sort(people, new Comparator<int[]>() {
@@ -58,7 +57,7 @@ public class Q406QueueReconstructionbyHeight {
         };
 
 
-        input = new Q406QueueReconstructionbyHeight().reconstructQueue(input);
+        input = new Q406_Queue_Reconstruction_by_Height().reconstructQueue(input);
         for (int[] tmp : input)
             System.out.println(Arrays.toString(tmp));
 
