@@ -23,8 +23,8 @@ public class Q526_Beautiful_Arrangement {
                 }
             }
 
-            int totalSolution = (N - counter) * lastSolution - ;
-            return totalSolution;
+//            int totalSolution = (N - counter) * lastSolution - ;
+            return -1;
         }
     }
 
