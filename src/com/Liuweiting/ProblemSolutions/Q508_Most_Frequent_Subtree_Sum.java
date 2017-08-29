@@ -1,8 +1,7 @@
-package com.Liuweiting;
+package com.Liuweiting.ProblemSolutions;
 
 import com.Liuweiting.DataStructure.TreeNode;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;

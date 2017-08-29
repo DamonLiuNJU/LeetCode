@@ -1,4 +1,4 @@
-package com.Liuweiting;
+package com.Liuweiting.ProblemSolutions;
 
 /**
  * https://leetcode.com/problems/beautiful-arrangement/#/description

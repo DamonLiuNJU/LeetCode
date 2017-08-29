@@ -1,4 +1,4 @@
-package com.Liuweiting;
+package com.Liuweiting.ProblemSolutions;
 
 public class Main {
 

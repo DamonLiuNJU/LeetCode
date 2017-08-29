@@ -1,4 +1,4 @@
-package com.Liuweiting;
+package com.Liuweiting.ProblemSolutions;
 
 import java.util.HashMap;
 import java.util.Random;

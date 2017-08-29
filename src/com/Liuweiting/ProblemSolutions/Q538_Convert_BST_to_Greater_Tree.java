@@ -1,7 +1,6 @@
-package com.Liuweiting;
+package com.Liuweiting.ProblemSolutions;
 
 import com.Liuweiting.DataStructure.TreeNode;
-import sun.reflect.generics.tree.Tree;
 
 /**
  * Created by DamonLiu on 2017/5/30.

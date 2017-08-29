@@ -1,4 +1,4 @@
-package com.Liuweiting;
+package com.Liuweiting.ProblemSolutions;
 
 /**
  * try not to change the content of board.
