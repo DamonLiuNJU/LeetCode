@@ -1,4 +1,4 @@
-package com.Liuweiting;
+package com.Liuweiting.ProblemSolutions;
 
 /**
  * Created by DamonLiu on 2017/8/29.

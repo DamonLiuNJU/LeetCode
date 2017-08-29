@@ -1,4 +1,4 @@
-package com.Liuweiting;
+package com.Liuweiting.ProblemSolutions;
 
 import com.Liuweiting.DataStructure.TreeNode;
 
