@@ -127,8 +127,54 @@ public class MainInMac {
         return Math.max(dfs(root.left,height)+1,dfs(root.right,height)+1);
     }
 
-    private double distanceBetweenPoints(int[] a,int [] b){
-        return Math.pow((a[0]-b[0])*(a[0]-b[0]) + (a[1]-b[1])*(a[1]-b[1]),0.5);
+    private double distanceBetweenPoints(int[] a,int [] b) {
+        return Math.pow((a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]), 0.5);
     }
+
+    public boolean isPowerOfFour(int num) {
+        return false;
+    }
+
+
+    /**
+     * 459. Repeated Substring Pattern
+     * https://leetcode.com/problems/repeated-substring-pattern/description/
+     * @param s
+     * @return
+     */
+    public boolean repeatedSubstringPattern(String s) {
+        for (int i = 1; i <=s.length(); i++) {
+            String pattern = s.substring(0,i);
+            if (isPatternSolid(s,pattern)) return true;
+        }
+        return false;
+    }
+
+    private boolean isPatternSolid(String s, String pattern){
+        if (s.length() % pattern.length()!=0) {
+            return false;
+        }
+        for (int j = 0; j < s.length(); j++) {
+            int indexInPattern = j % pattern.length();
+            if (pattern.charAt(indexInPattern)!=s.charAt(j)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    /**
+     * 643. Maximum Average Subarray I
+     * https://leetcode.com/problems/maximum-average-subarray-i/description/
+     * @param nums
+     * @param k
+     * @return
+     */
+    public double findMaxAverage(int[] nums, int k) {
+
+
+    }
+
 
 }
