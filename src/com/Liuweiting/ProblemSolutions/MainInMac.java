@@ -1,5 +1,6 @@
 package com.Liuweiting.ProblemSolutions;
 
+import com.Liuweiting.DataStructure.ListNode;
 import com.Liuweiting.DataStructure.TreeNode;
 
 import java.lang.reflect.AccessibleObject;
@@ -228,15 +229,15 @@ public class MainInMac {
         }
         max = tmp.val;
         int[] array = new int[min + max];
-        dfs(root,array,min);
+        dfs(root, array, min);
         int mostFrequent = 0;
         for (int i = 0; i < array.length; i++) {
-            mostFrequent = Math.max(array[i],mostFrequent);
+            mostFrequent = Math.max(array[i], mostFrequent);
         }
 
         ArrayList<Integer> result = new ArrayList<>();
         for (int i = 0; i < array.length; i++) {
-            if (array[i] == mostFrequent){
+            if (array[i] == mostFrequent) {
                 result.add(i);
             }
         }
@@ -247,62 +248,65 @@ public class MainInMac {
         return resultArray;
 
     }
-    public void dfs(TreeNode root, int[] array,int min){
-        if (root==null) return;
-        array[root.val - min] ++;
-        dfs(root.left,array,min);
-        dfs(root.right,array,min);
+
+    public void dfs(TreeNode root, int[] array, int min) {
+        if (root == null) return;
+        array[root.val - min]++;
+        dfs(root.left, array, min);
+        dfs(root.right, array, min);
     }
 
 
     /**
      * Q110
      * https://leetcode.com/problems/balanced-binary-tree/description/
+     *
      * @param root
      * @return
      */
     public boolean isBalanced(TreeNode root) {
-        if (root==null) return true;
+        if (root == null) return true;
         int depthOfLeft = getDepthOfTree(root.left);
         int depthOfRight = getDepthOfTree(root.right);
-        return Math.abs(depthOfLeft- depthOfRight) <= 1 && isBalanced(root.left) && isBalanced(root.right);
+        return Math.abs(depthOfLeft - depthOfRight) <= 1 && isBalanced(root.left) && isBalanced(root.right);
     }
 
-    private int getDepthOfTree(TreeNode root){
-        if (root==null) return 0;
-        return 1 + Math.max(getDepthOfTree(root.left),getDepthOfTree(root.right));
+    private int getDepthOfTree(TreeNode root) {
+        if (root == null) return 0;
+        return 1 + Math.max(getDepthOfTree(root.left), getDepthOfTree(root.right));
     }
 
 
     /**
      * 119. Pascal's Triangle II
+     *
      * @param rowIndex
      * @return
      */
     public List<Integer> getRow(int rowIndex) {
-        Integer[] array1 = new Integer[rowIndex+1];
+        Integer[] array1 = new Integer[rowIndex + 1];
         array1[0] = 1;
-        if (rowIndex==0){
+        if (rowIndex == 0) {
             return Arrays.asList(array1);
         }
-        Integer[] array2 = new Integer[rowIndex+1];
+        Integer[] array2 = new Integer[rowIndex + 1];
         array2[0] = 1;
         array2[1] = 1;
-        if (rowIndex==1){
+        if (rowIndex == 1) {
             return Arrays.asList(array2);
         }
         Integer[] tmp = array1;
         array1 = array2;
         array2 = tmp;
         for (int i = 2; i <= rowIndex; i++) {
-            int rowLengh = i+1;
+            int rowLengh = i + 1;
             for (int j = 0; j < rowLengh; j++) {
-                if (j==0 || j==rowLengh-1){
+                if (j == 0 || j == rowLengh - 1) {
                     array2[j] = 1;
                     continue;
                 }
 
-                array2[j] = array1[j-1] + array1[j];
+                array2[j] = array1[j - 1] + array1[j];
             }
             tmp = array1;
             array1 = array2;
@@ -314,13 +318,146 @@ public class MainInMac {
 
     /**
      * Q441.
+     *
      * @param n
      * @return
      */
+//    public int arrangeCoins(int n) {
+//        double x = (Math.pow(8 * n + 1, .05) - 1) / 2;
+//        int xFloor = (int) Math.floor(x);
+//        return xFloor;
+//    }
     public int arrangeCoins(int n) {
+        long lower = 1;
+        long upper = (int) Math.pow(2, 16);
+        long middle;
+        while (lower < upper - 1) {
+            middle = (lower + upper) / 2;
+            long tmp = (1 + middle) * middle / 2;
+            if (tmp == n) {
+                return (int) middle;
+            }
+
+            if (tmp < n) {
+                lower = middle;
+                continue;
+            }
+            if (tmp > n) {
+                upper = middle;
+            }
+        }
+        return (int) lower;
+    }
+
+
+    /**
+     * 172. Factorial Trailing Zeroes
+     * https://leetcode.com/problems/factorial-trailing-zeroes/description/
+     *
+     * @param n
+     * @return
+     */
+    public int trailingZeroes(int n) {
+        int count = 0;
+        int twoNumber = 0;
+        for (int i = 1; i <= n; i++) {
+            int tmp = i;
+            if (tmp % 10 == 0) {
+                do {
+                    count++;
+                    tmp /= 10;
+                } while (tmp > 10 && tmp % 10 == 0);
+                continue;
+            }
+            if (i % 2 == 0 && twoNumber == 0) {
+                twoNumber++;
+            }
+            if (i % 5 == 0 && twoNumber-- > 0) {
+                count++;
+            }
+
+        }
+        return count;
+    }
+
+    int guess(int num) {
+        return -1;
+    }
+
+    public int guessNumber(int n) {
+        if (guess(1) == 0) return 1;
+        if (guess(n) == 0) return n;
+        int guessedResult = (1 + n) / 2;
+        int lower = 1;
+        int upper = n;
+        while (lower < upper) {
+            if (guess(guessedResult) == 0) {
+                return guessedResult;
+            }
+            if (guess(guessedResult) > 0) {
+                lower = guessedResult + 1;
+            } else {
+                upper = guessedResult - 1;
+            }
+            guessedResult = (int) (0.5 * lower + 0.5 * upper);
+        }
+        return lower;
+    }
+
+
+    /**
+     * Q26.
+     * removeDulicates.
+     *
+     * @param nums
+     * @return
+     */
+    public int removeDuplicates(int[] nums) {
+        int beginIndex = -1;
+        int endIndex = -1;
+        int length = nums.length;
+        int result = 1;
+        for (int i = 1; i < length; i++) {
+            if (beginIndex > 0 && endIndex > 0 && endIndex > beginIndex) {
+                length -= (endIndex - beginIndex);
+                for (int j = beginIndex; j < length; j++) {
+                    if (j + endIndex - beginIndex < nums.length) {
+                        nums[j] = nums[j + endIndex - beginIndex];
+                    }
+                }
+                i = beginIndex;
+                beginIndex = -1;
+                endIndex = -1;
+            }
+            if (nums[i] == nums[i - 1] && beginIndex < 0) {
+                beginIndex = i;
+            }
+            if (nums[i] != nums[i - 1] && beginIndex > 0 && endIndex < 0) {
+                endIndex = i;
+                result++;
+            }
+        }
+        if (beginIndex > 0 && endIndex < 0) {
+            endIndex = length;
+            length -= endIndex - beginIndex;
+            return length;
+        }
+
+        if (beginIndex > 0 && endIndex > 0) {
+            length -= endIndex - beginIndex;
+            for (int j = beginIndex; j < length; j++) {
+                if (j + endIndex - beginIndex < nums.length) {
+                    nums[j] = nums[j + endIndex - beginIndex];
+                }
+            }
+        }
+        return length;
+    }
+
+    public boolean hasCycle(ListNode head) {
         
 
-        return -1;
+        return false;
     }
 
     public static void main(String[] args) {
@@ -330,7 +467,11 @@ public class MainInMac {
 //        System.out.println(m.findMaxAverage(input, k));
 
 
-        System.out.println(m.getRow(3));
+//        System.out.println(m.getRow(3));
+
+//        System.out.println(m.arrangeCoins(1804289383));
+        int[] input1 = {1,1, 1};
+        System.out.println(m.removeDuplicates(input1));
     }
 
 
