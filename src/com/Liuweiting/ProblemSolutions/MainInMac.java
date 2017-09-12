@@ -5,9 +5,7 @@ import com.Liuweiting.DataStructure.TreeNode;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by DamonLiu on 2017/9/4.
@@ -454,10 +452,311 @@ public class MainInMac {
         return length;
     }
 
-    public boolean hasCycle(ListNode head) {
-        
+//    public boolean hasCycle(ListNode head) {
+//        HashSet<ListNode> set = new HashSet<>();
+//        while (head!=null){
+//            if (set.contains(head)) return true;
+//            set.add(head);
+//            head = head.next;
+//        }
+//        return false;
+//    }
 
+    public boolean hasCycle(ListNode head) {
+        while (head!=null && head.next!=null) {
+            head.next = head.next.next;
+            head = head.next;
+            if (head.next == head) return true;
+        }
         return false;
+    }
+
+
+    public int[] twoSum(int[] nums, int target) {
+        int MIN = Integer.MAX_VALUE;
+        int MAX = Integer.MIN_VALUE;
+        int[] result = new int[2];
+        for (int i = 0; i < nums.length; i++) {
+            MIN = Math.min(MIN,nums[i]);
+            MAX = Math.max(MAX,nums[i]);
+        }
+        int [][] count = new int[MAX-MIN+1][2];
+        for (int i = 0; i < count.length; i++) {
+            count[i] = new int[]{-1,-1};
+        }
+        for (int i = 0;i<nums.length;i++){
+            int tmp = nums[i];
+            if (count[tmp - MIN][0] == -1 ) {
+                count[tmp - MIN][0] = i;
+            } else {
+                count[tmp - MIN][1] = i;
+                if ( 2 * nums[i] == target){
+                    result[0] = count[tmp - MIN][0];
+                    result[1] = count[tmp - MIN][1];
+                    return result;
+                }
+            }
+        }
+        for (int i = 0; i < count.length; i++) {
+            if (count[i][0]>=0){
+                int originNum = i + MIN;
+                int needNum = target - originNum;
+                if (needNum - MIN < count.length && count[needNum - MIN][0]>=0){
+                    result[0] = count[i][0];
+                    result[1] = count[needNum - MIN][0];
+                    return result;
+                }
+            }
+        }
+        return result;
+    }
+
+
+    /**
+     * 38. Count and Say
+     * @param n
+     * @return
+     */
+    public String countAndSay(int n) {
+        if (n==1) return "1";
+        if (n==2) return "11";
+        String tmp = countAndSay(n-1);
+        int curLength = 1;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 1; i < tmp.length(); i++) {
+            if (tmp.charAt(i) == tmp.charAt(i-1)) curLength++;
+            else{
+                sb.append(curLength);
+                sb.append(tmp.charAt(i-1));
+                curLength = 1;
+            }
+        }
+        sb.append(curLength);
+        sb.append(tmp.charAt(tmp.length()-1));
+        return sb.toString();
+    }
+
+
+    /**
+     * 112. Path Sum
+     * from Root to Leave path.
+     * @param root
+     * @param sum
+     * @return
+     */
+    int target;
+    boolean hasPathSum = false;
+    public boolean hasPathSum(TreeNode root, int sum) {
+        target = sum;
+        if (root==null) return sum==0;
+        sumToThisNode(root,0);
+        return hasPathSum;
+    }
+
+    private int sumToThisNode(TreeNode node,int prevSum){
+        if (node ==null) {
+            hasPathSum |= prevSum==target;
+            return prevSum;
+        }
+        sumToThisNode(node.left,prevSum + node.val);
+        sumToThisNode(node.right,prevSum + node.val);
+        return prevSum + node.val;
+    }
+
+
+    /**
+     * 205. Isomorphic Strings
+     * https://leetcode.com/problems/isomorphic-strings/description/
+     * @param s
+     * @param t
+     * @return
+     */
+    HashMap<Character,Character> map = new HashMap<>();
+    HashMap<Character,Character> reversedMap = new HashMap<>();
+    public boolean isIsomorphic(String s, String t) {
+        if (s.length()==0 && t.length()==0) return true;
+        for (int i = 0; i < s.length(); i++) {
+            char key = s.charAt(i);
+            char mapped = t.charAt(i);
+            if (map.containsKey(key)){
+                if (map.get(key)!=mapped){
+                    return false;
+                }
+            } else if (reversedMap.containsKey(mapped)){
+                return false;
+            } else {
+                map.put(key,mapped);
+                reversedMap.put(mapped,key);
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Q507 Perfect Number.
+     * @param num
+     * @return
+     */
+    HashSet<Integer> perfectNumbers = new HashSet<>();
+    public boolean checkPerfectNumber(int num) {
+        int sum = 0;
+        for (int i = 1; i <= num; i++) {
+            if (num!=i && num % i==0){
+                sum += i;
+            }
+        }
+        return num == sum;
+    }
+
+    public List<Integer> findAnagrams(String s, String p) {
+        int[] pCharCount = new int[26];
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < p.length(); i++) {
+            pCharCount[p.charAt(i)-'a']++;
+        }
+        for (int i = 0; i <= s.length() - p.length(); i++) {
+            int[] tmp = pCharCount.clone();
+            boolean isValid = true;
+            for (int j = 0; j < p.length(); j++) {
+                if (tmp[s.charAt(i+j)-'a']==0) {
+                    isValid = false;
+                    break;
+                } else if (tmp[s.charAt(i+j)-'a']>0){
+                    tmp[s.charAt(i+j)-'a']--;
+                }
+            }
+            if (isValid) result.add(i);
+        }
+        return result;
+    }
+
+
+
+    public boolean isValid(String s) {
+        if (s.length() % 2 !=0) return false;
+        Stack<Character> stack = new Stack<>();
+        char[] tmp = s.toCharArray();
+        for (int i = 0; i < s.length(); i++) {
+            switch (tmp[i]){
+                case '(':
+                case '{':
+                case '[':
+                    stack.push(tmp[i]);
+                    break;
+                case ')':
+                case '}':
+                case ']':
+                    if (stack.isEmpty()){
+                        return false;
+                    }
+                    char c = stack.pop();
+                    if (isParentAPari(c,tmp[i])){
+                        continue;
+                    } else {
+                        return false;
+                    }
+            }
+        }
+        return stack.isEmpty();
+    }
+    private boolean isParentAPari(Character left,Character right){
+        if (left==')' || left==']' || left=='}') return false;
+        if (left=='(') return right==')';
+        if (left=='[') return right==']';
+        if (left=='{') return right=='}';
+        return false;
+    }
+
+
+    /**
+     *
+     * @param root
+     * @return
+     */
+    LinkedList<TreeNode> currLevel = new LinkedList<>();
+    LinkedList<TreeNode> nextLevel = new LinkedList<>();
+    public int minDepth(TreeNode root) {
+        currLevel.add(root);
+        int depth = 0;
+        while (!currLevel.isEmpty()){
+            TreeNode tmp = currLevel.removeFirst();
+            if (isNodeLeave(tmp)){
+                return depth;
+            }
+            if (tmp.left!=null) nextLevel.add(tmp.left);
+            if (tmp.right!=null) nextLevel.add(tmp.right);
+            if (currLevel.isEmpty()){
+                currLevel = nextLevel;
+                nextLevel = new LinkedList<>();
+            }
+        }
+        return depth;
+    }
+
+    private boolean isNodeLeave(TreeNode node){
+        return node!=null && node.left==null && node.right==null;
+    }
+
+
+    /**
+     * Q290.
+     * https://leetcode.com/problems/word-pattern/description/
+     * @param pattern only lower case letters.
+     * @param str seperated by space.
+     * @return if match.
+     */
+    public boolean wordPattern(String pattern, String str) {
+        String[] words = str.split(" ");
+        if (str.length()!=words.length){
+            return false;
+        }
+        HashMap<Character,String> map = new HashMap<>();
+        for (int i = 0; i < pattern.length(); i++) {
+            if (map.containsKey(pattern.charAt(i))){
+                if (map.get(pattern.charAt(i)).compareTo(words[i])!=0){
+                    return false;
+                }
+            } else {
+                map.put(pattern.charAt(i),words[i]);
+            }
+        }
+        return true;
+    }
+
+    public boolean wordPatternFull(String pattern, String str) {
+        String[] words = str.split(" ");
+        if(words.length!=pattern.length()){
+            return false;
+        }
+        HashMap<Character,String> map = new HashMap<>();
+        HashMap<String,Character> map2 = new HashMap<>();
+        for (int i = 0; i < words.length; i++) {
+            if (map.containsKey(pattern.charAt(i))){
+                if (map.get(pattern.charAt(i)).compareTo(words[i])!=0){
+                    return false;
+                }
+            } else if (map2.containsKey(words[i])){
+                if(map2.get(words[i]) == (pattern.charAt(i))){
+
+                } else {
+                    return false;
+                }
+            } else {
+                map.put(pattern.charAt(i),words[i]);
+                map2.put(words[i],pattern.charAt(i));
+            }
+        }
+        return true;
+    }
+
+
+    /**
+     * 234. Palindrome Linked List
+     * @param head
+     * @return
+     */
+    public boolean isPalindrome(ListNode head) {
+
     }
 
     public static void main(String[] args) {
@@ -470,8 +769,17 @@ public class MainInMac {
 //        System.out.println(m.getRow(3));
 
 //        System.out.println(m.arrangeCoins(1804289383));
-        int[] input1 = {1,1, 1};
-        System.out.println(m.removeDuplicates(input1));
+        int[] input1 = {3, 2, 4};
+//        System.out.println(m.removeDuplicates(input1));
+//        System.out.println(m.twoSum(input1,6));
+//        String s = "";
+//        s.indexOf('s');
+
+//        System.out.println(m.countAndSay(6));
+
+
+//        System.out.println(m.isIsomorphic("ab","aa"));
+//        System.out.println(m.findAnagrams("abab","ab"));
     }
 
 
