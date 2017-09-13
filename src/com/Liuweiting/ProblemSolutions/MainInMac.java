@@ -463,7 +463,7 @@ public class MainInMac {
 //    }
 
     public boolean hasCycle(ListNode head) {
-        while (head!=null && head.next!=null) {
+        while (head != null && head.next != null) {
             head.next = head.next.next;
             head = head.next;
             if (head.next == head) return true;
@@ -477,20 +477,20 @@ public class MainInMac {
         int MAX = Integer.MIN_VALUE;
         int[] result = new int[2];
         for (int i = 0; i < nums.length; i++) {
-            MIN = Math.min(MIN,nums[i]);
-            MAX = Math.max(MAX,nums[i]);
+            MIN = Math.min(MIN, nums[i]);
+            MAX = Math.max(MAX, nums[i]);
         }
-        int [][] count = new int[MAX-MIN+1][2];
+        int[][] count = new int[MAX - MIN + 1][2];
         for (int i = 0; i < count.length; i++) {
-            count[i] = new int[]{-1,-1};
+            count[i] = new int[]{-1, -1};
         }
-        for (int i = 0;i<nums.length;i++){
+        for (int i = 0; i < nums.length; i++) {
             int tmp = nums[i];
-            if (count[tmp - MIN][0] == -1 ) {
+            if (count[tmp - MIN][0] == -1) {
                 count[tmp - MIN][0] = i;
             } else {
                 count[tmp - MIN][1] = i;
-                if ( 2 * nums[i] == target){
+                if (2 * nums[i] == target) {
                     result[0] = count[tmp - MIN][0];
                     result[1] = count[tmp - MIN][1];
                     return result;
@@ -498,10 +498,10 @@ public class MainInMac {
             }
         }
         for (int i = 0; i < count.length; i++) {
-            if (count[i][0]>=0){
+            if (count[i][0] >= 0) {
                 int originNum = i + MIN;
                 int needNum = target - originNum;
-                if (needNum - MIN < count.length && count[needNum - MIN][0]>=0){
+                if (needNum - MIN < count.length && count[needNum - MIN][0] >= 0) {
                     result[0] = count[i][0];
                     result[1] = count[needNum - MIN][0];
                     return result;
@@ -514,25 +514,26 @@ public class MainInMac {
 
     /**
      * 38. Count and Say
+     *
      * @param n
      * @return
      */
     public String countAndSay(int n) {
-        if (n==1) return "1";
-        if (n==2) return "11";
-        String tmp = countAndSay(n-1);
+        if (n == 1) return "1";
+        if (n == 2) return "11";
+        String tmp = countAndSay(n - 1);
         int curLength = 1;
         StringBuilder sb = new StringBuilder();
         for (int i = 1; i < tmp.length(); i++) {
-            if (tmp.charAt(i) == tmp.charAt(i-1)) curLength++;
-            else{
+            if (tmp.charAt(i) == tmp.charAt(i - 1)) curLength++;
+            else {
                 sb.append(curLength);
-                sb.append(tmp.charAt(i-1));
+                sb.append(tmp.charAt(i - 1));
                 curLength = 1;
             }
         }
         sb.append(curLength);
-        sb.append(tmp.charAt(tmp.length()-1));
+        sb.append(tmp.charAt(tmp.length() - 1));
         return sb.toString();
     }
 
@@ -540,26 +541,28 @@ public class MainInMac {
     /**
      * 112. Path Sum
      * from Root to Leave path.
+     *
      * @param root
      * @param sum
      * @return
      */
     int target;
     boolean hasPathSum = false;
+
     public boolean hasPathSum(TreeNode root, int sum) {
         target = sum;
-        if (root==null) return sum==0;
-        sumToThisNode(root,0);
+        if (root == null) return sum == 0;
+        sumToThisNode(root, 0);
         return hasPathSum;
     }
 
-    private int sumToThisNode(TreeNode node,int prevSum){
-        if (node ==null) {
-            hasPathSum |= prevSum==target;
+    private int sumToThisNode(TreeNode node, int prevSum) {
+        if (node == null) {
+            hasPathSum |= prevSum == target;
             return prevSum;
         }
-        sumToThisNode(node.left,prevSum + node.val);
-        sumToThisNode(node.right,prevSum + node.val);
+        sumToThisNode(node.left, prevSum + node.val);
+        sumToThisNode(node.right, prevSum + node.val);
         return prevSum + node.val;
     }
 
@@ -567,26 +570,28 @@ public class MainInMac {
     /**
      * 205. Isomorphic Strings
      * https://leetcode.com/problems/isomorphic-strings/description/
+     *
      * @param s
      * @param t
      * @return
      */
-    HashMap<Character,Character> map = new HashMap<>();
-    HashMap<Character,Character> reversedMap = new HashMap<>();
+    HashMap<Character, Character> map = new HashMap<>();
+    HashMap<Character, Character> reversedMap = new HashMap<>();
+
     public boolean isIsomorphic(String s, String t) {
-        if (s.length()==0 && t.length()==0) return true;
+        if (s.length() == 0 && t.length() == 0) return true;
         for (int i = 0; i < s.length(); i++) {
             char key = s.charAt(i);
             char mapped = t.charAt(i);
-            if (map.containsKey(key)){
-                if (map.get(key)!=mapped){
+            if (map.containsKey(key)) {
+                if (map.get(key) != mapped) {
                     return false;
                 }
-            } else if (reversedMap.containsKey(mapped)){
+            } else if (reversedMap.containsKey(mapped)) {
                 return false;
             } else {
-                map.put(key,mapped);
-                reversedMap.put(mapped,key);
+                map.put(key, mapped);
+                reversedMap.put(mapped, key);
             }
         }
         return true;
@@ -594,14 +599,16 @@ public class MainInMac {
 
     /**
      * Q507 Perfect Number.
+     *
      * @param num
      * @return
      */
     HashSet<Integer> perfectNumbers = new HashSet<>();
+
     public boolean checkPerfectNumber(int num) {
         int sum = 0;
         for (int i = 1; i <= num; i++) {
-            if (num!=i && num % i==0){
+            if (num != i && num % i == 0) {
                 sum += i;
             }
         }
@@ -612,17 +619,17 @@ public class MainInMac {
         int[] pCharCount = new int[26];
         List<Integer> result = new ArrayList<>();
         for (int i = 0; i < p.length(); i++) {
-            pCharCount[p.charAt(i)-'a']++;
+            pCharCount[p.charAt(i) - 'a']++;
         }
         for (int i = 0; i <= s.length() - p.length(); i++) {
             int[] tmp = pCharCount.clone();
             boolean isValid = true;
             for (int j = 0; j < p.length(); j++) {
-                if (tmp[s.charAt(i+j)-'a']==0) {
+                if (tmp[s.charAt(i + j) - 'a'] == 0) {
                     isValid = false;
                     break;
-                } else if (tmp[s.charAt(i+j)-'a']>0){
-                    tmp[s.charAt(i+j)-'a']--;
+                } else if (tmp[s.charAt(i + j) - 'a'] > 0) {
+                    tmp[s.charAt(i + j) - 'a']--;
                 }
             }
             if (isValid) result.add(i);
@@ -631,13 +638,12 @@ public class MainInMac {
     }
 
 
-
     public boolean isValid(String s) {
-        if (s.length() % 2 !=0) return false;
+        if (s.length() % 2 != 0) return false;
         Stack<Character> stack = new Stack<>();
         char[] tmp = s.toCharArray();
         for (int i = 0; i < s.length(); i++) {
-            switch (tmp[i]){
+            switch (tmp[i]) {
                 case '(':
                 case '{':
                 case '[':
@@ -646,11 +652,11 @@ public class MainInMac {
                 case ')':
                 case '}':
                 case ']':
-                    if (stack.isEmpty()){
+                    if (stack.isEmpty()) {
                         return false;
                     }
                     char c = stack.pop();
-                    if (isParentAPari(c,tmp[i])){
+                    if (isParentAPari(c, tmp[i])) {
                         continue;
                     } else {
                         return false;
@@ -659,33 +665,34 @@ public class MainInMac {
         }
         return stack.isEmpty();
     }
-    private boolean isParentAPari(Character left,Character right){
-        if (left==')' || left==']' || left=='}') return false;
-        if (left=='(') return right==')';
-        if (left=='[') return right==']';
-        if (left=='{') return right=='}';
+
+    private boolean isParentAPari(Character left, Character right) {
+        if (left == ')' || left == ']' || left == '}') return false;
+        if (left == '(') return right == ')';
+        if (left == '[') return right == ']';
+        if (left == '{') return right == '}';
         return false;
     }
 
 
     /**
-     *
      * @param root
      * @return
      */
     LinkedList<TreeNode> currLevel = new LinkedList<>();
     LinkedList<TreeNode> nextLevel = new LinkedList<>();
+
     public int minDepth(TreeNode root) {
         currLevel.add(root);
         int depth = 0;
-        while (!currLevel.isEmpty()){
+        while (!currLevel.isEmpty()) {
             TreeNode tmp = currLevel.removeFirst();
-            if (isNodeLeave(tmp)){
+            if (isNodeLeave(tmp)) {
                 return depth;
             }
-            if (tmp.left!=null) nextLevel.add(tmp.left);
-            if (tmp.right!=null) nextLevel.add(tmp.right);
-            if (currLevel.isEmpty()){
+            if (tmp.left != null) nextLevel.add(tmp.left);
+            if (tmp.right != null) nextLevel.add(tmp.right);
+            if (currLevel.isEmpty()) {
                 currLevel = nextLevel;
                 nextLevel = new LinkedList<>();
             }
@@ -693,31 +700,32 @@ public class MainInMac {
         return depth;
     }
 
-    private boolean isNodeLeave(TreeNode node){
-        return node!=null && node.left==null && node.right==null;
+    private boolean isNodeLeave(TreeNode node) {
+        return node != null && node.left == null && node.right == null;
     }
 
 
     /**
      * Q290.
      * https://leetcode.com/problems/word-pattern/description/
+     *
      * @param pattern only lower case letters.
-     * @param str seperated by space.
+     * @param str     seperated by space.
      * @return if match.
      */
     public boolean wordPattern(String pattern, String str) {
         String[] words = str.split(" ");
-        if (str.length()!=words.length){
+        if (str.length() != words.length) {
             return false;
         }
-        HashMap<Character,String> map = new HashMap<>();
+        HashMap<Character, String> map = new HashMap<>();
         for (int i = 0; i < pattern.length(); i++) {
-            if (map.containsKey(pattern.charAt(i))){
-                if (map.get(pattern.charAt(i)).compareTo(words[i])!=0){
+            if (map.containsKey(pattern.charAt(i))) {
+                if (map.get(pattern.charAt(i)).compareTo(words[i]) != 0) {
                     return false;
                 }
             } else {
-                map.put(pattern.charAt(i),words[i]);
+                map.put(pattern.charAt(i), words[i]);
             }
         }
         return true;
@@ -725,25 +733,25 @@ public class MainInMac {
 
     public boolean wordPatternFull(String pattern, String str) {
         String[] words = str.split(" ");
-        if(words.length!=pattern.length()){
+        if (words.length != pattern.length()) {
             return false;
         }
-        HashMap<Character,String> map = new HashMap<>();
-        HashMap<String,Character> map2 = new HashMap<>();
+        HashMap<Character, String> map = new HashMap<>();
+        HashMap<String, Character> map2 = new HashMap<>();
         for (int i = 0; i < words.length; i++) {
-            if (map.containsKey(pattern.charAt(i))){
-                if (map.get(pattern.charAt(i)).compareTo(words[i])!=0){
+            if (map.containsKey(pattern.charAt(i))) {
+                if (map.get(pattern.charAt(i)).compareTo(words[i]) != 0) {
                     return false;
                 }
-            } else if (map2.containsKey(words[i])){
-                if(map2.get(words[i]) == (pattern.charAt(i))){
+            } else if (map2.containsKey(words[i])) {
+                if (map2.get(words[i]) == (pattern.charAt(i))) {
 
                 } else {
                     return false;
                 }
             } else {
-                map.put(pattern.charAt(i),words[i]);
-                map2.put(words[i],pattern.charAt(i));
+                map.put(pattern.charAt(i), words[i]);
+                map2.put(words[i], pattern.charAt(i));
             }
         }
         return true;
@@ -752,16 +760,160 @@ public class MainInMac {
 
     /**
      * 234. Palindrome Linked List
+     *
      * @param head
      * @return
      */
     public boolean isPalindrome(ListNode head) {
+        //TODO: this question is some how wrong in description, maybe solve it later.
 
+        return false;
+    }
+
+
+    public ListNode removeElements(ListNode head, int val) {
+        ListNode tmpHead = new ListNode(Integer.MAX_VALUE);
+        ListNode newHead = tmpHead;
+        tmpHead.next = head;
+        newHead.next = head;
+        ListNode originHead = head;
+        while (tmpHead.next != null) {
+            if (tmpHead.next.val == val) {
+                tmpHead.next = tmpHead.next.next;
+                continue;
+            }
+            tmpHead = tmpHead.next;
+        }
+        return newHead.next;
+    }
+
+
+    public boolean containsNearbyDuplicate(int[] nums, int k) {
+        HashMap<Integer, Integer> numberToIndex = new HashMap<>();
+        k++;
+        for (int i = 0; i < k && i < nums.length; i++) {
+            int tmp = nums[i];
+            numberToIndex.put(tmp, numberToIndex.getOrDefault(tmp, 0) + 1);
+            if (numberToIndex.get(tmp) >= 2) {
+                return true;
+            }
+        }
+        //deal with the left nums.
+        for (int i = k; i < nums.length; i++) {
+            int numToRemove = nums[i - k];
+            numberToIndex.put(numToRemove, numberToIndex.get(numToRemove) - 1);
+            int numToAdd = nums[i];
+            numberToIndex.put(numToAdd, numberToIndex.getOrDefault(numToAdd, 0) + 1);
+            if (numberToIndex.get(numToAdd) >= 2) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * 88. Merge Sorted Array
+     * https://leetcode.com/problems/merge-sorted-array/description/
+     *
+     * @param nums1
+     * @param m
+     * @param nums2
+     * @param n
+     */
+    public void merge_Cheated(int[] nums1, int m, int[] nums2, int n) {
+        int index1 = 0;
+        int index2 = 0;
+        for (int i = m; i < m + n; i++) {
+            nums1[i] = nums2[i - m];
+        }
+        Arrays.sort(nums1, 0, m + n);
+    }
+
+    public void merge(int[] nums1, int m, int[] nums2, int n) {
+        int currentIndex = m + n - 1;
+        int i = m - 1;
+        int j = n - 1;
+        while (i >= 0 && j >= 0) {
+            if (nums1[i] >= nums2[j])
+                nums1[currentIndex--] = nums1[i--];
+            else
+                nums1[currentIndex--] = nums2[j--];
+        }
+        while (j >= 0) {
+            nums1[currentIndex--] = nums2[j--];
+        }
+    }
+
+
+    /**
+     * 633. Sum of Square Numbers
+     * Given a non-negative integer c, your task is to decide whether there're two integers a and b such that a2 + b2 = c.
+     * https://leetcode.com/problems/sum-of-square-numbers/description/
+     *
+     * @param c
+     */
+    public boolean judgeSquareSum(int c) {
+        int tmp = 0;
+        while (c - tmp * tmp > tmp * tmp) {
+            if (isNumSquare(c - tmp * tmp)) {
+                return true;
+            }
+            tmp++;
+        }
+        return false;
+    }
+
+    private boolean isNumSquare(int num) {
+//        int half = (int) Math.pow(num,.5);
+        int half = (int) Math.sqrt(num);
+        return num == half * half;
+    }
+
+
+    /**
+     * 14. Longest Common Prefix
+     *
+     * @param strs
+     * @return
+     */
+    public String longestCommonPrefix(String[] strs) {
+        if (strs.length == 0) return "";
+        String s = strs[0];
+        int length = s.length();
+        for (String others : strs) {
+            length = Math.min(length, getPrefixLength(others, s));
+        }
+        return s.substring(0,length);
+    }
+
+    public int getPrefixLength(String s1, String s2) {
+        for (int i = 0; i < s1.length() && i < s2.length(); i++) {
+            if (s1.charAt(i) != s2.charAt(i)) {
+                return i;
+            }
+        }
+        s1.indexOf(s2);
+        return Math.min(s1.length(), s2.length());
+    }
+
+
+    /**
+     * 160. Intersection of Two Linked Lists
+     * https://leetcode.com/problems/intersection-of-two-linked-lists/description/
+     * @param headA
+     * @param headB
+     * @return
+     */
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        
+
+        return null;
     }
 
     public static void main(String[] args) {
         MainInMac m = new MainInMac();
-        int[] input = {1, 12, -5, -6, 50, 3};
+        int[] input = {-11, -2, 4, 6, 50, 3};
         int k = 4;
 //        System.out.println(m.findMaxAverage(input, k));
 
@@ -769,7 +921,7 @@ public class MainInMac {
 //        System.out.println(m.getRow(3));
 
 //        System.out.println(m.arrangeCoins(1804289383));
-        int[] input1 = {3, 2, 4};
+        int[] input1 = {-1, 23};
 //        System.out.println(m.removeDuplicates(input1));
 //        System.out.println(m.twoSum(input1,6));
 //        String s = "";
@@ -780,6 +932,28 @@ public class MainInMac {
 
 //        System.out.println(m.isIsomorphic("ab","aa"));
 //        System.out.println(m.findAnagrams("abab","ab"));
+
+        ListNode root = new ListNode(1);
+        ListNode cur = root;
+        cur.next = new ListNode(2);
+        cur = cur.next;
+        cur.next = new ListNode(6);
+        cur = cur.next;
+        cur.next = new ListNode(3);
+        cur = cur.next;
+        cur.next = new ListNode(4);
+        cur = cur.next;
+        cur.next = new ListNode(5);
+        cur = cur.next;
+        cur.next = new ListNode(6);
+
+//        m.removeElements(root,6);
+
+//        System.out.println(m.containsNearbyDuplicate(input1,1));
+//        m.merge(input,3,input1,2);
+//        System.out.println(m.judgeSquareSum(5));
+        String[] tmp = {"a"};
+        m.longestCommonPrefix(tmp);
     }
 
 
