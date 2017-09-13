@@ -884,7 +884,7 @@ public class MainInMac {
         for (String others : strs) {
             length = Math.min(length, getPrefixLength(others, s));
         }
-        return s.substring(0,length);
+        return s.substring(0, length);
     }
 
     public int getPrefixLength(String s1, String s2) {
@@ -901,38 +901,84 @@ public class MainInMac {
     /**
      * 160. Intersection of Two Linked Lists
      * https://leetcode.com/problems/intersection-of-two-linked-lists/description/
+     *
      * @param headA
      * @param headB
      * @return
      */
     public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
-        
-
+        ListNode tmpAHead = headA;
+        while (tmpAHead != null) {
+            ListNode tmpBHead = headB;
+            while (tmpBHead != null) {
+                if (tmpBHead == tmpAHead) return tmpAHead;
+                tmpBHead = tmpBHead.next;
+            }
+            tmpAHead = tmpAHead.next;
+        }
         return null;
     }
+
+
+    /**
+     * the point is to find the n's digit's corresponding number.
+     *
+     * @param n
+     * @return
+     */
+    public int findNthDigit(int n) {
+        int base = 1;
+        long count = 9;
+
+        while (true) {
+            if (n > base * count) {
+                n -= base * count;
+                base++;
+                count *= 10;
+            } else {
+                break;
+            }
+        }
+        int currentValue = (int) Math.pow(10, base - 1);
+//        while (n > base){
+//            n -= base;
+//            currentValue++;
+//        }
+        currentValue += (n - 1) / base;
+        n -= n % base;
+
+        int result = (currentValue + "").charAt((n - 1)) - '0';
+//        System.out.println(result);
+        return result;
+    }
+
+
+    /**
+     * Q605.
+     *
+     * @param flowerbed
+     * @param n
+     * @return
+     */
+    public boolean canPlaceFlowers(int[] flowerbed, int n) {
+        for (int i = 0; i < flowerbed.length; i++) {
+            if (flowerbed[i] == 0) {
+                boolean canPlace = true;
+                canPlace &= (i - 1 >= 0 ? flowerbed[i - 1] == 0 : true);
+                canPlace &= (i + 1 < flowerbed.length ? flowerbed[i + 1] == 0 : true);
+                n -= canPlace ? 1 : 0;
+                if (n == 0) return true;
+                flowerbed[i] = canPlace ? 1 : 0;
+            }
+        }
+        return n <= 0;
+    }
+
 
     public static void main(String[] args) {
         MainInMac m = new MainInMac();
         int[] input = {-11, -2, 4, 6, 50, 3};
-        int k = 4;
-//        System.out.println(m.findMaxAverage(input, k));
-
-
-//        System.out.println(m.getRow(3));
-
-//        System.out.println(m.arrangeCoins(1804289383));
-        int[] input1 = {-1, 23};
-//        System.out.println(m.removeDuplicates(input1));
-//        System.out.println(m.twoSum(input1,6));
-//        String s = "";
-//        s.indexOf('s');
-
-//        System.out.println(m.countAndSay(6));
-
-
-//        System.out.println(m.isIsomorphic("ab","aa"));
-//        System.out.println(m.findAnagrams("abab","ab"));
-
+        int[] input1 = {0, 0, 1, 0, 0};
         ListNode root = new ListNode(1);
         ListNode cur = root;
         cur.next = new ListNode(2);
@@ -946,14 +992,6 @@ public class MainInMac {
         cur.next = new ListNode(5);
         cur = cur.next;
         cur.next = new ListNode(6);
-
-//        m.removeElements(root,6);
-
-//        System.out.println(m.containsNearbyDuplicate(input1,1));
-//        m.merge(input,3,input1,2);
-//        System.out.println(m.judgeSquareSum(5));
-        String[] tmp = {"a"};
-        m.longestCommonPrefix(tmp);
     }
 
 
