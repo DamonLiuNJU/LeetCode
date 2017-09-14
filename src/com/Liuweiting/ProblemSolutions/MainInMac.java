@@ -975,24 +975,368 @@ public class MainInMac {
     }
 
 
-    public static void main(String[] args) {
-        MainInMac m = new MainInMac();
-        int[] input = {-11, -2, 4, 6, 50, 3};
-        int[] input1 = {0, 0, 1, 0, 0};
-        ListNode root = new ListNode(1);
-        ListNode cur = root;
-        cur.next = new ListNode(2);
-        cur = cur.next;
-        cur.next = new ListNode(6);
-        cur = cur.next;
-        cur.next = new ListNode(3);
-        cur = cur.next;
-        cur.next = new ListNode(4);
-        cur = cur.next;
-        cur.next = new ListNode(5);
-        cur = cur.next;
-        cur.next = new ListNode(6);
+    /**
+     * Q303
+     *
+     * @param nums
+     */
+
+
+    /**
+     * Q475.
+     * https://leetcode.com/problems/heaters/description/
+     *
+     * @param houses  houses indexes. positive.
+     * @param heaters heater indexes. positive.
+     * @return
+     */
+    public int findRadius(int[] houses, int[] heaters) {
+
+        int lower = 0;
+        int upper = Integer.MAX_VALUE;
+
+        int tmp;
+        while (lower < upper) {
+            tmp = (lower + upper) / 2;
+            if (canSatisfy(houses, heaters, tmp)) {
+                upper = tmp;
+            } else {
+                if (lower == tmp) {
+                    return lower + 1;
+                }
+                lower = tmp;
+            }
+        }
+        return lower;
+    }
+
+    /**
+     * return true, if under the given radius r, heaters can heat all the houses.
+     *
+     * @param houses
+     * @param heaters
+     * @param r
+     * @return
+     */
+    private static boolean canSatisfy(int[] houses, int[] heaters, int r) {
+        for (int i = 0; i < houses.length; i++) {
+            boolean canHeat = false;
+            for (int j = 0; j < heaters.length; j++) {
+                if (distance(houses[i], heaters[j]) <= r) {
+                    canHeat = true;
+                    break;
+                }
+            }
+            if (!canHeat) return false;
+        }
+        return true;
+    }
+
+    private static int distance(int house, int heater) {
+        return Math.abs(house - heater);
     }
 
 
+    public int findUnsortedSubarray(int[] nums) {
+
+        int i = 0;
+        while (i < nums.length && isSmallestFromIndex(nums, i++)) ;
+        int j = nums.length - 1;
+        while (j >= 0 && isBiggestToIndex(nums, j--)) ;
+        i--;
+        j++;
+        return j > i ? j - i + 1 : 0;
+    }
+
+    private static boolean isSmallestFromIndex(int[] nums, int fromIndex) {
+        int shooter = nums[fromIndex];
+        for (int i = fromIndex + 1; i < nums.length; i++) {
+            if (nums[i] < shooter) return false;
+        }
+        return true;
+    }
+
+    private static boolean isBiggestToIndex(int[] nums, int toIndex) {
+        int shooter = nums[toIndex];
+        for (int i = toIndex - 1; i >= 0; i--) {
+            if (nums[i] > shooter) return false;
+        }
+        return true;
+    }
+
+    /**
+     * from index 0 to index endIndex. both included.
+     *
+     * @param nums
+     * @param endIndex
+     * @return
+     */
+    private static boolean isSorted(int[] nums, int endIndex) {
+        if (endIndex == 0) return true;
+        return nums[endIndex] >= nums[endIndex - 1] && isSorted(nums, endIndex - 1);
+    }
+
+    private static int getInsertIndex(int[] nums, int value) {
+        for (int i = 0; i < nums.length; i++) {
+            if (value <= nums[i]) {
+                return i;
+            }
+        }
+        return nums.length - 1;
+    }
+
+    public int strStr(String haystack, String needle) {
+        return haystack.indexOf(needle);
+    }
+
+
+    public int findPairs(int[] nums, int k) {
+        Arrays.sort(nums);
+        int count = 0;
+        int prev = Integer.MIN_VALUE;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == prev) continue;
+            int index = Arrays.binarySearch(nums, i + 1, nums.length, nums[i] + k);
+            count += index > 0 && index != i ? 1 : 0;
+            prev = nums[i];
+        }
+        return count;
+    }
+
+
+    public int mySqrt(int x) {
+        if (x == 0) return 0;
+        if (x == 1 || x == 2 || x == 3) return 1;
+        else {
+            long lower = 1;
+            long upper = x / 2;
+            long tmp;
+            while (lower < upper) {
+                tmp = (lower + upper) / 2;
+                if (tmp * tmp == x) {
+                    return (int) tmp;
+                }
+                if (tmp * tmp < x) {
+                    if (lower == tmp) {
+                        return (int) ((lower + 1) * (lower + 1) > x ? lower : lower + 1);
+                    } else {
+                        lower = tmp;
+                    }
+                } else {
+                    if (upper != tmp) {
+                        upper = tmp;
+                    } else {
+                        return (int) (upper - 1);
+                    }
+                }
+
+            }
+            Math.sqrt(x);
+            return (int) (lower + 1);
+        }
+    }
+
+    /**
+     * Q414
+     *
+     * @param nums
+     * @return
+     */
+    public int thirdMax(int[] nums) {
+        int[] tmp = new int[3];
+        Arrays.fill(tmp, Integer.MIN_VALUE);
+        int putPlace0Times = 0;
+        int putPlace1Times = 0;
+        int putPlace2Times = 0;
+
+        HashSet<Integer> tmpSet = new HashSet<>();
+        for (int x : nums) {
+            if (tmpSet.size() < 3) {
+                tmpSet.add(x);
+            }
+            if (x == tmp[0] || x == tmp[1] || x == tmp[2]) {
+                continue;
+            }
+            if (x > tmp[0]) {
+                putPlace0Times++;
+                tmp[2] = tmp[1];
+                tmp[1] = tmp[0];
+                tmp[0] = x;
+            } else if (x > tmp[1]) {
+                putPlace1Times++;
+                tmp[2] = tmp[1];
+                tmp[1] = x;
+            } else if (x > tmp[2]) {
+                putPlace2Times++;
+                tmp[2] = x;
+            }
+        }
+        boolean containsLegalResult = tmpSet.size() >= 3;
+        return containsLegalResult ? tmp[2] : tmp[0];
+    }
+
+
+    public int countPrimes(int n) {
+        //1 2 3 5 7 11 13.
+
+        return -1;
+    }
+
+
+    /**
+     * @param s
+     * @return
+     */
+    public boolean isPalindrome(String s) {
+        s = s.toLowerCase();
+        int left = 0;
+        int right = s.length() - 1;
+        while (left < right) {
+            while (left < s.length() && !(s.charAt(left) >= 'a' && s.charAt(left) <= 'z' || s.charAt(left) >= '0' && s.charAt(left) <= '9')) {
+                left++;
+            }
+            while (right >= 0 && !(s.charAt(right) >= 'a' && s.charAt(right) <= 'z' || s.charAt(right) >= '0' && s.charAt(right) <= '9')) {
+                right--;
+            }
+            if (left >= right) {
+                return true;
+            }
+            if (s.charAt(left) != s.charAt(right)) {
+                return false;
+            } else {
+                left++;
+                right--;
+            }
+        }
+        return true;
+    }
+
+
+    /**
+     * 168. Excel Sheet Column Title
+     *
+     * @param n
+     * @return
+     */
+    public String convertToTitle(int n) {
+        n = n - 1;
+        int base = 26;
+        StringBuilder sb = new StringBuilder();
+        while (n >= base) {
+            sb.append(getRelative(n % base));
+            n = n / base;
+            n = n - 1;
+        }
+        sb.append(getRelative(n));
+        return sb.reverse().toString();
+    }
+
+    private static String getRelative(int n) {
+        char tmp = (char) (n + 'A');
+        return String.valueOf(tmp);
+    }
+
+
+    private static boolean isBadVersion(int version){
+        return false;
+    }
+
+    /**
+     * Q278
+     * @param n
+     * @return
+     */
+    public int firstBadVersion(int n) {
+        int lower = 1;
+        int upper = n;
+        int tmp = 0;
+        while (lower < upper){
+            int newTmp = (int) (.5*upper + .5 * lower);
+            if (newTmp==tmp){
+                return lower;
+            }
+            tmp = newTmp;
+            if (isBadVersion(tmp)){
+                upper = tmp;
+            } else {
+                lower = tmp;
+            }
+        }
+        return isBadVersion(lower)?lower:lower+1;
+    }
+
+
+    public int reverse(int x) {
+        boolean negative = x < 0;
+        x = Math.abs(x);
+        if (x<0){
+            return 0;
+        }
+        StringBuilder sb = new StringBuilder(x + "");
+        String reversed = sb.reverse().toString();
+        String MAX = Integer.MAX_VALUE + "";
+        if (reversed.length()==MAX.length() && reversed.compareTo(MAX) > 0){
+            return 0;
+        }
+        int result = Integer.parseInt(reversed);
+        return negative?-result:result;
+    }
+
+    /**
+     * Q189
+     * @param nums
+     * @param k
+     */
+    public void rotate(int[] nums, int k) {
+        k = k % nums.length;
+        int[] tmp = new int[k];
+        for (int i = nums.length - k; i < nums.length && i>=0; i++) {
+            tmp[i - nums.length + k] = nums[i];
+        }
+        for (int i = nums.length - k - 1 ; i >=0 && i<nums.length; i--) {
+            nums[i + k] = nums[i];
+        }
+        for (int i = 0; i < k; i++) {
+            nums[i] = tmp[i];
+        }
+    }
+
+
+    /**
+     * Q665.
+     * @param nums
+     * @return
+     */
+    public boolean checkPossibility(int[] nums) {
+        boolean chance = true;
+        int anotherOne[] = nums.clone();
+        for (int i = 0; i < nums.length-1; i++) {
+            if (chance && nums[i] > nums[i+1]){
+                chance = false;
+                nums[i+1] = nums[i];
+                anotherOne[i] = anotherOne[i+1];
+                break;
+            }
+        }
+
+        return isNondescrising(nums)||isNondescrising(anotherOne);
+    }
+
+    private boolean isNondescrising(int[] nums) {
+        for (int i = 0; i < nums.length-1; i++) {
+            if (nums[i] > nums[i+1]) return false;
+        }
+        return true;
+    }
+
+    public static void main(String[] args) {
+        MainInMac m = new MainInMac();
+        int[] input = {1, 2, 3,4,5,6,7,8,9,10};
+        int[] input1 = {4,2,3};
+
+        m.rotate(input,3);
+//        System.out.println(Arrays.toString(input));
+        System.out.println(m.reverse(-2147483648));
+        m.checkPossibility(input1);
+    }
 }
