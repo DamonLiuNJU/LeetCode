@@ -1237,12 +1237,13 @@ public class MainInMac {
     }
 
 
-    private static boolean isBadVersion(int version){
+    private static boolean isBadVersion(int version) {
         return false;
     }
 
     /**
      * Q278
+     *
      * @param n
      * @return
      */
@@ -1250,50 +1251,51 @@ public class MainInMac {
         int lower = 1;
         int upper = n;
         int tmp = 0;
-        while (lower < upper){
-            int newTmp = (int) (.5*upper + .5 * lower);
-            if (newTmp==tmp){
+        while (lower < upper) {
+            int newTmp = (int) (.5 * upper + .5 * lower);
+            if (newTmp == tmp) {
                 return lower;
             }
             tmp = newTmp;
-            if (isBadVersion(tmp)){
+            if (isBadVersion(tmp)) {
                 upper = tmp;
             } else {
                 lower = tmp;
             }
         }
-        return isBadVersion(lower)?lower:lower+1;
+        return isBadVersion(lower) ? lower : lower + 1;
     }
 
 
     public int reverse(int x) {
         boolean negative = x < 0;
         x = Math.abs(x);
-        if (x<0){
+        if (x < 0) {
             return 0;
         }
         StringBuilder sb = new StringBuilder(x + "");
         String reversed = sb.reverse().toString();
         String MAX = Integer.MAX_VALUE + "";
-        if (reversed.length()==MAX.length() && reversed.compareTo(MAX) > 0){
+        if (reversed.length() == MAX.length() && reversed.compareTo(MAX) > 0) {
             return 0;
         }
         int result = Integer.parseInt(reversed);
-        return negative?-result:result;
+        return negative ? -result : result;
     }
 
     /**
      * Q189
+     *
      * @param nums
      * @param k
      */
     public void rotate(int[] nums, int k) {
         k = k % nums.length;
         int[] tmp = new int[k];
-        for (int i = nums.length - k; i < nums.length && i>=0; i++) {
+        for (int i = nums.length - k; i < nums.length && i >= 0; i++) {
             tmp[i - nums.length + k] = nums[i];
         }
-        for (int i = nums.length - k - 1 ; i >=0 && i<nums.length; i--) {
+        for (int i = nums.length - k - 1; i >= 0 && i < nums.length; i--) {
             nums[i + k] = nums[i];
         }
         for (int i = 0; i < k; i++) {
@@ -1304,39 +1306,87 @@ public class MainInMac {
 
     /**
      * Q665.
+     *
      * @param nums
      * @return
      */
     public boolean checkPossibility(int[] nums) {
         boolean chance = true;
         int anotherOne[] = nums.clone();
-        for (int i = 0; i < nums.length-1; i++) {
-            if (chance && nums[i] > nums[i+1]){
+        for (int i = 0; i < nums.length - 1; i++) {
+            if (chance && nums[i] > nums[i + 1]) {
                 chance = false;
-                nums[i+1] = nums[i];
-                anotherOne[i] = anotherOne[i+1];
+                nums[i + 1] = nums[i];
+                anotherOne[i] = anotherOne[i + 1];
                 break;
             }
         }
 
-        return isNondescrising(nums)||isNondescrising(anotherOne);
+        return isNondescrising(nums) || isNondescrising(anotherOne);
     }
 
     private boolean isNondescrising(int[] nums) {
-        for (int i = 0; i < nums.length-1; i++) {
-            if (nums[i] > nums[i+1]) return false;
+        for (int i = 0; i < nums.length - 1; i++) {
+            if (nums[i] > nums[i + 1]) return false;
         }
         return true;
     }
 
+    public int largestPalindrome(int n) {
+        int base = (int) Math.pow(10, n - 1);
+        int end = base * 10 - 1;
+        long max = Integer.MIN_VALUE;
+        for (long i = end; i >= base; i--) {
+            for (long j = i; j >= base; j--) {
+                int tmp = getPalindromeLength(i, j);
+                if (tmp > 0) {
+                    max = Math.max(max, i * j);
+                }
+            }
+        }
+        return (int) (max % 1337);
+    }
+
+
+    /**
+     * @param number1
+     * @param number2
+     * @return return -1 if the result is not palindrome, positive result if is a palindrome.
+     */
+    private int getPalindromeLength(long number1, long number2) {
+        String tmp = number1 * number2 + "";
+        String rev = new StringBuilder(tmp).reverse().toString();
+        if (tmp.compareTo(rev) == 0) {
+            return tmp.length();
+        }
+        return -1;
+    }
+
+
+    public int largestPalindrome2(int n) {
+        if (n == 1) return 9;
+        int max = (int) Math.pow(10, n) - 1;
+        for (int v = max - 1; v > max / 10; v--) {
+            long u = Long.valueOf(v + new StringBuilder().append(v).reverse().toString());
+            for (long x = max; x * x >= u; x--)
+                if (u % x == 0) {
+                    return (int) (u % 1337);
+                }
+        }
+        return 0;
+    }
+
     public static void main(String[] args) {
         MainInMac m = new MainInMac();
-        int[] input = {1, 2, 3,4,5,6,7,8,9,10};
-        int[] input1 = {4,2,3};
+        int[] input = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        int[] input1 = {4, 2, 3};
 
-        m.rotate(input,3);
+        m.rotate(input, 3);
 //        System.out.println(Arrays.toString(input));
-        System.out.println(m.reverse(-2147483648));
-        m.checkPossibility(input1);
+//        System.out.println(m.reverse(-2147483648));
+//        m.checkPossibility(input1);
+//        System.out.println(m.largestPalindrome(8));
+//        System.out.println(m.largestPalindrome2(8));
+//        System.out.println(888888 % 1337);
     }
 }
