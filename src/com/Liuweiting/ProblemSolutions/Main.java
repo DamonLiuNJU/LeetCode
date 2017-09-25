@@ -1,6 +1,9 @@
 package com.Liuweiting.ProblemSolutions;
 
+import com.Liuweiting.DataStructure.ListNode;
+
 import java.util.Arrays;
+import java.util.Random;
 
 public class Main {
 
@@ -53,7 +56,34 @@ public class Main {
         int value2 = nums[nums.length-1]*nums[nums.length-2]*nums[nums.length-3];
         int value3 = nums[0]*nums[1]*nums[nums.length-1];
         int value4 = nums[0]*nums[nums.length-2]*nums[nums.length-3];
+        return -1;
+    }
 
+
+    /**
+     * @param head
+     *            The linked list's head. Note that the head is guaranteed to be
+     *            not null, so it contains at least one node.
+     */
+    ListNode head;
+    int totalLength = 0;
+    public Main(ListNode head) {
+        this.head = head;
+        while (head!=null){
+            totalLength++;
+            head = head.next;
+        }
+    }
+
+    /** Returns a random node's value. */
+    public int getRandom() {
+        int randomIndex = new Random().nextInt(totalLength);
+        ListNode tmp = head;
+        while (randomIndex>0 && tmp.next!=null){
+            randomIndex--;
+            tmp = tmp.next;
+        }
+        return tmp.val;
     }
 
 
@@ -62,6 +92,12 @@ public class Main {
 //    }
 
     public static void main(String[] args) {
-
+        ListNode root = new ListNode(1);
+        root.next = new ListNode(2);
+        root.next.next = new ListNode(3);
+        Main m = new Main(root);
+        while (true){
+            System.out.println(m.getRandom());
+        }
     }
 }
