@@ -1376,17 +1376,299 @@ public class MainInMac {
         return 0;
     }
 
+
+    public String frequencySort(String s) {
+        HashMap<Character, Integer> map = new HashMap<>();
+        for (int i = 0; i < s.length(); i++) {
+            map.put(s.charAt(i), map.getOrDefault(s.charAt(i), 0) + 1);
+        }
+        map = (HashMap<Character, Integer>) sortMapByValue(map);
+        StringBuilder sb = new StringBuilder();
+        for (Character c : map.keySet()) {
+            int cout = map.get(c);
+            for (int i = 0; i < cout; i++) {
+                sb.append(c);
+            }
+        }
+        return sb.reverse().toString();
+    }
+
+    /**
+     * 使用 Map按value进行排序
+     *
+     * @return
+     */
+    public static Map<Character, Integer> sortMapByValue(Map<Character, Integer> oriMap) {
+        if (oriMap == null || oriMap.isEmpty()) {
+            return oriMap;
+        }
+        Map<Character, Integer> sortedMap = new LinkedHashMap<Character, Integer>();
+        List<Map.Entry<Character, Integer>> entryList = new ArrayList<Map.Entry<Character, Integer>>(oriMap.entrySet());
+        Collections.sort(entryList, new Comparator<Map.Entry<Character, Integer>>() {
+            @Override
+            public int compare(Map.Entry<Character, Integer> o1, Map.Entry<Character, Integer> o2) {
+                return o1.getValue() - o2.getValue();
+            }
+        });
+
+        Iterator<Map.Entry<Character, Integer>> iter = entryList.iterator();
+        Map.Entry<Character, Integer> tmpEntry = null;
+        while (iter.hasNext()) {
+            tmpEntry = iter.next();
+            sortedMap.put(tmpEntry.getKey(), tmpEntry.getValue());
+        }
+        return sortedMap;
+    }
+
+
+    public List<List<String>> printTree(TreeNode root) {
+        int height = heightOfTree(root);
+        int array_length = (int) (Math.pow(2, height) - 1);
+        List<String[]> list = new ArrayList<>(height);
+        for (int i = 0; i < height; i++) {
+            String[] tmp = new String[array_length];
+            Arrays.fill(tmp, "");
+            list.add(tmp);
+        }
+
+        dfs(root, 0, list, 0, array_length);
+
+        List<List<String>> re = new ArrayList<>(height);
+        for (String[] tmp : list) {
+            re.add(Arrays.asList(tmp));
+        }
+        return re;
+    }
+
+    private int heightOfTree(TreeNode node) {
+        if (node == null) return 0;
+        return Math.max(heightOfTree(node.left), heightOfTree(node.right)) + 1;
+    }
+
+    public void dfs(TreeNode node, int depth, List<String[]> list, int lower, int upper) {
+        if (node == null) return;
+        int len = list.get(depth).length;
+        list.get(depth)[(lower + upper) / 2] = node.val + "";
+        dfs(node.left, depth + 1, list, lower, (lower + upper) / 2);
+        dfs(node.right, depth + 1, list, (lower + upper) / 2, upper);
+    }
+
+
+    /**
+     * Q648 Replace words.
+     *
+     * @param dict     prefix set.
+     * @param sentence the sentence to deal with.
+     * @return
+     */
+    public String replaceWords(List<String> dict, String sentence) {
+        dict.sort((o1, o2) -> o1.compareTo(o2));
+        HashSet<String> prefix = new HashSet<>();
+        prefix.add(dict.get(0));
+        for (int i = 1; i < dict.size(); i++) {
+            if (dict.get(i).startsWith(dict.get(0))) {
+                continue;
+            } else {
+                prefix.add(dict.get(i));
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        String[] words = sentence.split(" ");
+        for (String word : words) {
+            boolean havePre = false;
+            for (String pre : dict) {
+                if (word.startsWith(pre)) {
+                    sb.append(pre + " ");
+                    havePre = true;
+                    break;
+                }
+            }
+            if (!havePre) {
+                sb.append(word + " ");
+            }
+        }
+        return sb.toString().trim();
+    }
+
+
+    /**
+     * [[1,0,0,0,1,0,0,0,0,0,0,0,0,0,0],    //  0 and 4  4 and 12 5 and 12  1 and 5  6 and 11  10 and 11  11 and 14 7 11 12.
+     * [0,1,0,0,0,1,0,0,0,0,0,0,0,0,0],    //
+     * [0,0,1,0,0,0,0,0,0,0,0,0,0,0,0],    //  2
+     * [0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],    //  3
+     * [1,0,0,0,1,0,0,0,0,0,0,0,1,0,0],    //
+     * [0,1,0,0,0,1,0,0,0,0,0,0,1,0,0],    //
+     * [0,0,0,0,0,0,1,0,0,0,0,1,0,0,0],    //
+     * [0,0,0,0,0,0,0,1,0,0,0,1,1,0,0],    //
+     * [0,0,0,0,0,0,0,0,1,0,0,0,0,0,0],    //  8 and
+     * [0,0,0,0,0,0,0,0,0,1,0,0,0,0,0],    //  9 and
+     * [0,0,0,0,0,0,0,0,0,0,1,1,0,0,0],    //
+     * [0,0,0,0,0,0,1,1,0,0,1,1,0,0,1],    //
+     * [0,0,0,0,1,1,0,1,0,0,0,0,1,0,0],    //   and
+     * [0,0,0,0,0,0,0,0,0,0,0,0,0,1,0],    //  13 and
+     * [0,0,0,0,0,0,0,0,0,0,0,1,0,0,1]]    //
+     *
+     * @param M
+     * @return
+     */
+    public int findCircleNum(int[][] M) {
+        int[] relations = new int[M.length];
+        for (int i = 0; i < relations.length; i++) {
+            relations[i] = i;
+        }
+        for (int i = 0; i < M.length; i++) {
+            int[] tmp = M[i];
+            for (int j = i + 1; j < M[i].length; j++) {
+                if (M[i][j] == 1) {
+                    if (relations[j] == j)
+                        relations[j] = relations[i];
+                    else {
+                        int totalMinRelations = Math.min(relations[i], relations[j]);
+                        for (int k = 0; k < relations.length; k++) {
+                            if (relations[k] == relations[i] || relations[k] == relations[j]) {
+                                relations[k] = totalMinRelations;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        for (int i = 0; i < relations.length; i++) {
+            int tmp = i;
+            while (relations[tmp] != tmp) {
+                relations[tmp] = relations[relations[tmp]];
+                tmp = relations[tmp];
+            }
+            relations[i] = tmp;
+        }
+
+        HashSet<Integer> s = new HashSet<>();
+        for (int tmp : relations) {
+            s.add(tmp);
+        }
+
+
+        return s.size();
+    }
+
+
+    /**
+     * Q565 longest
+     *
+     * @param nums input data.
+     * @return
+     */
+    public int arrayNesting(int[] nums) {
+        int longestLength = -1;
+        HashSet<Integer> tmp;
+        HashSet<Integer> maxSet = new HashSet<>();
+        boolean isVisited[] = new boolean[nums.length];
+        for (int i = 0; i < nums.length; i++) {
+            if (isVisited[i]) {
+                continue;
+            }
+            int seed = i;
+            int preSize = 0;
+            tmp = new HashSet();
+            while (true) {
+                if (maxSet.contains(nums[seed])) {
+                    break;
+                }
+                tmp.add(nums[seed]);
+                isVisited[seed] = true;
+                if (tmp.size() > preSize) {
+                    preSize = tmp.size();
+                    seed = nums[seed];
+                } else {
+                    if (preSize > longestLength) {
+                        maxSet = tmp;
+                    }
+                    longestLength = Math.max(longestLength, preSize);
+                    break;
+                }
+            }
+        }
+        return longestLength;
+    }
+
+
+    /**
+     * 646. Maximum Length of Pair Chain
+     *
+     * @param pairs
+     * @return
+     */
+//    public int findLongestChain(int[][] pairs) {
+//        Arrays.sort(pairs, (o1, o2) -> o1[0] - o2[0] == 0 ? o1[1] - o2[1] : o1[0] - o2[0]);
+//        int maxLength = -1;
+//        for (int i = 0; i < pairs.length; i++) {
+//            int[] prev = null;
+//            ArrayList<Integer> chain = new ArrayList<>();
+//            for (int j = i; j < pairs.length; j++) {
+//                if (prev == null || pairs[j][0] > prev[1]) {
+//                    chain.add(j);
+//                    prev = pairs[j];
+//                }
+//            }
+//            if (chain.size() > maxLength) maxLength = chain.size();
+//        }
+//        return maxLength;
+//    }
+    public int findLongestChain(int[][] pairs) {
+        Arrays.sort(pairs, (o1, o2) -> o1[1] - o2[1] == 0 ? o1[0] - o2[0] : o1[1] - o2[1]);
+        //need to remove the pairs that are the same or is
+        int maxLength = -1;
+        for (int i = 0; i < pairs.length; i++) {
+            int[] prev = null;
+            int tmpLength = 0;
+            for (int j = i; j < pairs.length; j++) {
+                if (prev == null || pairs[j][0] > prev[1]) {
+                    tmpLength++;
+                    prev = pairs[j];
+                }
+            }
+            if (tmpLength > maxLength) maxLength = tmpLength;
+        }
+        return maxLength;
+    }
+
+
+    /**
+     * @param args the input param.
+     */
+    public int totalHammingDistance(int[] nums) {
+        HashMap<Integer,Integer> map = new HashMap<>();
+        for (int tmp : nums){
+            map.put(tmp,map.getOrDefault(tmp,0)+1);
+        }
+        Integer[] keys = new Integer[map.keySet().size()];
+        map.keySet().toArray(keys);
+        int sum = 0;
+        for (int i = 0; i < keys.length; i++) {
+            for (int j = i + 1; j < keys.length; j++) {
+                int tmp1 = hammingDis(keys[i], keys[j]);
+                int times = (map.get(keys[i]) * map.get(keys[j]));
+                sum +=  tmp1 * times;
+            }
+        }
+        return sum;
+    }
+
+    private int hammingDis(int a, int b) {
+        int c = a ^ b;
+        int counter = 0;
+        while (c != 0) {
+            counter += c & 1;
+            c = c >>> 1;
+        }
+        return counter;
+    }
+
     public static void main(String[] args) {
         MainInMac m = new MainInMac();
-        int[] input = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-        int[] input1 = {4, 2, 3};
-
-        m.rotate(input, 3);
-//        System.out.println(Arrays.toString(input));
-//        System.out.println(m.reverse(-2147483648));
-//        m.checkPossibility(input1);
-//        System.out.println(m.largestPalindrome(8));
-//        System.out.println(m.largestPalindrome2(8));
-//        System.out.println(888888 % 1337);
+        int[] input = {6,1,8,6,8};
+        System.out.println(m.totalHammingDistance(input));
     }
+
 }
