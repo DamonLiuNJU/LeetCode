@@ -1635,12 +1635,12 @@ public class MainInMac {
 
 
     /**
-     * @param args the input param.
+     * @param nums the input param.
      */
     public int totalHammingDistance(int[] nums) {
-        HashMap<Integer,Integer> map = new HashMap<>();
-        for (int tmp : nums){
-            map.put(tmp,map.getOrDefault(tmp,0)+1);
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for (int tmp : nums) {
+            map.put(tmp, map.getOrDefault(tmp, 0) + 1);
         }
         Integer[] keys = new Integer[map.keySet().size()];
         map.keySet().toArray(keys);
@@ -1649,7 +1649,7 @@ public class MainInMac {
             for (int j = i + 1; j < keys.length; j++) {
                 int tmp1 = hammingDis(keys[i], keys[j]);
                 int times = (map.get(keys[i]) * map.get(keys[j]));
-                sum +=  tmp1 * times;
+                sum += tmp1 * times;
             }
         }
         return sum;
@@ -1665,9 +1665,12 @@ public class MainInMac {
         return counter;
     }
 
+
+
+
     public static void main(String[] args) {
         MainInMac m = new MainInMac();
-        int[] input = {6,1,8,6,8};
+        int[] input = {6, 1, 8, 6, 8};
         System.out.println(m.totalHammingDistance(input));
     }
 
