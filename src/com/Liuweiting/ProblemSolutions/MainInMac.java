@@ -1666,12 +1666,513 @@ public class MainInMac {
     }
 
 
+    /**
+     * @param nums
+     * @return
+     */
+    public int[] nextGreaterElements(int[] nums) {
+        int length = nums.length - 1;
+        int tmp = length;
+        int counter = 0;
+        int k;
+        int max[] = new int[nums.length];
+        for (int i = 0; i < nums.length; i++) {
+            max[i] = -1;
+            counter = nums.length;
+            k = 1;
+            for (; k < counter; k++) {
+                if (nums[(i + k) % nums.length] > nums[i]) {
+                    max[i] = nums[(i + k) % nums.length];
+                    break;
+                }
+            }
+        }
+        return max;
+    }
 
+
+    /**
+     * 454. 4Sum II
+     * https://leetcode.com/problems/4sum-ii/description/
+     * the target is to find sum to zero indexes.
+     *
+     * @param A
+     * @param B
+     * @param C
+     * @param D
+     * @return
+     */
+    public int fourSumCount_V1(int[] A, int[] B, int[] C, int[] D) {
+        int c = 0;
+        for (int i = 0; i < A.length; i++) {
+            for (int j = 0; j < B.length; j++) {
+                for (int k = 0; k < C.length; k++) {
+                    for (int l = 0; l < D.length; l++) {
+                        int sum = A[i] + B[j] + C[k] + D[l];
+                        c += sum == 0 ? 1 : 0;
+                    }
+                }
+            }
+        }
+        return c;
+    }
+
+    public int fourSumCount_V2(int[] A, int[] B, int[] C, int[] D) {
+        int c = 0;
+        Arrays.sort(D);
+        for (int i = 0; i < A.length; i++) {
+            for (int j = 0; j < B.length; j++) {
+                for (int k = 0; k < C.length; k++) {
+                    int sum = A[i] + B[j] + C[k];
+                    if (Arrays.binarySearch(D, -sum) >= 0) {
+                        c++;
+                    }
+                }
+            }
+        }
+        return c;
+    }
+
+
+    /**
+     * 672. Bulb Switcher II
+     * https://leetcode.com/problems/bulb-switcher-ii/description/
+     *
+     * @param n
+     * @param m
+     * @return
+     */
+    public int flipLights(int n, int m) {
+        int totalCount = 0;
+
+
+        return totalCount;
+    }
+
+
+    /**
+     * 623. Add One Row to Tree
+     * https://leetcode.com/problems/add-one-row-to-tree/description/
+     *
+     * @param root
+     * @param v
+     * @param d
+     * @return
+     */
+    public TreeNode addOneRow(TreeNode root, int v, int d) {
+        if (d == 1) {
+            TreeNode tmpRoot = new TreeNode(v);
+            tmpRoot.left = root;
+            return tmpRoot;
+        }
+        dfs(root, 1, d, v);
+        return root;
+    }
+
+    private void dfs(TreeNode node, int depth, int targetDepth, int value) {
+        if (node == null) {
+            if (depth == targetDepth) {
+                node = new TreeNode(value);
+            }
+            return;
+        }
+        if (targetDepth == depth) {
+            TreeNode tmpLeft = new TreeNode(value);
+            TreeNode tmpRight = new TreeNode(value);
+            tmpLeft.left = node.left;
+            tmpRight.right = node.right;
+            node.left = tmpLeft;
+            node.right = tmpRight;
+        } else {
+            dfs(node.left, depth + 1, targetDepth, value);
+            dfs(node.right, depth + 1, targetDepth, value);
+        }
+    }
+
+    /**
+     * 592. Fraction Addition and Subtraction
+     * https://leetcode.com/problems/fraction-addition-and-subtraction/description/
+     *
+     * @param expression
+     * @return
+     */
+    public String fractionAddition(String expression) {
+        boolean firstNegative = expression.startsWith("-");
+        if (firstNegative) expression = expression.substring(1);
+        int length = 1;
+        for (int i = 1; i < expression.length(); i++) {
+            if (expression.charAt(i) == '+' || expression.charAt(i) == '-') {
+                length++;
+            }
+        }
+        String[] numbers = new String[length];
+        int currIndex = 0;
+        int beginIndex = -1;
+        for (int i = 0; i < expression.length(); i++) {
+            if (beginIndex < 0) beginIndex = i;
+            if (i - 1 >= 0 && expression.charAt(i - 1) == '-') {
+                beginIndex = i - 1;
+            }
+            if (expression.charAt(i) == '+' || expression.charAt(i) == '-') {
+                numbers[currIndex++] = expression.substring(beginIndex, i);
+                beginIndex = -1;
+            }
+        }
+        numbers[length - 1] = expression.substring(beginIndex);
+        String sum = (firstNegative ? "-" : "") + numbers[0];
+
+        for (int i = 1; i < numbers.length; i++) {
+            String tmp = numbers[i];
+            sum = addTwoNumbers(tmp, sum);
+        }
+        return sum;
+    }
+
+    /**
+     * add two numbers in fraction style.
+     *
+     * @param num1
+     * @param num2
+     * @return
+     */
+    private static String addTwoNumbers(String num1, String num2) {
+        boolean num1negative = num1.startsWith("-");
+        int num1son = Integer.parseInt(num1.substring(num1negative ? 1 : 0, num1.indexOf('/')));
+        if (num1negative) num1son = -num1son;
+        int num1mom = Integer.parseInt(num1.substring(num1.indexOf('/') + 1));
+
+        boolean num2negative = num2.startsWith("-");
+        int num2son = Integer.parseInt(num2.substring(num2negative ? 1 : 0, num2.indexOf('/')));
+        if (num2negative) num2son = -num2son;
+        int num2mom = Integer.parseInt(num2.substring(num2.indexOf('/') + 1));
+
+        if (num1mom >= num2mom && num1mom % num2mom == 0) {
+            int num2times = num1mom / num2mom;
+            num2son *= num2times;
+            int resultSon = num1son + num2son;
+            return getSimplifiedFraction(resultSon, num1mom);
+        }
+
+
+        if (num1mom <= num2mom && num2mom % num1mom == 0) {
+            int num2times = num2mom / num1mom;
+            num1son *= num2times;
+            int part1 = num1son;
+            int resultSon = part1 + num2son;
+            return getSimplifiedFraction(resultSon, num2mom);
+        }
+
+//        int son = (num1negative?-(num1son * num2mom):(num1son * num2mom)) + (num2negative?-(num2son * num1mom):(num2son * num1mom));
+        int son = num1son * num2mom + num2son * num1mom;
+        int mon = num1mom * num2mom;
+        return getSimplifiedFraction(son, mon);
+    }
+
+    private static String getSimplifiedFraction(int son, int mom) {
+
+        if (son == 0) return son + "/" + 1;
+        if (son == 1 || mom == 1) return son + "/" + mom;
+
+
+        for (int i = 2; i <= Math.min(Math.abs(son), Math.abs(mom)); i++) {
+            if (son % i == 0 && mom % i == 0) {
+                return getSimplifiedFraction(son / i, mom / i);
+            }
+        }
+        return son + "/" + mom;
+    }
+
+
+    /**
+     * 421. Maximum XOR of Two Numbers in an Array
+     * https://leetcode.com/problems/maximum-xor-of-two-numbers-in-an-array/description/
+     * Other options: need to solve in O(n) time complexity.
+     *
+     * @param nums
+     * @return
+     */
+    public int findMaximumXOR(int[] nums) {
+        int prevMaxIndex = 0;
+        int prevMaxIndex2 = 1;
+        int max = nums[0] ^ nums[1];
+        for (int i = 2; i < nums.length; i++) {
+            int max1 = max ^ nums[prevMaxIndex] ^ nums[i];
+            int max2 = max ^ nums[prevMaxIndex2] ^ nums[i];
+            if (max1 > max2 && max1 > max) {
+                prevMaxIndex = i;
+                max = max1;
+            } else if (max2 > max) {
+                prevMaxIndex2 = i;
+                max = max2;
+            }
+        }
+        return nums[prevMaxIndex] ^ nums[prevMaxIndex2];
+    }
+
+
+    public int countNumbersWithUniqueDigits(int n) {
+        if (n == 1) return 10;
+        if (n > 10) {
+            n = 10;
+        }
+        int orig = n;
+        int total = 1;
+        int currentChoice = 9;
+        while (n > 1) {
+            total *= currentChoice;
+            currentChoice--;
+            n--;
+        }
+        total *= (currentChoice + 1);
+
+        return total + countNumbersWithUniqueDigits(orig - 1);
+    }
+
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        ListNode reversedL1 = reverseList(l1);
+        ListNode reversedL2 = reverseList(l2);
+        int carryIn = 0;
+        ListNode preL1 = null, preL2;
+        ListNode newList = null;
+        ListNode current = null;
+        while (reversedL1 != null || reversedL2 != null) {
+            int currentL1val = reversedL1 == null ? 0 : reversedL1.val;
+            int currentL2val = reversedL2 == null ? 0 : reversedL2.val;
+            int addResult = currentL1val + currentL2val + carryIn;
+            carryIn = addResult / 10;
+            addResult %= 10;
+            if (newList == null) {
+                newList = new ListNode(addResult);
+                current = newList;
+            } else {
+                current.next = new ListNode(addResult);
+                current = current.next;
+            }
+            if (reversedL1 != null)
+                reversedL1 = reversedL1.next;
+            if (reversedL2 != null)
+                reversedL2 = reversedL2.next;
+        }
+        if (carryIn != 0) {
+            current.next = new ListNode(carryIn);
+        }
+        ListNode re = reverseList(newList);
+        return re;
+    }
+
+    private static ListNode reverseList(ListNode root) {
+        ListNode tmpPre = null;
+        while (root != null) {
+            ListNode originNext = root.next;
+            root.next = tmpPre;
+            tmpPre = root;
+            root = originNext;
+        }
+        return tmpPre;
+    }
+
+    public int[] findDiagonalOrder(int[][] matrix) {
+        if (matrix.length == 0) return new int[0];
+        int M = matrix.length; //row count;
+        int N = matrix[0].length; // column count;
+        int result[] = new int[M * N];
+        int x = 0, y = 0;
+        boolean goUp = true;
+        for (int i = 0; i < result.length; i++) {
+            result[i] = matrix[x][y];
+            if (goUp && (x == 0 || y == N - 1)) {
+                goUp = false;
+                if (x == 0 && y < N - 1) {
+                    y++;
+                } else {
+                    x++;
+                }
+                continue;
+            } else if (!goUp && (y == 0 || x == M - 1)) {
+                goUp = true;
+                if (y == 0 && x < M - 1) {
+                    x++;
+                } else {
+                    y++;
+                }
+                continue;
+            }
+            if (goUp) {
+                x--;
+                y++;
+            } else {
+                x++;
+                y--;
+            }
+        }
+        return result;
+    }
+
+
+    public int findMinDifference(List<String> timePoints) {
+        timePoints.sort((o1, o2) -> o1.compareTo(o2));
+        String time0 = timePoints.get(0);
+        int MIN = Integer.MAX_VALUE;
+        for (int i = 1; i < timePoints.size(); i++) {
+            MIN = Integer.min(MIN, timeGap(timePoints.get(i - 1), timePoints.get(i)));
+        }
+        MIN = Integer.min(MIN, timeGap(timePoints.get(timePoints.size() - 1), timePoints.get(0)));
+        return MIN;
+    }
+
+
+    /**
+     * assume calculate time from
+     *
+     * @param t1
+     * @param t2
+     * @return
+     */
+    private static int timeGap(String t1, String t2) {
+        int h1 = Integer.parseInt(t1.substring(0, t1.indexOf(':')));
+        int m1 = Integer.parseInt(t1.substring(t1.indexOf(':') + 1));
+
+        int h2 = Integer.parseInt(t2.substring(0, t2.indexOf(':')));
+        int m2 = Integer.parseInt(t2.substring(t2.indexOf(':') + 1));
+
+        int tmp;
+        if (h1 == h2) {
+            return Math.abs(m1 - m2);
+        } else if (h1 < h2) {
+            tmp = (h2 - (h1 + 1)) * 60 + (60 - m1) + m2;
+        } else {
+            tmp = (h1 - (h2 + 1)) * 60 + (60 - m2) + m1;
+        }
+        tmp = Math.min(tmp, 24 * 60 - tmp);
+        return tmp;
+    }
+
+
+    /**
+     * 22. Generate Parentheses
+     * https://leetcode.com/problems/generate-parentheses/description/
+     *
+     * @param n
+     * @return
+     */
+//    public List<String> generateParenthesis(int n) {
+//        return lengthGenerate(n);
+//    }
+//
+//    private static List<String> lengthGenerate(int n) {
+//        Set<String> list = new HashSet<>();
+//        if (n == 1) {
+//            List<String> tmp = new ArrayList();
+//            tmp.add("()");
+//            return tmp;
+//        }
+//        if (n==2){
+//            List<String> tmp = new ArrayList();
+//            tmp.add("()()");
+//            tmp.add("(())");
+//            return tmp;
+//        }
+//
+//        for (int i = 1; i <= n / 2; i++) {
+//            for (String tmp : lengthGenerate(n - i)) {
+//                for (String tmp2 : lengthGenerate(i)){
+//                    list.add(tmp + tmp2);
+//                    list.add(tmp2 + tmp);
+//                }
+//            }
+//        }
+//
+//        for (String tmp : lengthGenerate(n - 1)) {
+//            list.add("("+tmp+")");
+//        }
+////        if (n % 2==0){
+////            for(String tmp : lengthGenerate(n / 2)){
+////                for (String tmp2 : lengthGenerate(n / 2)){
+////                    list.add(tmp + tmp2);
+////                }
+////            }
+////        }
+//        String[] ar = list.toArray(new String[list.size()]);
+//        List<String> tmp = Arrays.asList(ar);
+//        return tmp;
+//    }
+
+
+    public List<String> generateParenthesis(int n) {
+        List<String> res = new ArrayList<String>();
+        helper(res, new StringBuilder(), 0 , 0 , n);
+        return res;
+    }
+    public void helper( List<String> res , StringBuilder sb, int left, int right , int max ){
+        if( sb.length() ==  max*2 ){
+            res.add(sb.toString());
+            return;
+        }
+        if( left < max ){
+            int len = sb.length();
+            helper(res, sb.append('(') , left + 1 , right , max);
+            sb.setLength(len);
+        }
+        if( right < left){
+            int len = sb.length();
+            helper(res, sb.append(')') , left , right + 1 , max);
+            sb.setLength(len);
+        }
+    }
+
+    private static void printDiff(String[] s1, String[] s2){
+        Set<String> list = new HashSet<>();
+        for (String tmp : s1){
+            boolean have = false;
+            for (String tmp2 : s2){
+                if (tmp.compareTo(tmp2)==0){
+                    have = true;
+                    break;
+                }
+            }
+            if (!have)
+                list.add(tmp);
+        }
+
+        for (String tmp : s2){
+            boolean have = false;
+            for (String tmp2 : s1){
+                if (tmp.compareTo(tmp2)==0){
+                    have = true;
+                    break;
+                }
+            }
+            if (!have)
+                list.add(tmp);
+        }
+        String[] ar = list.toArray(new String[list.size()]);
+        System.out.println(Arrays.toString(ar));
+    }
 
     public static void main(String[] args) {
         MainInMac m = new MainInMac();
-        int[] input = {6, 1, 8, 6, 8};
-        System.out.println(m.totalHammingDistance(input));
-    }
+//        int[] input = {14, 70, 53, 83, 49, 91, 36, 80, 92, 51, 66, 70};
+//        System.out.println(m.findMaximumXOR(input));
+//        System.out.println(m.countNumbersWithUniqueDigits(2));
+//        ListNode l1 = new ListNode(7);
+//        l1.next = new ListNode(2);
+//        l1.next.next = new ListNode(4);
+//        l1.next.next.next = new ListNode(3);
+//        ListNode l2 = new ListNode(5);
+//        l2.next = new ListNode(6);
+//        l2.next.next = new ListNode(4);
+//        m.addTwoNumbers(l1, l2);
+        int[][] input = {
+                {1, 2, 3},
+                {4, 5, 6},
+                {7, 8, 9},
+        };
+//        m.findDiagonalOrder(input);
 
+
+        m.generateParenthesis(2);
+        String[] s1 = {"()(())()()","(((()))())","((()(())))","()()(()())","(()(()))()","()(()()())","(()(()()))","()((()))()","()((()()))","(()()()())","(((()())))","()()()()()","((()())())","(())()()()","()(()())()","(()(())())","()(()(()))","(((())))()","(((())()))","()(((())))","(())(())()","(()((())))","()(())(())","()()(())()","()()((()))","((()))()()","((())()())","((((()))))","((()()()))","(()()())()","(()()(()))","()((())())","((()()))()","((())())()","()()()(())","((())(()))","(()())()()"};
+        String[] s2 = {"((((()))))","(((()())))","(((())()))","(((()))())","(((())))()","((()(())))","((()()()))","((()())())","((()()))()","((())(()))","((())()())","((())())()","((()))(())","((()))()()","(()((())))","(()(()()))","(()(())())","(()(()))()","(()()(()))","(()()()())","(()()())()","(()())(())","(()())()()","(())((()))","(())(()())","(())(())()","(())()(())","(())()()()","()(((())))","()((()()))","()((())())","()((()))()","()(()(()))","()(()()())","()(()())()","()(())(())","()(())()()","()()((()))","()()(()())","()()(())()","()()()(())","()()()()()"};
+        printDiff(s1,s2);
+    }
 }
