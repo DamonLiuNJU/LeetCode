@@ -2096,36 +2096,35 @@ public class MainInMac {
 //        List<String> tmp = Arrays.asList(ar);
 //        return tmp;
 //    }
-
-
     public List<String> generateParenthesis(int n) {
         List<String> res = new ArrayList<String>();
-        helper(res, new StringBuilder(), 0 , 0 , n);
+        helper(res, new StringBuilder(), 0, 0, n);
         return res;
     }
-    public void helper( List<String> res , StringBuilder sb, int left, int right , int max ){
-        if( sb.length() ==  max*2 ){
+
+    public void helper(List<String> res, StringBuilder sb, int left, int right, int max) {
+        if (sb.length() == max * 2) {
             res.add(sb.toString());
             return;
         }
-        if( left < max ){
+        if (left < max) {
             int len = sb.length();
-            helper(res, sb.append('(') , left + 1 , right , max);
+            helper(res, sb.append('('), left + 1, right, max);
             sb.setLength(len);
         }
-        if( right < left){
+        if (right < left) {
             int len = sb.length();
-            helper(res, sb.append(')') , left , right + 1 , max);
+            helper(res, sb.append(')'), left, right + 1, max);
             sb.setLength(len);
         }
     }
 
-    private static void printDiff(String[] s1, String[] s2){
+    private static void printDiff(String[] s1, String[] s2) {
         Set<String> list = new HashSet<>();
-        for (String tmp : s1){
+        for (String tmp : s1) {
             boolean have = false;
-            for (String tmp2 : s2){
-                if (tmp.compareTo(tmp2)==0){
+            for (String tmp2 : s2) {
+                if (tmp.compareTo(tmp2) == 0) {
                     have = true;
                     break;
                 }
@@ -2134,10 +2133,10 @@ public class MainInMac {
                 list.add(tmp);
         }
 
-        for (String tmp : s2){
+        for (String tmp : s2) {
             boolean have = false;
-            for (String tmp2 : s1){
-                if (tmp.compareTo(tmp2)==0){
+            for (String tmp2 : s1) {
+                if (tmp.compareTo(tmp2) == 0) {
                     have = true;
                     break;
                 }
@@ -2148,6 +2147,75 @@ public class MainInMac {
         String[] ar = list.toArray(new String[list.size()]);
         System.out.println(Arrays.toString(ar));
     }
+
+
+    /**
+     * 216. Combination Sum III
+     * https://leetcode.com/problems/combination-sum-iii/description/
+     *
+     * @param k
+     * @param n
+     * @return
+     */
+    List<List<Integer>> re = new ArrayList<>();
+
+    public List<List<Integer>> combinationSum3(int k, int n) {
+        if (n > 45 || (n == 45 && k < 9)) {
+            return new ArrayList<>();
+        }
+        if (n == 45 && k == 9) {
+            Integer[] tmp = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+            re.add(Arrays.asList(tmp));
+            return re;
+        }
+
+//        Set<Integer> alreadyTaken =
+        dfs(n, k, new ArrayList<Integer>());
+
+        return re;
+    }
+
+    private void dfs(int target, int possibleChoice, ArrayList<Integer> alreadyTaken) {
+        if (possibleChoice == 0) {
+            if (target == 0) {
+                re.add(alreadyTaken);
+            }
+            return;
+        }
+        int alreadyMax = 0;
+        for (int tmp : alreadyTaken) {
+            alreadyMax = Math.max(alreadyMax, tmp);
+        }
+
+        for (int i = alreadyMax + 1; i <= 9; i++) {
+            boolean tag = false;
+            for (int index : alreadyTaken) {
+                if (index == i) {
+                    tag = true;
+                }
+            }
+            if (!tag) {
+                ArrayList<Integer> tmp = (ArrayList<Integer>) alreadyTaken.clone();
+                tmp.add(i);
+                dfs(target - i, possibleChoice - 1, tmp);
+            }
+        }
+    }
+
+
+    /**
+     * 554. Brick Wall
+     * https://leetcode.com/problems/brick-wall/description/
+     *
+     * @param wall
+     * @return
+     */
+    public int leastBricks(List<List<Integer>> wall) {
+        
+
+        return -1;
+    }
+
 
     public static void main(String[] args) {
         MainInMac m = new MainInMac();
@@ -2170,9 +2238,9 @@ public class MainInMac {
 //        m.findDiagonalOrder(input);
 
 
-        m.generateParenthesis(2);
-        String[] s1 = {"()(())()()","(((()))())","((()(())))","()()(()())","(()(()))()","()(()()())","(()(()()))","()((()))()","()((()()))","(()()()())","(((()())))","()()()()()","((()())())","(())()()()","()(()())()","(()(())())","()(()(()))","(((())))()","(((())()))","()(((())))","(())(())()","(()((())))","()(())(())","()()(())()","()()((()))","((()))()()","((())()())","((((()))))","((()()()))","(()()())()","(()()(()))","()((())())","((()()))()","((())())()","()()()(())","((())(()))","(()())()()"};
-        String[] s2 = {"((((()))))","(((()())))","(((())()))","(((()))())","(((())))()","((()(())))","((()()()))","((()())())","((()()))()","((())(()))","((())()())","((())())()","((()))(())","((()))()()","(()((())))","(()(()()))","(()(())())","(()(()))()","(()()(()))","(()()()())","(()()())()","(()())(())","(()())()()","(())((()))","(())(()())","(())(())()","(())()(())","(())()()()","()(((())))","()((()()))","()((())())","()((()))()","()(()(()))","()(()()())","()(()())()","()(())(())","()(())()()","()()((()))","()()(()())","()()(())()","()()()(())","()()()()()"};
-        printDiff(s1,s2);
+//        m.generateParenthesis(2);
+//        String[] s1 = {"()(())()()","(((()))())","((()(())))","()()(()())","(()(()))()","()(()()())","(()(()()))","()((()))()","()((()()))","(()()()())","(((()())))","()()()()()","((()())())","(())()()()","()(()())()","(()(())())","()(()(()))","(((())))()","(((())()))","()(((())))","(())(())()","(()((())))","()(())(())","()()(())()","()()((()))","((()))()()","((())()())","((((()))))","((()()()))","(()()())()","(()()(()))","()((())())","((()()))()","((())())()","()()()(())","((())(()))","(()())()()"};
+//        String[] s2 = {"((((()))))","(((()())))","(((())()))","(((()))())","(((())))()","((()(())))","((()()()))","((()())())","((()()))()","((())(()))","((())()())","((())())()","((()))(())","((()))()()","(()((())))","(()(()()))","(()(())())","(()(()))()","(()()(()))","(()()()())","(()()())()","(()())(())","(()())()()","(())((()))","(())(()())","(())(())()","(())()(())","(())()()()","()(((())))","()((()()))","()((())())","()((()))()","()(()(()))","()(()()())","()(()())()","()(())(())","()(())()()","()()((()))","()()(()())","()()(())()","()()()(())","()()()()()"};
+//        printDiff(s1,s2);
     }
 }
