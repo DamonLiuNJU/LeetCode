@@ -2673,68 +2673,20 @@ public class MainInMac {
      */
 //    int lo = Integer.MAX_VALUE, high = -1;
     public int findMinArrowShots(int[][] points) {
-
-        for (int[] point : points) {
-//            lo = Math.min(lo, point[0]);
-//            high = Math.max(high, point[1]);
+        if (points.length == 0) {
+            return 0;
         }
-//        int[] count = new int[high - lo + 1];
-        Map<Integer, Integer> index2count = new HashMap<>();
-        for (int i = 0; i < points.length; i++) {
-            int[] cur = points[i];
-//            if (index2count.size()==0){
-            index2count.put(cur[0], index2count.getOrDefault(cur[0], 1));
-            index2count.put(cur[1], index2count.getOrDefault(cur[1], 1));
-//                continue;
-//            }
-            for (int j = 0; j < i; j++) {
-                int[] pre = points[j];
-                if (pre[0] > cur[1] || pre[1] < cur[0]) {
-                    continue;
-                } else if (pre[0] == cur[1]) { //首尾相接
-                    index2count.put(pre[0], index2count.getOrDefault(pre[0], 1) + 1);
-                    continue;
-                } else if (pre[1] == cur[0]) { //首尾相接
-                    index2count.put(pre[1], index2count.getOrDefault(pre[1], 1) + 1);
-                    continue;
-                } else if (pre[0] < cur[1] && pre[1] > cur[1] && cur[0] < pre[0]) {
-                    index2count.put(pre[0], index2count.getOrDefault(pre[0], 1) + 1);
-                    index2count.put(cur[1], index2count.getOrDefault(cur[1], 1) + 1);
-                    continue;
-                } else if (pre[0] < cur[0] && pre[1] > cur[0] && cur[1] > pre[1]) {
-                    index2count.put(pre[1], index2count.getOrDefault(pre[1], 1) + 1);
-                    index2count.put(cur[0], index2count.getOrDefault(cur[0], 1) + 1);
-                    continue;
-                } else if (cur[0] >= pre[0] && cur[1] <= pre[1]) {
-                    index2count.put(cur[0], index2count.getOrDefault(cur[0], 1) + 1);
-                    index2count.put(cur[1], index2count.getOrDefault(cur[1], 1) + 1);
-                    continue;
-                } else {
-                    index2count.put(pre[0], index2count.getOrDefault(pre[0], 1) + 1);
-                    index2count.put(pre[1], index2count.getOrDefault(pre[1], 1) + 1);
-                    continue;
-                }
+        Arrays.sort(points, (a, b) -> a[1] - b[1]);
+        int arrowPos = points[0][1];
+        int arrowCnt = 1;
+        for (int i = 1; i < points.length; i++) {
+            if (arrowPos >= points[i][0]) {
+                continue;
             }
+            arrowCnt++;
+            arrowPos = points[i][1];
         }
-
-
-        int totalShoot = 0;
-        while (true) {
-            int max = -1;
-            int maxIndex = -1;
-            for (int key : index2count.keySet()) {
-                if (index2count.get(key) > max) {
-                    max = index2count.get(key);
-                    maxIndex = key;
-                }
-            }
-            if (max > 0) {
-                shoot(points, index2count, maxIndex);
-                totalShoot++;
-            } else {
-                return totalShoot;
-            }
-        }
+        return arrowCnt;
     }
 
 
