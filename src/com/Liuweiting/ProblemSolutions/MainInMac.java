@@ -2412,9 +2412,23 @@ public class MainInMac {
      * @return
      */
     public ListNode detectCycle(ListNode head) {
+        ListNode slow = head;
+        ListNode fast = head;
+        do {
+            if (slow==null||fast==null||fast.next==null){
+                return null;
+            }
+            slow = slow.next;
+            fast = fast.next.next;
+        } while (slow != fast); // question is, this meet point is not necessarily the entry point, it's just a point in cycle.
 
+        slow = head;
+        while (slow!=fast){
+            slow = slow.next;
+            fast = fast.next;
+        }
 
-        return null;
+        return slow;
     }
 
     public static void main(String[] args) {
