@@ -2241,31 +2241,193 @@ public class MainInMac {
     }
 
 
+    /**
+     * 144. Binary Tree Preorder Traversal
+     * https://leetcode.com/problems/binary-tree-preorder-traversal/description/
+     *
+     * @param root
+     * @return
+     */
+    List<Integer> result = new ArrayList<>();
+
+    public List<Integer> preorderTraversal(TreeNode root) {
+        if (root != null) {
+            result.add(root.val);
+            preorderTraversal(root.left);
+            preorderTraversal(root.right);
+        }
+        return result;
+    }
+
+    /**
+     * 481. Magical String
+     * https://leetcode.com/problems/magical-string/description/
+     *
+     * @param n
+     * @return
+     */
+    public int magicalString(int n) {
+        String base = "122112122";
+        int counter = 0;
+        while (base.length() < n) {
+            boolean start = true;
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < base.length(); i++) {
+                if (base.charAt(i) == '1') {
+                    sb.append(start ? 1 : 2);
+                    start = !start;
+                } else {
+                    sb.append(start ? 1 : 2);
+                    sb.append(start ? 1 : 2);
+                    start = !start;
+                }
+            }
+            base = sb.toString();
+        }
+        for (int i = 0; i < n; i++) {
+            if (base.charAt(i) == '1') {
+                counter++;
+            }
+        }
+        return counter;
+    }
+
+
+    /**
+     * 12. Integer to Roman
+     *
+     * @param num 1~3999
+     *            <p>
+     *            把一个给定的罗马字符转为数字。首先要了解罗马字符表示的规则。
+     *            一，羅馬數字共有7個，即I（1）、V（5）、X（10）、L（50）、C（100）、D（500）和M（1000）。
+     *            二，在較大的羅馬數字的右邊記上較小的羅馬數字，表示大數字加小數字，例如：VI（6），VIII（8），LV（55=50 + 5），LX（60=50 + 10）
+     *            三，在較大的羅馬數字的左邊記上較小的羅馬數字，表示大數字减小數字，例如：IX（9），XL（40=50 - 10），XC（90=100 - 10）
+     *            四，左减的数字有限制，仅限于I、X、C。比如45不可以写成VL，只能是XLV。
+     *            五，左減時不可跨越一個位數。比如，99不可以用IC（100 - 1）表示，而是用XCIX（[100 - 10] + [10 - 1]）表示。
+     * @return
+     */
+    public String intToRoman(int num) {
+        //TODO: try to understand this problem.
+        return null;
+    }
+
+    private static int Char2Int(char c) {
+        switch (c) {
+            case 'I':
+                return 1;
+            case 'V':
+                return 5;
+            case 'X':
+                return 10;
+            case 'L':
+                return 50;
+            case 'C':
+                return 100;
+            case 'D':
+                return 500;
+            case 'M':
+                return 1000;
+        }
+        return -1;
+    }
+
+    private static char Int2Char(int c) {
+        switch (c) {
+            case 1:
+                return 'I';
+            case 5:
+                return 'V';
+            case 10:
+                return 'X';
+            case 50:
+                return 'L';
+            case 100:
+                return 'C';
+            case 500:
+                return 'D';
+            case 1000:
+                return 'M';
+        }
+        return 'E';
+    }
+
+    /**
+     * Q378.https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/description/
+     *
+     * @param matrix
+     * @param k
+     * @return
+     */
+    public int kthSmallest(int[][] matrix, int k) {
+        int lo = matrix[0][0], hi = matrix[matrix.length - 1][matrix[0].length - 1] + 1;//[lo, hi)
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            int count = 0, j = matrix[0].length - 1;
+            for (int i = 0; i < matrix.length; i++) {
+                while (j >= 0 && matrix[i][j] > mid) j--;
+                count += (j + 1);
+            }
+            if (count < k) lo = mid + 1;
+            else hi = mid;
+        }
+        return lo;
+    }
+
+    /**
+     * Q287
+     *
+     * @param nums
+     * @return
+     */
+    public int findDuplicate(int[] nums) {
+        int low = 1;
+        int high = nums.length;  //[low,high)
+        int counter = 0;
+        while (low < high) {
+            counter = 0;
+            int mid = low + (high - low) / 2;
+            for (int i = 0; i < nums.length; i++) {
+                if (nums[i] <= mid) {
+                    counter++;
+                    if (counter > mid) {
+                        break;
+                    }
+                }
+            }
+            if (counter > mid) {
+                high = mid;
+            } else {
+                low = mid + 1;
+            }
+        }
+        return low;
+    }
+
+
+    /**
+     * Q142. Linked List Cycle II
+     * https://leetcode.com/problems/linked-list-cycle-ii/description/
+     *
+     * @param head
+     * @return
+     */
+    public ListNode detectCycle(ListNode head) {
+
+
+        return null;
+    }
+
     public static void main(String[] args) {
         MainInMac m = new MainInMac();
-//        int[] input = {14, 70, 53, 83, 49, 91, 36, 80, 92, 51, 66, 70};
-//        System.out.println(m.findMaximumXOR(input));
-//        System.out.println(m.countNumbersWithUniqueDigits(2));
-//        ListNode l1 = new ListNode(7);
-//        l1.next = new ListNode(2);
-//        l1.next.next = new ListNode(4);
-//        l1.next.next.next = new ListNode(3);
-//        ListNode l2 = new ListNode(5);
-//        l2.next = new ListNode(6);
-//        l2.next.next = new ListNode(4);
-//        m.addTwoNumbers(l1, l2);
-        int[][] input = {
-                {1, 2, 3},
-                {4, 5, 6},
-                {7, 8, 9},
-        };
-//        m.findDiagonalOrder(input);
-
-
-//        m.generateParenthesis(2);
-//        String[] s1 = {"()(())()()","(((()))())","((()(())))","()()(()())","(()(()))()","()(()()())","(()(()()))","()((()))()","()((()()))","(()()()())","(((()())))","()()()()()","((()())())","(())()()()","()(()())()","(()(())())","()(()(()))","(((())))()","(((())()))","()(((())))","(())(())()","(()((())))","()(())(())","()()(())()","()()((()))","((()))()()","((())()())","((((()))))","((()()()))","(()()())()","(()()(()))","()((())())","((()()))()","((())())()","()()()(())","((())(()))","(()())()()"};
-//        String[] s2 = {"((((()))))","(((()())))","(((())()))","(((()))())","(((())))()","((()(())))","((()()()))","((()())())","((()()))()","((())(()))","((())()())","((())())()","((()))(())","((()))()()","(()((())))","(()(()()))","(()(())())","(()(()))()","(()()(()))","(()()()())","(()()())()","(()())(())","(()())()()","(())((()))","(())(()())","(())(())()","(())()(())","(())()()()","()(((())))","()((()()))","()((())())","()((()))()","()(()(()))","()(()()())","()(()())()","()(())(())","()(())()()","()()((()))","()()(()())","()()(())()","()()()(())","()()()()()"};
-//        printDiff(s1,s2);
+//        int[][] input = {
+//                {10, 20, 40},
+//                {10, 31, 60},
+//                {20, 40, 70},
+//        };
+//        System.out.println(m.kthSmallest(input,5));
+//
+//        int [] nums = {1,2,2};
+//        System.out.println(m.findDuplicate(nums));
 
 
     }
