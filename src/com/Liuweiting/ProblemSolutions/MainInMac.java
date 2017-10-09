@@ -2415,15 +2415,16 @@ public class MainInMac {
         ListNode slow = head;
         ListNode fast = head;
         do {
-            if (slow==null||fast==null||fast.next==null){
+            if (slow == null || fast == null || fast.next == null) {
                 return null;
             }
             slow = slow.next;
             fast = fast.next.next;
-        } while (slow != fast); // question is, this meet point is not necessarily the entry point, it's just a point in cycle.
+        }
+        while (slow != fast); // question is, this meet point is not necessarily the entry point, it's just a point in cycle.
 
         slow = head;
-        while (slow!=fast){
+        while (slow != fast) {
             slow = slow.next;
             fast = fast.next;
         }
@@ -2431,18 +2432,346 @@ public class MainInMac {
         return slow;
     }
 
+
+    /**
+     * 486. Predict the Winner
+     * https://leetcode.com/problems/predict-the-winner/description/
+     *
+     * @param nums
+     * @return
+     */
+    public boolean PredictTheWinner(int[] nums) {
+//        return predictHelper(nums, 0, nums.length, 0, 0, true);
+        return player1CanWin(nums, 0, nums.length, 0, 0);
+    }
+
+    private boolean player1CanWin(int[] nums, int beginIndex, int endIndex, int player1score, int player2score) {
+        if (endIndex - beginIndex == 1) {
+            return player1score + nums[beginIndex] >= player2score;
+        }
+        return !player2CanWin(nums, beginIndex + 1, endIndex, player1score + nums[beginIndex], player2score)
+                || !player2CanWin(nums, beginIndex, endIndex - 1, player1score + nums[endIndex - 1], player2score);
+    }
+
+    private boolean player2CanWin(int[] nums, int beginIndex, int endIndex, int player1score, int player2score) {
+        if (endIndex - beginIndex == 1) {
+            return player2score + nums[beginIndex] > player1score;
+        }
+        return !player1CanWin(nums, beginIndex + 1, endIndex, player1score, player2score + nums[beginIndex])
+                || !player1CanWin(nums, beginIndex, endIndex - 1, player1score, player2score + nums[endIndex - 1]);
+    }
+
+    private boolean predictHelper(int[] nums, int begin, int end, int player1score, int player2score, boolean player1round) {
+        if (begin == end) {
+            return player1score >= player2score;
+        }
+        boolean dfs = false;
+        if (player1round) {
+            return predictHelper(nums, begin + 1, end, player1score + nums[begin], player2score, !player1round) ||
+                    predictHelper(nums, begin, end - 1, player1score + nums[end - 1], player2score, !player1round);
+        } else {
+            return predictHelper(nums, begin + 1, end, player1score, player2score + nums[begin], !player1round) ||
+                    predictHelper(nums, begin, end - 1, player1score, player2score + nums[end - 1], !player1round);
+        }
+    }
+
+
+    /**
+     * 46. Permutations
+     * https://leetcode.com/problems/permutations/description/
+     *
+     * @param nums
+     * @return
+     */
+    List<List<Integer>> permuteResult = new ArrayList<>();
+
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> indexes = permute(nums.length, nums.length);
+        for (List<Integer> index : indexes) {
+            List<Integer> result = new ArrayList<>();
+            for (Integer i : index) {
+                result.add(nums[i]);
+            }
+            permuteResult.add(result);
+        }
+
+        return permuteResult;
+    }
+
+    /**
+     * return 0~n-1 's permute.
+     *
+     * @param n
+     * @return
+     */
+    private static List<List<Integer>> permute(int n, int currentLeft) {
+
+        if (currentLeft == 1) {
+            List<List<Integer>> re = new ArrayList<>(currentLeft);
+            for (int i = 0; i < n; i++) {
+                List<Integer> tmp = new ArrayList<>();
+                tmp.add(i);
+                re.add(tmp);
+            }
+            return re;
+        }
+
+        List<List<Integer>> newre = new ArrayList<>();
+        List<List<Integer>> tmp = permute(n, currentLeft - 1);
+        for (List<Integer> list : tmp) {
+            for (int i = 0; i < n; i++) {
+                if (!list.contains(i)) {
+                    List<Integer> newlist = (List<Integer>) ((ArrayList) list).clone();
+                    newlist.add(i);
+                    newre.add(newlist);
+                }
+            }
+        }
+        return newre;
+    }
+
+
+    /**
+     * 318. Maximum Product of Word Lengths
+     * https://leetcode.com/problems/maximum-product-of-word-lengths/description/
+     * Given a string array words, find the maximum value of length(word[i]) * length(word[j])
+     * where the two words do not share common letters. You may assume that each word will contain
+     * only lower case letters. If no such two words exist, return 0.
+     *
+     * @param words
+     * @return
+     */
+
+    private static int relative(char tmp) {
+        return tmp - 'a';
+    }
+
+    public int maxProduct(String[] words) {
+        int maxLength = 0;
+        for (int i = 0; i < words.length; i++) {
+            for (int j = i + 1; j < words.length; j++) {
+                boolean used[] = new boolean[26];
+                Arrays.fill(used, false);
+                for (char tmp : words[i].toCharArray()) {
+                    used[relative(tmp)] = true;
+                }
+                boolean haveCommon = false;
+                for (char c : words[j].toCharArray()) {
+                    if (used[relative(c)]) {
+                        haveCommon = true;
+                        break;
+                    }
+                }
+                if (!haveCommon) {
+                    maxLength = Math.max(maxLength, words[i].length() * words[j].length());
+                }
+            }
+        }
+        return maxLength;
+    }
+
+
+    /**
+     * 423. Reconstruct Original Digits from English
+     * zero -- z   six -- x  eight -- g  two -- w  three -- h(after eight)  four(r)  one(o) five(f) seven(v)
+     * nIne(*)
+     *
+     * @param s input String.
+     * @return the original result.
+     */
+    public String originalDigits(String s) {
+        int[] count = new int[26];
+        for (char c : s.toCharArray()) {
+            count[relative(c)]++;
+        }
+        ArrayList<Integer> list = new ArrayList<>();
+        removeThings(count, 'z', "zero", list, 0);
+        removeThings(count, 'x', "six", list, 6);
+        removeThings(count, 'g', "eight", list, 8);
+        removeThings(count, 'w', "two", list, 2);
+        removeThings(count, 'h', "three", list, 3);
+        removeThings(count, 'r', "four", list, 4);
+        removeThings(count, 'o', "one", list, 1);
+        removeThings(count, 'f', "five", list, 5);
+        removeThings(count, 'v', "seven", list, 7);
+        removeThings(count, 'i', "nine", list, 9);
+
+        list.sort((o1, o2) -> o1 - o2);
+        StringBuilder sb = new StringBuilder();
+        for (int tmp : list) {
+            sb.append(tmp);
+        }
+        return sb.toString();
+    }
+
+    private static void removeThings(int[] count, char key, String word, List<Integer> list, int num) {
+        while (count[relative(key)] > 0) {
+            list.add(num);
+            for (char c : word.toCharArray()) {
+                count[relative(c)]--;
+            }
+        }
+    }
+
+
+    /**
+     * 230. Kth Smallest Element in a BST
+     * https://leetcode.com/problems/kth-smallest-element-in-a-bst/description/
+     *
+     * @param root
+     * @param k
+     * @return
+     */
+    public int kthSmallest(TreeNode root, int k) {
+        TreeNode tmp = root;
+        while (tmp.left != null) {
+            tmp = tmp.left;
+        }
+        int lo = -1, high = -1;
+        lo = tmp.val;
+        tmp = root;
+        while (tmp.right != null) {
+            tmp = tmp.right;
+        }
+        high = tmp.val + 1;
+        int mid = -1;
+        while (lo < high) {
+            mid = lo + (high - lo) / 2;
+            int count = 0;
+            int totalCount = dfs(mid, root);
+            System.out.println("search for : " + mid + " result : " + totalCount);
+            if (totalCount > k) {
+                high = mid;
+            } else if (totalCount < k) {
+                lo = mid + 1;
+            } else {
+                return mid;
+            }
+        }
+
+        return lo;
+    }
+
+    private static int dfs(int val, TreeNode root) {
+        if (root == null) return 0;
+        if (root.val > val) {
+            return dfs(val, root.left);
+        }
+        if (root.val <= val) {
+            return 1 + dfs(val, root.left) + dfs(val, root.right);
+        }
+        return 0;
+    }
+
+
+    /**
+     * 452. Minimum Number of Arrows to Burst Balloons
+     * https://leetcode.com/problems/minimum-number-of-arrows-to-burst-balloons/description/
+     *
+     * @param points points of ballons.
+     * @return number of arrows.
+     */
+//    int lo = Integer.MAX_VALUE, high = -1;
+    public int findMinArrowShots(int[][] points) {
+
+        for (int[] point : points) {
+//            lo = Math.min(lo, point[0]);
+//            high = Math.max(high, point[1]);
+        }
+//        int[] count = new int[high - lo + 1];
+        Map<Integer, Integer> index2count = new HashMap<>();
+        for (int i = 0; i < points.length; i++) {
+            int[] cur = points[i];
+//            if (index2count.size()==0){
+            index2count.put(cur[0], index2count.getOrDefault(cur[0], 1));
+            index2count.put(cur[1], index2count.getOrDefault(cur[1], 1));
+//                continue;
+//            }
+            for (int j = 0; j < i; j++) {
+                int[] pre = points[j];
+                if (pre[0] > cur[1] || pre[1] < cur[0]) {
+                    continue;
+                } else if (pre[0] == cur[1]) { //首尾相接
+                    index2count.put(pre[0], index2count.getOrDefault(pre[0], 1) + 1);
+                    continue;
+                } else if (pre[1] == cur[0]) { //首尾相接
+                    index2count.put(pre[1], index2count.getOrDefault(pre[1], 1) + 1);
+                    continue;
+                } else if (pre[0] < cur[1] && pre[1] > cur[1] && cur[0] < pre[0]) {
+                    index2count.put(pre[0], index2count.getOrDefault(pre[0], 1) + 1);
+                    index2count.put(cur[1], index2count.getOrDefault(cur[1], 1) + 1);
+                    continue;
+                } else if (pre[0] < cur[0] && pre[1] > cur[0] && cur[1] > pre[1]) {
+                    index2count.put(pre[1], index2count.getOrDefault(pre[1], 1) + 1);
+                    index2count.put(cur[0], index2count.getOrDefault(cur[0], 1) + 1);
+                    continue;
+                } else if (cur[0] >= pre[0] && cur[1] <= pre[1]) {
+                    index2count.put(cur[0], index2count.getOrDefault(cur[0], 1) + 1);
+                    index2count.put(cur[1], index2count.getOrDefault(cur[1], 1) + 1);
+                    continue;
+                } else {
+                    index2count.put(pre[0], index2count.getOrDefault(pre[0], 1) + 1);
+                    index2count.put(pre[1], index2count.getOrDefault(pre[1], 1) + 1);
+                    continue;
+                }
+            }
+        }
+
+
+        int totalShoot = 0;
+        while (true) {
+            int max = -1;
+            int maxIndex = -1;
+            for (int key : index2count.keySet()) {
+                if (index2count.get(key) > max) {
+                    max = index2count.get(key);
+                    maxIndex = key;
+                }
+            }
+            if (max > 0) {
+                shoot(points, index2count, maxIndex);
+                totalShoot++;
+            } else {
+                return totalShoot;
+            }
+        }
+    }
+
+
+    /**
+     * find a max point and shoot. return the shoot result.
+     *
+     * @param points
+     * @param count
+     * @return
+     */
+    private void shoot(int[][] points, Map<Integer, Integer> count, int shootPoint) {
+        for (int[] point : points) {
+            if (shootPoint <= point[1] && shootPoint >= point[0]) {
+                count.keySet().stream().filter(key -> key >= point[0] && key <= point[1]).forEach(key -> count.put(key, count.get(key) - 1));
+            }
+        }
+    }
+
     public static void main(String[] args) {
         MainInMac m = new MainInMac();
-//        int[][] input = {
-//                {10, 20, 40},
-//                {10, 31, 60},
-//                {20, 40, 70},
-//        };
+        int[][] input = {
+                {3, 9}, {7, 12}, {3, 8}, {6, 8}, {9, 10}, {2, 9}, {0, 9}, {3, 9}, {0, 6}, {2, 8}
+        };
 //        System.out.println(m.kthSmallest(input,5));
 //
 //        int [] nums = {1,2,2};
 //        System.out.println(m.findDuplicate(nums));
 
-
+//        int[] input = {1, 5, 233, 2};
+//        System.out.println(m.PredictTheWinner(input));
+//        String[] input = {"abcw", "baz", "foo", "bar", "xtfn", "abcdef"};
+//        System.out.println(m.permute(input));
+//        System.out.println(m.maxProduct(input));
+//        System.out.println(m.originalDigits("owoztneoer"));
+//        TreeNode root = new TreeNode(1);
+//        root.right = new TreeNode(2);
+//        m.kthSmallest(root, 2);
+        System.out.println(m.findMinArrowShots(input));
     }
 }
