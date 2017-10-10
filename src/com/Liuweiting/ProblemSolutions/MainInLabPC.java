@@ -796,10 +796,10 @@ public class MainInLabPC {
         int leftIndex = 0;
         int rightIndex = s.length() - 1;
         while (leftIndex < rightIndex) {
-            while (!isVowel(s.charAt(leftIndex)) && leftIndex < s.length()-1){
+            while (!isVowel(s.charAt(leftIndex)) && leftIndex < s.length() - 1) {
                 leftIndex++;
             }
-            while (!isVowel(s.charAt(rightIndex)) && rightIndex > 0 ){
+            while (!isVowel(s.charAt(rightIndex)) && rightIndex > 0) {
                 rightIndex--;
             }
             if (leftIndex >= rightIndex) break;
@@ -813,27 +813,29 @@ public class MainInLabPC {
     }
 
 
-    private boolean isVowel(char tmp){
-        return tmp=='a'||tmp=='e'||tmp=='i'||tmp=='o'||tmp=='u'||
-                tmp=='A'||tmp=='E'||tmp=='I'||tmp=='O'||tmp=='U';
+    private boolean isVowel(char tmp) {
+        return tmp == 'a' || tmp == 'e' || tmp == 'i' || tmp == 'o' || tmp == 'u' ||
+                tmp == 'A' || tmp == 'E' || tmp == 'I' || tmp == 'O' || tmp == 'U';
     }
 
     /**
      * 342. Power of Four
      * https://leetcode.com/problems/power-of-four/description/
+     *
      * @param num
      * @return
      */
     public boolean isPowerOfFour(int num) {
-        if (num==1){
+        if (num == 1) {
             return true;
         }
-        return num > 0 && (num&(num-1)) == 0 && (num & 0x55555555) != 0;
+        return num > 0 && (num & (num - 1)) == 0 && (num & 0x55555555) != 0;
     }
 
     /**
      * 367. Valid Perfect Square
      * https://leetcode.com/problems/valid-perfect-square/description/
+     *
      * @param num
      * @return
      */
@@ -842,19 +844,19 @@ public class MainInLabPC {
         if (num <= 3) return false;
         int lower = 1;
         int upper = 0x00010000;
-        int cur = (lower + upper ) / 2 ;
-        while (lower < upper){
-            if (cur * cur == num){
+        int cur = (lower + upper) / 2;
+        while (lower < upper) {
+            if (cur * cur == num) {
                 return true;
             }
 
-            if ((cur * cur)<0){
+            if ((cur * cur) < 0) {
                 upper = cur;
                 cur = (lower + upper) / 2;
                 continue;
             }
 
-            if ((cur * cur) < num){
+            if ((cur * cur) < num) {
                 lower = cur;
                 int newCur = (lower + upper) / 2;
                 if (newCur == cur) break;
@@ -862,7 +864,7 @@ public class MainInLabPC {
                 continue;
             }
 
-            if (cur * cur > num){
+            if (cur * cur > num) {
                 upper = cur;
                 cur = (lower + upper) / 2;
                 continue;
@@ -874,11 +876,132 @@ public class MainInLabPC {
     /**
      * 459. Repeated Substring Pattern
      * https://leetcode.com/problems/repeated-substring-pattern/description/
+     *
      * @param s
      * @return
      */
     public boolean repeatedSubstringPattern(String s) {
-        
+
+        if (s.length() % 2 == 0) {
+            int lengthBound = s.length() / 2;
+            boolean foundPattern = false;
+            while (lengthBound >= 1) {
+                if (s.length() % lengthBound != 0) {
+                    lengthBound--;
+                    continue;
+                }
+                String pattern = s.substring(0, lengthBound);
+
+                if (s.startsWith(pattern)) {
+                    boolean patternValid = true;
+                    for (int i = pattern.length(); i < s.length(); i += pattern.length()) {
+                        if (pattern.compareTo(s.substring(i, i + pattern.length())) != 0) {
+                            patternValid = false;
+                            break;
+                        }
+                    }
+                    if (patternValid) {
+                        foundPattern = true;
+                        return foundPattern;
+                    }
+                } else {
+
+                }
+                lengthBound--;
+            }
+
+            return false;
+        }
+
+        int upperBound = s.length() / 2;
+        int center = s.length() / 2;
+        int left = -1, right = -1;
+
+        left = center;
+        right = center + 1;
+
+        while (right - left <= upperBound) {
+            if (s.length() % (right - left) != 0) {
+                right++;
+                left--;
+                continue;
+            }
+            String pattern = s.substring(left, right);
+            if (s.startsWith(pattern)) {
+                boolean patternValid = true;
+                for (int i = 0; i < s.length(); i += pattern.length()) {
+                    if (pattern.compareTo(s.substring(i, i + pattern.length())) != 0) {
+                        patternValid = false;
+                        break;
+                    }
+                }
+                if (patternValid) {
+                    return true;
+                }
+            }
+
+            right++;
+            left--;
+        }
+        return false;
+    }
+
+
+    /**
+     * 583. Delete Operation for Two Strings
+     * https://leetcode.com/problems/delete-operation-for-two-strings/description/
+     * <p>
+     * Version1 is wrong, because the order is still important. this way makes the order info missed.
+     *
+     * @param word1 word1
+     * @param word2 another word
+     * @return minimum steps needed to make word1 and word2 the same.
+     */
+    public int minDistance1(String word1, String word2) {
+        int[] w1c = new int[26];
+        int[] w2c = new int[26];
+        for (char c : word1.toCharArray()) {
+            w1c[c - 'a']++;
+        }
+        for (char c : word2.toCharArray()) {
+            w2c[c - 'a']++;
+        }
+        int s = 0;
+        for (int i = 0; i < w1c.length; i++) {
+            w1c[i] = Math.min(w1c[i], w2c[i]);
+            s += w1c[i];
+        }
+
+        return word1.length() + word2.length() - 2 * s;
+    }
+
+    /**
+     * 其實就是找兩個word的最長不連續公共子串長度。
+     *
+     * @param word1
+     * @param word2
+     * @return
+     */
+    public int minDistance(String word1, String word2) {
+        int re = getMaxSubsequenceLength(word1, word2);
+        return word1.length() + word2.length() - 2 * re;
+    }
+
+    private int getMaxSubsequenceLength(String word1, String word2) {
+        int[][] map = new int[word1.length() + 1][word2.length() + 1];
+        int real_i, real_j;
+        for (int i = 1; i < word1.length() + 1; i++) {
+            for (int j = 1; j < word2.length() + 1; j++) {
+                real_i = i - 1;
+                real_j = j - 1;
+                if (word1.charAt(real_i) == word2.charAt(real_j)) {
+                    map[i][j] = 1 + map[i - 1][j - 1];
+                } else {
+                    map[i][j] = Math.max(map[i - 1][j], map[i][j - 1]);
+                }
+            }
+        }
+        return map[word1.length()][word2.length()];
     }
 
 
@@ -925,7 +1048,7 @@ public class MainInLabPC {
 //
 //        System.out.println(m.pathSum(root, 8));
 
-        int nums[] = null;
+//        int nums[] = null;
 
 
 //        nums = new int[]{-2,1,-3,4,-1,2,1,-5,4};
@@ -940,6 +1063,8 @@ public class MainInLabPC {
 //        System.out.println();
 
 //        m.reverseVowels("hello");
-        m.isPerfectSquare(2147395600);
+//        m.isPerfectSquare(2147395600);
+//        System.out.println(m.repeatedSubstringPattern("abababaabababaabababa"));
+        System.out.println(m.getMaxSubsequenceLength("asdfvxzcv", "svv"));
     }
 }
