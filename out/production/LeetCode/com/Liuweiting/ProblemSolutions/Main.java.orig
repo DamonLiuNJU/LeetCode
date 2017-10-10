@@ -47,7 +47,7 @@ public class Main {
      * @param nums
      * @return
      */
-    public int maximumProduct(int[] nums) {
+    public int maximumProduct_V1(int[] nums) {
         Arrays.sort(nums);
 
         //condition1
