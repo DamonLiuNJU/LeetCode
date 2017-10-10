@@ -695,24 +695,190 @@ public class MainInLabPC {
         if (root == null) return true;
         if (root.left == null && root.right == null) return true;
         if (root.right == null || root.left == null) return false;
-        return root.left.val == root.right.val && isTreeSymmetric(root.left,root.right);
+        return root.left.val == root.right.val && isTreeSymmetric(root.left, root.right);
     }
 
     private boolean isTreeSymmetric(TreeNode left, TreeNode right) {
         if (left == null && right == null) return true;
         if (right == null || left == null) return false;
-        return left.val==right.val && isTreeSymmetric(left.left,right.right) && isTreeSymmetric(left.right,right.left);
+        return left.val == right.val && isTreeSymmetric(left.left, right.right) && isTreeSymmetric(left.right, right.left);
     }
 
 
     /**
      * 66. Plus One
      * https://leetcode.com/problems/plus-one/description/
+     *
      * @param digits
      * @return
      */
     public int[] plusOne(int[] digits) {
-        return null;
+        int carryIn = 1;
+        int tmp;
+        for (int i = digits.length - 1; i >= 0; i--) {
+            tmp = carryIn + digits[i];
+            carryIn = tmp / 10;
+            digits[i] = tmp % 10;
+        }
+        if (carryIn != 0) {
+            int[] newdigits = new int[digits.length + 1];
+            newdigits[0] = carryIn;
+            for (int i = 1; i < newdigits.length; i++) {
+                newdigits[i] = digits[i - 1];
+            }
+            digits = newdigits;
+        }
+        return digits;
+    }
+
+
+    /**
+     * 118. Pascal's Triangle
+     * https://leetcode.com/problems/pascals-triangle/description/
+     *
+     * @param numRows
+     * @return
+     */
+    public List<List<Integer>> generate(int numRows) {
+        List<List<Integer>> result = new LinkedList<>();
+        for (int i = 0; i < numRows; i++) {
+            List<Integer> tmp = new ArrayList<>();
+            result.add(tmp);
+            tmp.add(1);
+            if (i == 0) {
+                continue;
+            }
+            if (i >= 2) {
+                for (int j = 1; j < i; j++) {
+                    tmp.add(result.get(i - 1).get(j - 1) + result.get(i - 1).get(j));
+                }
+            }
+            tmp.add(1);
+        }
+        return result;
+    }
+
+    /**
+     * 257. Binary Tree Paths
+     * https://leetcode.com/problems/binary-tree-paths/description/
+     *
+     * @param root
+     * @return
+     */
+    List<String> treePaths = new ArrayList<>();
+
+    public List<String> binaryTreePaths(TreeNode root) {
+        if (root == null) return treePaths;
+        Helper(root, "");
+        return treePaths;
+    }
+
+    private void Helper(TreeNode root, String cur) {
+        if (root == null) return;
+        if (root.left == null && root.right == null) {
+            treePaths.add(cur + (cur.length() == 0 ? "" : "->") + root.val);
+            return;
+        }
+        Helper(root.left, cur + (cur.length() == 0 ? "" : "->") + root.val);
+        Helper(root.right, cur + (cur.length() == 0 ? "" : "->") + root.val);
+    }
+
+
+    /**
+     * 345. Reverse Vowels of a String
+     *
+     * @param s str
+     * @return reversed result.
+     */
+    public String reverseVowels(String s) {
+        //A E I O U
+        char[] charArray = s.toCharArray();
+        int leftIndex = 0;
+        int rightIndex = s.length() - 1;
+        while (leftIndex < rightIndex) {
+            while (!isVowel(s.charAt(leftIndex)) && leftIndex < s.length()-1){
+                leftIndex++;
+            }
+            while (!isVowel(s.charAt(rightIndex)) && rightIndex > 0 ){
+                rightIndex--;
+            }
+            if (leftIndex >= rightIndex) break;
+            char tmp = charArray[leftIndex];
+            charArray[leftIndex] = charArray[rightIndex];
+            charArray[rightIndex] = tmp;
+            leftIndex++;
+            rightIndex--;
+        }
+        return new String(charArray);
+    }
+
+
+    private boolean isVowel(char tmp){
+        return tmp=='a'||tmp=='e'||tmp=='i'||tmp=='o'||tmp=='u'||
+                tmp=='A'||tmp=='E'||tmp=='I'||tmp=='O'||tmp=='U';
+    }
+
+    /**
+     * 342. Power of Four
+     * https://leetcode.com/problems/power-of-four/description/
+     * @param num
+     * @return
+     */
+    public boolean isPowerOfFour(int num) {
+        if (num==1){
+            return true;
+        }
+        return num > 0 && (num&(num-1)) == 0 && (num & 0x55555555) != 0;
+    }
+
+    /**
+     * 367. Valid Perfect Square
+     * https://leetcode.com/problems/valid-perfect-square/description/
+     * @param num
+     * @return
+     */
+    public boolean isPerfectSquare(int num) {
+        if (num == 1) return true;
+        if (num <= 3) return false;
+        int lower = 1;
+        int upper = 0x00010000;
+        int cur = (lower + upper ) / 2 ;
+        while (lower < upper){
+            if (cur * cur == num){
+                return true;
+            }
+
+            if ((cur * cur)<0){
+                upper = cur;
+                cur = (lower + upper) / 2;
+                continue;
+            }
+
+            if ((cur * cur) < num){
+                lower = cur;
+                int newCur = (lower + upper) / 2;
+                if (newCur == cur) break;
+                else cur = newCur;
+                continue;
+            }
+
+            if (cur * cur > num){
+                upper = cur;
+                cur = (lower + upper) / 2;
+                continue;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 459. Repeated Substring Pattern
+     * https://leetcode.com/problems/repeated-substring-pattern/description/
+     * @param s
+     * @return
+     */
+    public boolean repeatedSubstringPattern(String s) {
+        
     }
 
 
@@ -766,11 +932,14 @@ public class MainInLabPC {
 //        System.out.println(m.maxSubArray(nums));
 //        nums = new int[]{3, 2, 2, 3};
 //        System.out.println(m.removeElement(nums, 3));
-        ListNode l1 = new ListNode(5);
-        ListNode l2 = new ListNode(1);
-        l2.next = new ListNode(2);
-        l2.next.next = new ListNode(4);
-        m.mergeTwoLists(l1, l2);
-        System.out.println();
+//        ListNode l1 = new ListNode(5);
+//        ListNode l2 = new ListNode(1);
+//        l2.next = new ListNode(2);
+//        l2.next.next = new ListNode(4);
+//        m.mergeTwoLists(l1, l2);
+//        System.out.println();
+
+//        m.reverseVowels("hello");
+        m.isPerfectSquare(2147395600);
     }
 }
