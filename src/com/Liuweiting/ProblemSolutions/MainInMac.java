@@ -2749,26 +2749,158 @@ public class MainInMac {
     }
 
 
+    /**
+     * 328. Odd Even Linked List
+     * https://leetcode.com/problems/odd-even-linked-list/description/
+     *
+     * @param head
+     * @return
+     */
+    public ListNode oddEvenList(ListNode head) {
+        if (head == null) return head;
+        ListNode originHead = head, originEvenHead = head.next, curOdd = head, tmpOdd;
+        while (true) {
+            if (curOdd.next == null) {
+                curOdd.next = originEvenHead;
+                break;
+            }
+            tmpOdd = curOdd.next == null ? null : curOdd.next.next;
+            curOdd.next.next = tmpOdd == null ? null : tmpOdd.next;
+            if (tmpOdd == null) {
+                curOdd.next = originEvenHead;
+                break;
+            }
+            curOdd.next = tmpOdd;
+            curOdd = tmpOdd;
+        }
+        return originHead;
+    }
+
+
+    /**
+     * 650. 2 Keys Keyboard
+     * https://leetcode.com/problems/2-keys-keyboard/description/
+     *
+     * @param n
+     * @return
+     */
+    public int minSteps(int n) {
+        if (n == 1) return 0;
+        minStep = Integer.MAX_VALUE;
+        minStepHelper(n, 1, 1, 1); // n the length target, 1 the currentLength, 1 already toke a copy op.
+        return minStep;
+    }
+
+    static int minStep = Integer.MAX_VALUE;
+
+    private static void minStepHelper(int n, int currentLength, int currentOp, int base) {
+        if (currentLength == n) {
+            minStep = Math.min(minStep, currentOp);
+            return;
+        }
+        if (currentOp > minStep || currentOp > n || currentLength > n) return;
+        if (currentLength * 2 <= n) minStepHelper(n, currentLength * 2, currentOp + 2, currentLength);
+        if (currentLength + base <= n) minStepHelper(n, currentLength + base, currentOp + 1, base);
+    }
+
+
+    /**
+     * 337. House Robber III
+     * https://leetcode.com/problems/house-robber-iii/description/
+     *
+     * @param root
+     * @return
+     */
+    HashMap<TreeNode, Integer> node2max = new HashMap<>();
+
+    public int rob(TreeNode root) {
+        //condition 1 take root.
+        if (node2max.containsKey(root)) return node2max.get(root);
+        if (root == null) {
+            return 0;
+        }
+        int v1 = root.val + (root.left == null ? 0 : (rob(root.left.left) + rob(root.left.right))) + (root.right == null ? 0 : (rob(root.right.left) + rob(root.right.right)));
+
+        //condition 2 do not take root.
+        int v2 = rob(root.left) + rob(root.right);
+        v1 = v2 > v1 ? v2 : v1;
+        node2max.put(root, v1);
+        return v1;
+    }
+
+
+    /**
+     * 494. Target Sum
+     * https://leetcode.com/problems/target-sum/description/
+     * kind of brute force solution, time limit exceed.
+     * consider sort the input array.
+     */
+    static int S;
+    static int[] nums;
+    static boolean[] isAdd;
+    static int counter = 0;
+
+    public int findTargetSumWays1(int[] nums, int S) {
+        this.S = S;
+        this.nums = nums;
+        isAdd = new boolean[nums.length];
+        Arrays.fill(isAdd, false);
+        counter = 0;
+        helper(0);
+        return counter;
+    }
+
+    private static void helper(int curIndex) {
+        if (curIndex == nums.length) {//end condition.
+            int sum = 0;
+            for (int i = 0; i < nums.length; i++) sum += (isAdd[i] ? (1) : (-1)) * nums[i];
+            if (sum == S) counter++;
+            return;
+        }
+        //condition1. set curIndex as false;
+        isAdd[curIndex] = false;
+        helper(curIndex + 1);
+
+        //condition2. set curIndex as true.
+        isAdd[curIndex] = true;
+        helper(curIndex + 1);
+    }
+
+    static int c = 0;
+    public int findTargetSumWays2(int[] nums, int S) {
+        canFormTarget(nums,0,S);
+        return c;
+    }
+
+    private void canFormTarget(int [] nums, int index, int target){
+        if (index==nums.length) {c+= (target==0)?1:0;return;}
+        canFormTarget(nums,index+1,target - nums[index]);
+        canFormTarget(nums,index+1,target + nums[index]);
+    }
+
+    public int findTargetSumWays(int[] nums, int S) {
+        if(nums == null || nums.length == 0)
+            return 0;
+        int sum = 0;
+        for(int num: nums)
+            sum += num;
+        if((sum+S)%2!=0 || sum < S || -sum> S)
+            return 0;
+        return helper(nums, (sum+S)/2);
+    }
+
+    public int helper(int[] nums, int target){
+        int[] dp = new int[target+1];
+        dp[0] = 1;
+        for(int n: nums)
+            for(int i=target;i>=n;i--)
+                dp[i] += dp[i-n];
+        return dp[target];
+    }
+
     public static void main(String[] args) {
         MainInMac m = new MainInMac();
-        int[][] input = {
-                {3, 9}, {7, 12}, {3, 8}, {6, 8}, {9, 10}, {2, 9}, {0, 9}, {3, 9}, {0, 6}, {2, 8}
-        };
-//        System.out.println(m.kthSmallest(input,5));
-//
-//        int [] nums = {1,2,2};
-//        System.out.println(m.findDuplicate(nums));
-
-//        int[] input = {1, 5, 233, 2};
-//        System.out.println(m.PredictTheWinner(input));
-//        String[] input = {"abcw", "baz", "foo", "bar", "xtfn", "abcdef"};
-//        System.out.println(m.permute(input));
-//        System.out.println(m.maxProduct(input));
-//        System.out.println(m.originalDigits("owoztneoer"));
-//        TreeNode root = new TreeNode(1);
-//        root.right = new TreeNode(2);
-//        m.kthSmallest(root, 2);
-//        System.out.println(m.findMinArrowShots(input));
-        System.out.println(m.diffWaysToCompute("23-7+4"));
+        int[] input = {1,1,1,1,1};
+        System.out.println(m.findTargetSumWays(input,3));
     }
 }
