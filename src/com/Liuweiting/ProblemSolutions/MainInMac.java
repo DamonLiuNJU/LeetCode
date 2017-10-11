@@ -2867,40 +2867,153 @@ public class MainInMac {
     }
 
     static int c = 0;
+
     public int findTargetSumWays2(int[] nums, int S) {
-        canFormTarget(nums,0,S);
+        canFormTarget(nums, 0, S);
         return c;
     }
 
-    private void canFormTarget(int [] nums, int index, int target){
-        if (index==nums.length) {c+= (target==0)?1:0;return;}
-        canFormTarget(nums,index+1,target - nums[index]);
-        canFormTarget(nums,index+1,target + nums[index]);
+    private void canFormTarget(int[] nums, int index, int target) {
+        if (index == nums.length) {
+            c += (target == 0) ? 1 : 0;
+            return;
+        }
+        canFormTarget(nums, index + 1, target - nums[index]);
+        canFormTarget(nums, index + 1, target + nums[index]);
     }
 
     public int findTargetSumWays(int[] nums, int S) {
-        if(nums == null || nums.length == 0)
+        if (nums == null || nums.length == 0)
             return 0;
         int sum = 0;
-        for(int num: nums)
+        for (int num : nums)
             sum += num;
-        if((sum+S)%2!=0 || sum < S || -sum> S)
+        if ((sum + S) % 2 != 0 || sum < S || -sum > S)
             return 0;
-        return helper(nums, (sum+S)/2);
+        return helper(nums, (sum + S) / 2);
     }
 
-    public int helper(int[] nums, int target){
-        int[] dp = new int[target+1];
+    public int helper(int[] nums, int target) {
+        int[] dp = new int[target + 1];
         dp[0] = 1;
-        for(int n: nums)
-            for(int i=target;i>=n;i--)
-                dp[i] += dp[i-n];
+        for (int n : nums)
+            for (int i = target; i >= n; i--)
+                dp[i] += dp[i - n];
         return dp[target];
+    }
+
+
+    /**
+     * 524. Longest Word in Dictionary through Deleting
+     *
+     * @param s
+     * @param d
+     * @return
+     */
+    public String findLongestWord(String s, List<String> d) {
+        String re = "";
+        int MAX_LENGTH = 0;
+        for (String tmp : d) {
+            char[] c1 = s.toCharArray(), c2 = tmp.toCharArray();
+            if (isSubsequence(c1, c2, 0, 0)) {
+                if (c2.length > MAX_LENGTH) {
+                    re = tmp;
+                    MAX_LENGTH = c2.length;
+                } else if (c2.length == MAX_LENGTH) {
+                    if (tmp.compareTo(re) < 0) {
+                        re = tmp;
+                        MAX_LENGTH = c2.length;
+                    }
+                }
+            }
+        }
+        return re;
+    }
+
+    /**
+     * actually this method can be transformed into none recursive form.
+     * TODO: simplify this method, make it run faster.
+     *
+     * @param s
+     * @param tmp
+     * @param index1
+     * @param index2
+     * @return
+     */
+    private static boolean isSubsequence(char[] s, char[] tmp, int index1, int index2) {
+        if (index2 == tmp.length) return true;
+        int i = -1;
+        for (int j = index1; j < s.length; j++) {
+            if (s[j] == tmp[index2]) {
+                i = j;
+                break;
+            }
+        }
+        return i >= 0 && isSubsequence(s, tmp, i + 1, index2 + 1);
+    }
+
+
+    class Log {
+        //function_id:start_or_end:timestamp
+        public int functionId, timeStamp, innerTaken;
+        public boolean isStart;
+
+        public Log(String log) {
+            String[] t = log.split(":");
+            functionId = Integer.parseInt(t[0]);
+            timeStamp = Integer.parseInt(t[2]);
+            isStart = t[1].startsWith("s");
+            innerTaken = 0;
+        }
+    }
+
+    /**
+     * 636. Exclusive Time of Functions
+     * https://leetcode.com/problems/exclusive-time-of-functions/description/
+     *
+     * @param n    total n functions, id from 0 to n-1;
+     * @param logs log list, size should be exactly 2 * n;
+     * @return the times cost by each function.
+     */
+    public int[] exclusiveTime(int n, List<String> logs) {
+        int[] result = new int[n];
+        Stack<Log> stack = new Stack<>();
+        int timeLong;
+        for (String log : logs) {
+            Log l = new Log(log);
+            if (l.isStart) {
+                stack.push(l);
+            } else {
+                Log prevStart = stack.pop();
+                timeLong = (l.timeStamp - prevStart.timeStamp + 1 - prevStart.innerTaken);
+                result[prevStart.functionId] += timeLong;
+                for (Log tmpLog : stack) {
+                    tmpLog.innerTaken += timeLong;
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 638. Shopping Offers
+     * https://leetcode.com/problems/shopping-offers/description/
+     *
+     * @param price the prices list.
+     * @param special some offers.
+     * @param needs the amound needed to get.
+     * @return minimum price.
+     */
+    public int shoppingOffers(List<Integer> price, List<List<Integer>> special, List<Integer> needs) {
+        
+
+        return Integer.MAX_VALUE;
     }
 
     public static void main(String[] args) {
         MainInMac m = new MainInMac();
-        int[] input = {1,1,1,1,1};
-        System.out.println(m.findTargetSumWays(input,3));
+        int[] input = {1, 1, 1, 1, 1};
+        String[] tmp = {"0:start:0", "0:start:1", "0:start:2", "0:end:3", "0:end:4", "0:end:5"};
+        System.out.println(Arrays.toString(m.exclusiveTime(1, Arrays.asList(tmp))));
     }
 }
