@@ -3004,10 +3004,55 @@ public class MainInMac {
      * @param needs the amound needed to get.
      * @return minimum price.
      */
-    public int shoppingOffers(List<Integer> price, List<List<Integer>> special, List<Integer> needs) {
-        
+    static int MIN = Integer.MAX_VALUE;
+    static List<Integer> price;
+    static List<List<Integer>> special;
+    static int N;
 
-        return Integer.MAX_VALUE;
+    public int shoppingOffers(List<Integer> price, List<List<Integer>> special, List<Integer> needs) {
+        MIN = Integer.MAX_VALUE;
+        this.special = special;
+        this.price = price;
+        this.N = price.size();
+        shoppingOffersHelper(needs, 0);
+        return MIN;
+    }
+
+    private static void shoppingOffersHelper(List<Integer> needs, int currentSpend) {
+        boolean canFindOfferToTake = false;
+        for (List<Integer> offer : special) {
+            boolean canTake = canTakeOffer(needs, offer);
+            if (canTake) {
+                canFindOfferToTake = true;
+                List<Integer> newNeeds = new ArrayList<>(N);
+                for (int i = 0; i < N; i++) {
+                    newNeeds.add(needs.get(i) - offer.get(i));
+                }
+                shoppingOffersHelper(newNeeds, currentSpend + offer.get(N - 1));
+            }
+        }
+
+        if (!canFindOfferToTake) {
+            int cost = currentSpend;
+            for (int i = 0; i < N; i++) {
+                cost += needs.get(i) * price.get(i);
+            }
+            MIN = Math.min(MIN, cost);
+        }
+    }
+
+    private static boolean canTakeOffer(List<Integer> needs, List<Integer> offer) {
+        for (int i = 0; i < N; i++) {
+            if (offer.get(i) > needs.get(i)) {
+                return false;
+            }
+        }
+        // if it goes here, that means this offer is under the needs. but still need to consider if offer is really saving money.
+        int originCost = 0;
+        for (int i = 0; i < N; i++) {
+            originCost += offer.get(i) * price.get(i);
+        }
+        return originCost >= offer.get(N);
     }
 
     public static void main(String[] args) {
