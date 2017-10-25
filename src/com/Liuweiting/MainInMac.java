@@ -1,10 +1,8 @@
-package com.Liuweiting.ProblemSolutions;
+package com.Liuweiting;
 
 import com.Liuweiting.DataStructure.ListNode;
 import com.Liuweiting.DataStructure.TreeNode;
 
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -575,27 +573,27 @@ public class MainInMac {
      * @param t
      * @return
      */
-    HashMap<Character, Character> map = new HashMap<>();
-    HashMap<Character, Character> reversedMap = new HashMap<>();
-
-    public boolean isIsomorphic(String s, String t) {
-        if (s.length() == 0 && t.length() == 0) return true;
-        for (int i = 0; i < s.length(); i++) {
-            char key = s.charAt(i);
-            char mapped = t.charAt(i);
-            if (map.containsKey(key)) {
-                if (map.get(key) != mapped) {
-                    return false;
-                }
-            } else if (reversedMap.containsKey(mapped)) {
-                return false;
-            } else {
-                map.put(key, mapped);
-                reversedMap.put(mapped, key);
-            }
-        }
-        return true;
-    }
+//    HashMap<Character, Character> map = new HashMap<>();
+//    HashMap<Character, Character> reversedMap = new HashMap<>();
+//
+//    public boolean isIsomorphic(String s, String t) {
+//        if (s.length() == 0 && t.length() == 0) return true;
+//        for (int i = 0; i < s.length(); i++) {
+//            char key = s.charAt(i);
+//            char mapped = t.charAt(i);
+//            if (map.containsKey(key)) {
+//                if (map.get(key) != mapped) {
+//                    return false;
+//                }
+//            } else if (reversedMap.containsKey(mapped)) {
+//                return false;
+//            } else {
+//                map.put(key, mapped);
+//                reversedMap.put(mapped, key);
+//            }
+//        }
+//        return true;
+//    }
 
     /**
      * Q507 Perfect Number.
@@ -2538,7 +2536,7 @@ public class MainInMac {
      * where the two words do not share common letters. You may assume that each word will contain
      * only lower case letters. If no such two words exist, return 0.
      *
-     * @param words
+     * @param
      * @return
      */
 
@@ -3055,10 +3053,530 @@ public class MainInMac {
         return originCost >= offer.get(N);
     }
 
+
+    /**
+     * 681. Next Closest Time
+     *
+     * @param time
+     * @return
+     */
+    static String anchorTime;
+    static String resultTime;
+    static int currentGap;
+    static List<Character> possibleAlpha;
+
+    public String nextClosestTime(String time) {
+        this.anchorTime = time;
+        this.resultTime = null;
+        currentGap = Integer.MAX_VALUE;
+        List<Character> list = new ArrayList<>();
+        for (char tim : time.toCharArray()) {
+            if (tim != ':') {
+                list.add(tim);
+            }
+        }
+        this.possibleAlpha = list;
+        helper("");
+        return resultTime;
+    }
+
+    private static void helper(String currentTime) {
+        if (currentTime.length() == 5) {
+            if (isTimeValid(currentTime)) {
+                int tmpGap = getTimeGapBetween(anchorTime, currentTime);
+
+                if (tmpGap < currentGap) {
+                    currentGap = tmpGap;
+                    resultTime = currentTime;
+                }
+            }
+            return;
+        }
+        if (currentTime.length() == 2) {
+            helper(currentTime + ":");
+            return;
+        }
+
+        for (int i = 0; i < possibleAlpha.size(); i++) {
+            helper(currentTime + possibleAlpha.get(i));
+        }
+    }
+
+    /**
+     * 0 if anchor == time, (negative if time is before anchor and the return value will be + 24h,
+     *
+     * @param anchor the anchor time spot.
+     * @param time   the calculating time.
+     * @return the gap.
+     */
+    private static int getTimeGapBetween(String anchor, String time) {
+        int h1 = Integer.parseInt(anchor.substring(0, 2));
+        int m1 = Integer.parseInt(anchor.substring(3, 5));
+        int t1 = h1 * 60 + m1;
+
+        int h2 = Integer.parseInt(time.substring(0, 2));
+        int m2 = Integer.parseInt(time.substring(3, 5));
+        int t2 = h2 * 60 + m2;
+
+        return t2 > t1 ? t2 - t1 : 24 * 60 + t2 - t1;
+    }
+
+    private static boolean isTimeValid(String time) {
+        int h = Integer.parseInt(time.substring(0, 2));
+        int m = Integer.parseInt(time.substring(3, 5));
+        return 0 <= h && h <= 23 && 0 <= m && m <= 59;
+    }
+
+
+    public int longestPalindromeSubseq(String s) {
+        return getMaxSubsequenceLength(s, new StringBuilder(s).reverse().toString());
+    }
+
+
+    private int getMaxSubsequenceLength(String word1, String word2) {
+        int[][] map = new int[word1.length() + 1][word2.length() + 1];
+        int real_i, real_j;
+        for (int i = 1; i < word1.length() + 1; i++) {
+            for (int j = 1; j < word2.length() + 1; j++) {
+                real_i = i - 1;
+                real_j = j - 1;
+                if (word1.charAt(real_i) == word2.charAt(real_j)) {
+                    map[i][j] = 1 + map[i - 1][j - 1];
+                } else {
+                    map[i][j] = Math.max(map[i - 1][j], map[i][j - 1]);
+                }
+            }
+        }
+        return map[word1.length()][word2.length()];
+    }
+
+
+    //TODO:think about how to solve this.
+    public int characterReplacement(String s, int k) {
+
+
+        return -1;
+    }
+
+    /**
+     * 449. Serialize and Deserialize BST
+     * https://leetcode.com/problems/serialize-and-deserialize-bst/description/
+     *
+     * @param root
+     * @return
+     */
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        StringBuilder sb = new StringBuilder();
+        return serializeHelper(root);
+    }
+
+    private String serializeHelper(TreeNode root) {
+        if (root == null) return "";
+        String left = serializeHelper(root.left);
+        String right = serializeHelper(root.right);
+        return root.val + "#" + left.length() + "(" + left + ")(" + right + ")";
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        if (data.length() == 0) return null;
+        int val = 0, leftLength = 0, rightLength = 0;
+        String leftStr, rightStr;
+        int i;
+        for (i = 0; i < data.length(); i++) {
+            if ('#' == data.charAt(i)) {
+                val = Integer.parseInt(data.substring(0, i));
+                break;
+            }
+        }
+        int j;
+        for (j = i + 1; j < data.length(); j++) {
+            if ('(' == data.charAt(j)) {
+                leftLength = Integer.parseInt(data.substring(i + 1, j));
+                break;
+            }
+        }
+        leftStr = data.substring(j + 1, j + 1 + leftLength);
+        int rightStringStart = j + 1 + leftLength + 1;
+        rightStr = data.substring(rightStringStart + 1, data.length() - 1);
+
+
+        TreeNode root = new TreeNode(val);
+        root.left = deserialize(leftStr);
+        root.right = deserialize(rightStr);
+        return root;
+    }
+
+
+    /**
+     * 390. Elimination Game
+     * TODO: solve it.
+     *
+     * @param n
+     * @return
+     */
+    public static int eliminationGame(int n) {
+        int leftCount = n;
+
+        while (leftCount != 1) {
+
+        }
+
+        return totalCombine;
+    }
+
+
+    /**
+     * 377. Combination Sum IV
+     *
+     * @param nums   positive but no duplicate numbers.
+     * @param target the target sum result.
+     * @return all possible combinations, different orders are counted as different solutions.
+     */
+//    public int combinationSum4(int[] nums, int target) {
+//        int max = -1;
+//        int min = Integer.MAX_VALUE;
+//        for (int tmp : nums) {
+//            max = Math.max(max, tmp);
+//            min = Math.min(min, tmp);
+//        }
+//        int[] result = new int[Math.max(max, target) + 1];
+//        for (int tmp : nums) result[tmp]++;
+//
+//        for (int i = 0; i < target / min; i++) {
+//            for (int t : nums) {
+//                for (int j = 1; j < result.length; j++) {
+//                    if (t + j < result.length)
+//                        result[t + j] += (result[j]);
+//                    else {
+//                        break;
+//                    }
+//                }
+//            }
+//        }
+//
+//        return result[target];
+//    }
+
+    static int maxDepth = 0;
+    static int totalCombine = 0;
+    static int totalMin;
+
+    private void combinationHelper(int[] nums, int currentDepth, int target) {
+        if (target == 0) {
+            totalCombine++;
+            return;
+        }
+        if (target < 0 || target < totalMin || currentDepth > maxDepth + 2) {
+            return;
+        }
+        for (int t : nums) {
+            if (t <= target) {
+                combinationHelper(nums, currentDepth + 1, target - t);
+            }
+        }
+    }
+
+
+    /**
+     * @param tasks
+     * @param n
+     * @return
+     */
+    public int leastInterval(char[] tasks, int n) {
+        HashMap<Character, Integer> map = new HashMap<>();
+        for (char tmp : tasks) {
+            map.put(tmp, map.getOrDefault(tmp, 0) + 1);
+        }
+        return helper(map, n);
+    }
+
+    private int helper(HashMap<Character, Integer> map, int n) {
+        if (map.size() == 0) return 0;
+        int minRepeatTime = Integer.MAX_VALUE;
+        int totalTasks = map.size();
+        for (int t : map.values()) {
+            minRepeatTime = Math.min(t, minRepeatTime);
+        }
+        if (totalTasks >= n + 1) {
+            for (Character c : map.keySet().toArray(new Character[map.size()])) {
+                if (map.get(c) == minRepeatTime) {
+                    map.remove(c);
+                }
+            }
+            return minRepeatTime * totalTasks + helper(map, n);
+        } else {
+            for (Character c : map.keySet().toArray(new Character[map.size()])) {
+                if (map.get(c) == minRepeatTime) {
+                    map.put(c, 1);
+                }
+            }
+            return (n + 1) * (minRepeatTime - 1) + helper(map, n);
+        }
+    }
+
+    public int lastRemaining(int n) {
+        int removed = 0;
+        boolean right = true;
+        int begin = 1;
+        int end = n;
+        int step = 2;
+        HashSet<Integer> removedNums = new HashSet<>();
+        while (n - removed > 1) {
+            if (right) {
+                int tmpRemoved = (end - begin + 1) / step + 1;
+                right = false;
+                end = ((tmpRemoved - 1) * step) + begin - step / 2;
+                begin += step / 2;
+                step = step * 2;
+                removed += tmpRemoved;
+            } else {
+                int tmpRemovd = (end - begin) / step + 1;
+                right = true;
+                begin = end - tmpRemovd * step + step / 2;
+                end -= step / 2;
+                step *= 2;
+                removed += tmpRemovd;
+            }
+        }
+        return begin;
+    }
+
+
+    public int combinationSum4(int[] nums, int target) {
+
+//        int maxRound = target / nums[0];
+//        while (maxRound > 0) {
+//            for (int i = nums.length - 1; i >= 0; i--) {
+//                comb[target] += combinationSum4(nums, target - nums[i]);
+//            }
+//            maxRound--;
+//        }
+        Arrays.sort(nums);
+        return dfs(nums, target);
+    }
+
+    HashMap<Integer, Integer> map1 = new HashMap<>();
+
+    private int dfs(int[] nums, int target) {
+        if (map1.containsKey(target)) return map1.get(target);
+        if (target <= 0) return 0;
+        int comb[] = new int[target + 1];
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] < comb.length) {
+                comb[nums[i]] = 1;
+            }
+        }
+        for (int tmp : nums) {
+            comb[target] += combinationSum4(nums, target - tmp);
+        }
+        map1.put(target, comb[target]);
+        return comb[target];
+    }
+
+
+    /**
+     * TODO: solve this.
+     *
+     * @param tasks
+     * @param n
+     * @return
+     */
+    public int leastInterval2(char[] tasks, int n) {
+        HashMap<Character, Integer> map = new HashMap<>();
+        int maxValue = -1;
+        for (char tmp : tasks) {
+            map.put(tmp, map.getOrDefault(tmp, 0) + 1);
+            maxValue = Math.max(maxValue, map.get(tmp));
+        }
+        int maxCount = 0;
+        for (char key : map.keySet()) {
+            if (map.get(key) == maxValue) {
+                maxCount++;
+            }
+        }
+        if (map.keySet().size() > n) {
+
+        } else {
+            return (n + 1) * (maxValue - 1) + maxCount;
+        }
+        return -1;
+    }
+
+
+    /**
+     * 78. Subsets
+     *
+     * @param nums all possible elements.
+     * @return combinations, power set.
+     */
+    public List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        Arrays.sort(nums);
+        for (int elements = 0; elements <= nums.length; elements++) {
+            result.addAll(getAllCombinations(nums, elements));
+        }
+        return result;
+    }
+
+    /**
+     * generate all possible combinations with given length.
+     *
+     * @param nums
+     * @param length
+     * @return
+     */
+    private List<List<Integer>> getAllCombinations(int[] nums, int length) {
+        List<List<Integer>> result = new ArrayList<>();
+        if (length == 0) {
+            result.add(new ArrayList<>());
+            return result;
+        }
+        if (length == nums.length) {
+            ArrayList<Integer> tmp = new ArrayList<>();
+            for (int i : nums) tmp.add(i);
+            result.add(tmp);
+            return result;
+        }
+
+        for (List<Integer> tmp : getAllCombinations(nums, length - 1)) {
+            for (int i = 0; i < nums.length; i++) {
+                if (tmp.size() == 0 || nums[i] > tmp.get(tmp.size() - 1)) {
+                    ArrayList<Integer> list = new ArrayList<>();
+                    list.addAll(tmp);
+                    list.add(nums[i]);
+                    result.add(list);
+                }
+            }
+
+        }
+        return result;
+    }
+
+
+    /**
+     * TODO: understand this question.
+     * 137. Single Number II
+     * linear runtime complexity, without using extra memory.
+     *
+     * @param nums input nums.
+     * @return the number which didn't appear 3 times, exacly once.
+     */
+    public int singleNumber(int[] nums) {
+        int tmp = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            nums[i - 1] = tmp ^ nums[i];
+        }
+
+        return -1;
+    }
+
+
+    public int triangleNumber(int[] nums) {
+        int[] index = new int[nums.length];
+        for (int i = 0; i < index.length; i++) {
+            index[i] = i;
+        }
+        List<List<Integer>> allCombines = getAllCombinations(index, 3);
+        int counter = 0;
+        for (List<Integer> tmp : allCombines) {
+            if (formTriangle(tmp.get(0), tmp.get(1), tmp.get(2))) {
+                counter++;
+            }
+        }
+        return counter;
+    }
+
+    private boolean formTriangle(Integer a, Integer b, Integer c) {
+        return (a + b > c && a + c > b && b + c > a);
+    }
+
+    private List<List<Integer>> dfs(int[] nums, int leftTaking, ArrayList<Integer> usingIndex, List<List<Integer>> list) {
+        if (leftTaking == 0) {
+            return list;
+        }
+        List<List<Integer>> result = new ArrayList<>();
+        for (List<Integer> tmp : list) {
+            for (int i = 0; i < nums.length; i++) {
+                if (usingIndex.contains(i) || i < usingIndex.get(usingIndex.size() - 1)) {
+                    continue;
+                } else {
+                    ArrayList newlist = new ArrayList(tmp);
+                    newlist.add(i);
+                    result.add(newlist);
+                }
+            }
+        }
+        return result;
+    }
+
+
+    /**
+     * 62. Unique Paths
+     * Total time used : 7 min;
+     *
+     * @param m
+     * @param n
+     * @return
+     */
+    int[][] map;
+
+    public int uniquePaths(int m, int n) {
+        if (map == null) {
+            map = new int[m + 1][n + 1];
+        }
+        if (m == 1 || n == 1) return 1;
+        if (map[m][n] > 0) return map[m][n];
+        int tmp = uniquePaths(m - 1, n) + uniquePaths(m, n - 1);
+        map[m][n] = tmp;
+        return tmp;
+    }
+
+    /**
+     * 482.
+     *
+     * @param S
+     * @param K
+     * @return
+     */
+    public String licenseKeyFormatting(String S, int K) {
+        StringBuilder sb = new StringBuilder();
+        char[] tmp = S.toCharArray();
+        int counter = 0;
+        for (int i = S.length() - 1; i >= 0; i--) {
+            if (tmp[i] == '-') {
+                continue;
+            }
+            counter++;
+            sb.append(tmp[i]);
+            if (counter % K == 0 && i > 0) {
+                sb.append('-');
+            }
+        }
+        sb = sb.reverse();
+        while (sb.length() > 0 && sb.charAt(0) == '-') {
+            sb.deleteCharAt(0);
+        }
+        return sb.toString().toUpperCase();
+    }
+
+
     public static void main(String[] args) {
         MainInMac m = new MainInMac();
-        int[] input = {1, 1, 1, 1, 1};
-        String[] tmp = {"0:start:0", "0:start:1", "0:start:2", "0:end:3", "0:end:4", "0:end:5"};
-        System.out.println(Arrays.toString(m.exclusiveTime(1, Arrays.asList(tmp))));
+//        TreeNode root = new TreeNode(5);
+//        root.left = new TreeNode(3);
+//        root.right = new TreeNode(7);
+//        root.left.right = new TreeNode(4);
+//        String tmp = m.serialize(root);
+//        System.out.println(tmp);
+//
+//        m.deserialize(tmp);
+
+        int[] nums = {4, 2, 1};
+        System.out.println(m.combinationSum4(nums, 32));//181997601
+        char[] set = {'A', 'A', 'A', 'B', 'B', 'B'};
+//        System.out.println(m.leastInterval(set,2));
+//        System.out.println(m.lastRemaining(20));
     }
 }
