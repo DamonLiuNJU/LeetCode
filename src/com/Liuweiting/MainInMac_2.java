@@ -201,6 +201,49 @@ public class MainInMac_2 {
         return list;
     }
 
+
+    public class Interval {
+        int start;
+        int end;
+
+        Interval() {
+            start = 0;
+            end = 0;
+        }
+
+        Interval(int s, int e) {
+            start = s;
+            end = e;
+        }
+    }
+
+    /**
+     * @param intervals
+     * @return
+     */
+    public int eraseOverlapIntervals(Interval[] intervals) {
+        Arrays.sort(intervals, new Comparator<Interval>() {
+            @Override
+            public int compare(Interval o1, Interval o2) {
+                if (o1.end==o2.end) return o1.start - o2.start;
+                return o1.end - o2.end;
+            }
+        });
+
+        int maxNoneOverlappingIntervals = 1;
+        int currentEnd = intervals[0].end;
+        for (int i = 1; i < intervals.length; i++) {
+            if (intervals[i].start < currentEnd){
+                continue;
+            } else {
+                maxNoneOverlappingIntervals++;
+                currentEnd = intervals[i].end;
+            }
+        }
+
+        return intervals.length - maxNoneOverlappingIntervals;
+    }
+
     public static void main(String[] args) {
         MainInMac_2 m = new MainInMac_2();
         long t1 = System.currentTimeMillis();
