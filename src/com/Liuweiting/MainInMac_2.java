@@ -244,6 +244,8 @@ public class MainInMac_2 {
         return intervals.length - maxNoneOverlappingIntervals;
     }
 
+    
+
     public static void main(String[] args) {
         MainInMac_2 m = new MainInMac_2();
         long t1 = System.currentTimeMillis();
