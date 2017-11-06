@@ -592,10 +592,10 @@ public class MainInMac_2 {
         int count[] = new int[nums.length];
         for (int i = 0; i < nums.length; i++) {
             for (int j = 0; j < i; j++) {
-                if (nums[i] > nums[j]){
-                    count[i] = Math.max(count[j] + 1,count[i]);
+                if (nums[i] > nums[j]) {
+                    count[i] = Math.max(count[j] + 1, count[i]);
                 }
-                if (count[i]>=2){
+                if (count[i] >= 2) {
                     return true;
                 }
             }
@@ -608,6 +608,7 @@ public class MainInMac_2 {
 
     /**
      * can reuse the candidates.
+     *
      * @param candidates
      * @param target
      * @return
@@ -616,20 +617,20 @@ public class MainInMac_2 {
         Arrays.sort(candidates);
         this.candidates = candidates;
         List<List<Integer>> result = new ArrayList<>();
-        backtrace(result,new ArrayList<>(),0,target);
+        backtrace(result, new ArrayList<>(), 0, target);
         return result;
     }
 
-    private void backtrace(List<List<Integer>> result, List<Integer> current, int currentSum,int target){
+    private void backtrace(List<List<Integer>> result, List<Integer> current, int currentSum, int target) {
         if (currentSum > target) return;
-        if (currentSum==target){
+        if (currentSum == target) {
             result.add(current);
             return;
         }
-        for (Integer tmp : this.candidates){
-            if (current.size()>0 && tmp < current.get(current.size()-1)) continue;
+        for (Integer tmp : this.candidates) {
+            if (current.size() > 0 && tmp < current.get(current.size() - 1)) continue;
             current.add(tmp);
-            backtrace(result,current,currentSum + tmp,target);
+            backtrace(result, current, currentSum + tmp, target);
             current.remove(tmp);
         }
     }
@@ -672,7 +673,7 @@ public class MainInMac_2 {
         int tmp = 0;
         int N = matrix.length;
         for (int i = 0; i < matrix.length; i++) {
-            for (int j  = 0; j < matrix.length; j++) {
+            for (int j = 0; j < matrix.length; j++) {
                 if (j - i > N) {
                     tmp = matrix[i][j];
                     matrix[i][j] = matrix[N - 1 - j][N - 1 - i];
@@ -684,8 +685,8 @@ public class MainInMac_2 {
         for (int i = 0; i < N; i++) {
             for (int j = 0; j <= N / 2; j++) {
                 tmp = matrix[i][j];
-                matrix[i][j] = matrix[i][N-j-1];
-                matrix[i][N-j-1] = tmp;
+                matrix[i][j] = matrix[i][N - j - 1];
+                matrix[i][N - j - 1] = tmp;
             }
         }
     }
@@ -704,6 +705,37 @@ public class MainInMac_2 {
         int[] p2 = {0, 1};
         int[] p3 = {0, 2};
         int[] p4 = {1, 2};
-        System.out.println(m.validSquare(p1, p2, p3, p4));
+//        System.out.println(m.validSquare(p1, p2, p3, p4));
+
+        HashSet<Integer> hashSet = new HashSet<>();
+
+        Object o1 = new Object();
+        Object o2 = new Object();
+        System.out.println(o1.equals(o2));
+        System.out.println(o1==o2);
+        System.out.println();
+        o2 = o1;
+        System.out.println(o1.equals(o2));
+        System.out.println(o1==o2);
+        System.out.println();
+        String s1 = "abc";
+        String s2 = "abc";
+        String s3 = "ab"+"c";
+        System.out.println(s1.equals(s2));
+        System.out.println(s1==s2);
+        System.out.println();
+        System.out.println(s1.equals(s3));
+        System.out.println(s1==s3);
+        System.out.println();
+
+        String s4 = new String("abc");
+        System.out.println(s4==s1);
+        System.out.println(s4.equals(s1));
+        /**
+         * equals，直接调用"=="去判断指针所指对象是否是堆上同一个地址。
+         * 在重写的情况下，例如在String中，他会去判断内容是否相同，这个就自己定义了。
+         * 而hashcode也是自定义的，需要保证在运行过程中多次调用返回相同值这一特点。
+         */
+        System.out.println(s1.hashCode()+" " + s4.hashCode());
     }
 }
