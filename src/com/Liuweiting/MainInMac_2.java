@@ -548,24 +548,146 @@ public class MainInMac_2 {
         Arrays.sort(points, (o1, o2) -> o1[0] == o2[0] ? o1[1] - o2[1] : o1[0] - o2[0]);
         double lengthP1P4 = Math.pow(points[0][0] - points[3][0], 2) + Math.pow(points[0][1] - points[3][1], 2);
         double lengthP2P3 = Math.pow(points[1][0] - points[2][0], 2) + Math.pow(points[1][1] - points[2][1], 2);
-        if (lengthP1P4 != lengthP2P3 || lengthP1P4==0 || lengthP2P3==0) {
+        if (lengthP1P4 != lengthP2P3 || lengthP1P4 == 0 || lengthP2P3 == 0) {
             return false;
         }
-        if (points[0][1]==points[3][1]){
-            return points[1][0]==points[2][0];
+        if (points[0][1] == points[3][1]) {
+            return points[1][0] == points[2][0];
         }
 //        double k1 = (double)((points[3][1] - points[0][1])) / (points[3][0] - points[0][0]);
 //        double k2 = (double)((points[2][1] - points[1][1])) / (points[2][0] - points[1][0]);
         int val1 = (points[3][1] - points[0][1]) * (points[2][1] - points[1][1]);
         int val2 = (points[3][0] - points[0][0]) * (points[2][0] - points[1][0]);
-        return val1 + val2 == 0 && isAngle90(points[0],points[1],points[2]);
+        return val1 + val2 == 0 && isAngle90(points[0], points[1], points[2]);
     }
 
-    private boolean isAngle90(int[] p0,int[] p1,int[] p2){
-        if (p0[0]==p1[0]) return p0[1]==p2[1];
+    private boolean isAngle90(int[] p0, int[] p1, int[] p2) {
+        if (p0[0] == p1[0]) return p0[1] == p2[1];
         int v1 = (p2[1] - p0[1]) * (p1[1] - p0[1]);
         int v2 = (p2[0] - p0[0]) * (p1[0] - p0[0]);
         return v1 + v2 == 0;
+    }
+
+    /**
+     * 215. Kth Largest Element in an Array
+     *
+     * @param nums all the numbers, unsorted.
+     * @param k    the k's largest.
+     * @return number result.
+     */
+    public int findKthLargest(int[] nums, int k) {
+        Arrays.sort(nums);
+        return nums[nums.length - k];
+    }
+
+
+    /**
+     * 334. Increasing Triplet Subsequence
+     *
+     * @param nums array of number.
+     * @return if there is an increasing triplet subsequence.
+     */
+
+    public boolean increasingTriplet(int[] nums) {
+        int count[] = new int[nums.length];
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = 0; j < i; j++) {
+                if (nums[i] > nums[j]){
+                    count[i] = Math.max(count[j] + 1,count[i]);
+                }
+                if (count[i]>=2){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+    int[] candidates;
+
+    /**
+     * can reuse the candidates.
+     * @param candidates
+     * @param target
+     * @return
+     */
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        Arrays.sort(candidates);
+        this.candidates = candidates;
+        List<List<Integer>> result = new ArrayList<>();
+        backtrace(result,new ArrayList<>(),0,target);
+        return result;
+    }
+
+    private void backtrace(List<List<Integer>> result, List<Integer> current, int currentSum,int target){
+        if (currentSum > target) return;
+        if (currentSum==target){
+            result.add(current);
+            return;
+        }
+        for (Integer tmp : this.candidates){
+            if (current.size()>0 && tmp < current.get(current.size()-1)) continue;
+            current.add(tmp);
+            backtrace(result,current,currentSum + tmp,target);
+            current.remove(tmp);
+        }
+    }
+
+
+    /**
+     * 找到数组A和B的共同子数组
+     *
+     * @param A 数组
+     * @param B 数组
+     * @return 共同数组
+     */
+    public int findLength(int[] A, int[] B) {
+        int[][] map = new int[A.length + 1][B.length + 1];
+        int max = 0;
+        for (int i = 0; i < A.length + 1; i++) {
+            for (int j = 0; j < B.length + 1; j++) {
+                if (i == 0 || j == 0) {
+                    map[i][j] = 0;
+                } else {
+                    if (A[i - 1] == B[j - 1]) {
+                        map[i][j] = map[i - 1][j - 1] + 1;
+                        max = Math.max(max, map[i][j]);
+                    }
+                }
+            }
+        }
+        return max;
+    }
+
+
+    /**
+     * rotate the input matrix 90 degree, clockwise.
+     *
+     * @param matrix input matrix
+     */
+    public void rotate(int[][] matrix) {
+        //Step1, 沿2-4对折。
+        //Step2, 沿水平对翻。
+        int tmp = 0;
+        int N = matrix.length;
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j  = 0; j < matrix.length; j++) {
+                if (j - i > N) {
+                    tmp = matrix[i][j];
+                    matrix[i][j] = matrix[N - 1 - j][N - 1 - i];
+                    matrix[N - 1 - j][N - 1 - i] = tmp;
+                }
+            }
+        }
+
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j <= N / 2; j++) {
+                tmp = matrix[i][j];
+                matrix[i][j] = matrix[i][N-j-1];
+                matrix[i][N-j-1] = tmp;
+            }
+        }
     }
 
     public static void main(String[] args) {
@@ -578,10 +700,10 @@ public class MainInMac_2 {
 //[-792,-1897]
 //[-150,-3181]
 
-        int[] p1 = {0,0};
-        int[] p2 = {0,1};
-        int[] p3 = {0,2};
-        int[] p4 = {1,2};
-        System.out.println(m.validSquare(p1,p2,p3,p4));
+        int[] p1 = {0, 0};
+        int[] p2 = {0, 1};
+        int[] p3 = {0, 2};
+        int[] p4 = {1, 2};
+        System.out.println(m.validSquare(p1, p2, p3, p4));
     }
 }
