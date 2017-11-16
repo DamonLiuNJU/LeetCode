@@ -691,9 +691,196 @@ public class MainInMac_2 {
         }
     }
 
+
+    /**
+     * 416. Partition Equal Subset Sum
+     * https://leetcode.com/problems/partition-equal-subset-sum/description/
+     *
+     * @param nums input numbers.
+     * @return if it can be split into two subarrays with equal sum.
+     */
+    public boolean canPartition(int[] nums) {
+        int sum = 0;
+        int max = -1;
+        for (int tmp : nums) {
+            sum += tmp;
+            max = Math.max(max, tmp);
+        }
+
+        if (sum % 2 == 1) return false;
+        int target = sum / 2;
+        if (max > target) return false;
+        boolean[] tmp = new boolean[nums.length];
+//        Arrays.fill(tmp,0);
+        return canFormTarget(nums, tmp, target);
+    }
+
+    HashMap<Integer, Boolean> canFormMap = new HashMap<>();
+
+    private boolean canFormTarget(int[] nums, boolean used[], int target) {
+        if (canFormMap.containsKey(target)) return canFormMap.get(target);
+        if (target == 0) {
+            canFormMap.put(target, true);
+            return true;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (used[i]) continue;
+            if (nums[i] > target) continue;
+            used[i] = true;
+            boolean tmp = canFormTarget(nums, used, target - nums[i]);
+            if (tmp) {
+                canFormMap.put(target - nums[i], true);
+                return true;
+            }
+            used[i] = false;
+        }
+        canFormMap.put(target, false);
+        return false;
+    }
+
+    /**
+     * https://leetcode.com/problems/minimum-path-sum/description/
+     *
+     * @param grid the input m*n matrix. All elements are none negative.
+     * @return return the minimum path sum.
+     */
+    public int minPathSum(int[][] grid) {
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (i == 0 && j == 0) continue;
+                int left = Integer.MAX_VALUE, up = Integer.MAX_VALUE;
+                if (j > 0) {
+                    left = grid[i][j - 1];
+                }
+                if (i > 0) {
+                    up = grid[i - 1][j];
+                }
+                grid[i][j] = Math.min(left, up) + grid[i][j];
+            }
+        }
+
+        return grid[grid.length - 1][grid[0].length];
+    }
+
+//    public int findMaxForm(String[] strs, int m, int n) {
+//        int counter = 0;
+//        max = 0;
+//        int[][] map = new int[strs.length][2];  // each row is  number of 0, number of 1, is used.
+//        boolean [] used = new boolean[strs.length];
+//        for (int i=0;i<strs.length;i++){
+//            String s  = strs[i];
+//            for (char c : s.toCharArray()){
+//                map[i][c-'0']++;
+//            }
+//        }
+//        backtrace(map,m,n,0,used);
+//        return max;
+//    }
+//    static int max;
+//    private void backtrace(int[][] map,int leftZero,int leftOnes,int currentIndex,boolean used[]){
+//        int counter = 0;
+//        for (boolean b : used){
+//            if (b) counter++;
+//        }
+//        max = Math.max(counter,max);
+//        for (int i = currentIndex; i < used.length; i++) {
+//            if (map[i][0] <= leftZero && map[i][1] <= leftOnes && !used[i]) {
+//                used[i] = true;
+//                backtrace(map, leftZero - map[i][0], leftOnes - map[i][1], currentIndex + 1, used);
+//                used[i] = false;
+//            }
+//        }
+//    }
+
+    public int findMaxForm(String[] strs, int m, int n) {
+        int[][] dp = new int[m + 1][n + 1];
+        for (String s : strs) {
+            int[] count = count(s);
+            for (int i = m; i >= count[0]; i--)
+                for (int j = n; j >= count[1]; j--)
+                    dp[i][j] = Math.max(1 + dp[i - count[0]][j - count[1]], dp[i][j]);
+        }
+        return dp[m][n];
+    }
+
+    public int[] count(String str) {
+        int[] res = new int[2];
+        for (int i = 0; i < str.length(); i++)
+            res[str.charAt(i) - '0']++;
+        return res;
+    }
+
+
+    /**
+     * https://leetcode.com/problems/increasing-subsequences/description/
+     *
+     * @param nums input array of number.
+     * @return all subsequences that is increasing.
+     */
+
+    public List<List<Integer>> findSubsequences(int[] nums) {
+        return findSubsequences(nums, nums.length - 1);
+    }
+
+
+    public List<List<Integer>> findSubsequences(int[] nums, int endIndex) {
+        if (endIndex == 0) {
+
+        }
+        List<List<Integer>> result = new ArrayList<>();
+        for (List<Integer> list : findSubsequences(nums, endIndex - 1)) {
+            if (list.get(list.size() - 1) <= nums[endIndex]) {
+                List<Integer> tmp = new ArrayList<>(list);
+                tmp.add(nums[endIndex]);
+                result.add(tmp);
+            } else {
+                result.add(list);
+            }
+        }
+        return result;
+    }
+
+
+    /**
+     * https://leetcode.com/problems/redundant-connection/description/
+     *
+     * @param edges all the edges, undirected.
+     * @return the last edge that caused the graph to be none-tree structure.
+     */
+    public int[] findRedundantConnection(int[][] edges) {
+        int N = edges.length;
+        int[] root = new int[N + 1];
+        for (int i = 1; i <= N; i++) {
+            root[i] = i;
+        }
+        for (int[] edge : edges){
+            int head = edge[0];
+            int tail = edge[1];
+            while (root[head]!=head){
+                head = root[head];
+            }
+            while (root[tail]!=tail){
+                tail = root[tail];
+            }
+            if (head==tail){
+                return edge;
+            }
+
+            int smallRoot = Math.min(head,tail);
+            int bigRoot = Math.max(head,tail);
+            for (int i = 1; i <= N; i++) {
+                if (root[i]==bigRoot)
+                    root[i] = smallRoot;
+            }
+            root[edge[1]] = smallRoot;
+            root[edge[0]] = smallRoot;
+        }
+        return null;
+    }
+
     public static void main(String[] args) {
         MainInMac_2 m = new MainInMac_2();
-        int[] input = {1, 1, 1};
+        int[] input = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 97, 95};
 //        System.out.println(m.subarraySum2(input, 2));
 //        System.out.println(m.generateMatrix(3));
 //        [1134,-2539]
@@ -712,30 +899,33 @@ public class MainInMac_2 {
         Object o1 = new Object();
         Object o2 = new Object();
         System.out.println(o1.equals(o2));
-        System.out.println(o1==o2);
+        System.out.println(o1 == o2);
         System.out.println();
         o2 = o1;
         System.out.println(o1.equals(o2));
-        System.out.println(o1==o2);
+        System.out.println(o1 == o2);
         System.out.println();
         String s1 = "abc";
         String s2 = "abc";
-        String s3 = "ab"+"c";
+        String s3 = "ab" + "c";
         System.out.println(s1.equals(s2));
-        System.out.println(s1==s2);
+        System.out.println(s1 == s2);
         System.out.println();
         System.out.println(s1.equals(s3));
-        System.out.println(s1==s3);
+        System.out.println(s1 == s3);
         System.out.println();
 
         String s4 = new String("abc");
-        System.out.println(s4==s1);
+        System.out.println(s4 == s1);
         System.out.println(s4.equals(s1));
         /**
          * equals，直接调用"=="去判断指针所指对象是否是堆上同一个地址。
          * 在重写的情况下，例如在String中，他会去判断内容是否相同，这个就自己定义了。
          * 而hashcode也是自定义的，需要保证在运行过程中多次调用返回相同值这一特点。
          */
-        System.out.println(s1.hashCode()+" " + s4.hashCode());
+        System.out.println(m.canPartition(input));
+
+        String[] sinput = {"10", "0001", "111001", "1", "0"};
+        System.out.println(m.findMaxForm(sinput, 5, 3));
     }
 }
