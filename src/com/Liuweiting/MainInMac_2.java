@@ -868,10 +868,11 @@ public class MainInMac_2 {
 
             int smallRoot = Math.min(head,tail);
             int bigRoot = Math.max(head,tail);
-            for (int i = 1; i <= N; i++) {
-                if (root[i]==bigRoot)
-                    root[i] = smallRoot;
-            }
+//            for (int i = 1; i <= N; i++) {
+//                if (root[i]==bigRoot)
+//                    root[i] = smallRoot;
+//            }
+            root[bigRoot] = smallRoot;
             root[edge[1]] = smallRoot;
             root[edge[0]] = smallRoot;
         }
