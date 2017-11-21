@@ -1,8 +1,6 @@
 package com.Liuweiting;
 
 import com.Liuweiting.DataStructure.TreeNode;
-import com.sun.org.apache.bcel.internal.generic.INEG;
-import com.sun.source.tree.Tree;
 
 import java.util.*;
 
@@ -853,21 +851,21 @@ public class MainInMac_2 {
         for (int i = 1; i <= N; i++) {
             root[i] = i;
         }
-        for (int[] edge : edges){
+        for (int[] edge : edges) {
             int head = edge[0];
             int tail = edge[1];
-            while (root[head]!=head){
+            while (root[head] != head) {
                 head = root[head];
             }
-            while (root[tail]!=tail){
+            while (root[tail] != tail) {
                 tail = root[tail];
             }
-            if (head==tail){
+            if (head == tail) {
                 return edge;
             }
 
-            int smallRoot = Math.min(head,tail);
-            int bigRoot = Math.max(head,tail);
+            int smallRoot = Math.min(head, tail);
+            int bigRoot = Math.max(head, tail);
 //            for (int i = 1; i <= N; i++) {
 //                if (root[i]==bigRoot)
 //                    root[i] = smallRoot;
@@ -879,54 +877,96 @@ public class MainInMac_2 {
         return null;
     }
 
+    /**
+     * https://leetcode.com/problems/search-a-2d-matrix-ii/description/
+     *
+     * @param matrix input
+     * @param target searching target
+     * @return if target exist in matrix.
+     */
+    public boolean searchMatrix(int[][] matrix, int target) {
+        int m = matrix.length;
+        if (m == 0) return false;
+        int n = matrix[0].length;
+        if (n == 0) return false;
+        return searchMatrix(matrix, target, 0, 0, m, n);
+    }
+
+    private static boolean searchMatrix(int[][] matrix, int target, int beginX, int beginY, int endX, int endY) {
+        System.out.println("searching from (" + beginX + "," + beginY + ") to (" + endX + "," + endY + ")");
+        if (beginX >= matrix.length || beginY >= matrix[0].length) {
+            return false;
+        }
+        if (beginX == endX - 1 && beginY == endY - 1 || (beginX == endX && beginY == endY))
+            return matrix[beginX][beginY] == target;
+        if (beginX == endX && beginY == endY - 1) return matrix[beginX][beginY] == target;
+        if (beginX == endX - 1 && beginY == endY) return matrix[beginX][beginY] == target;
+        int middleX = (int) (beginX * 0.5 + (endX) * .5);
+        int middleY = (int) (beginY * .5 + (endY) * .5);
+        if (matrix[middleX][middleY] == target) return true;
+
+        if (matrix[middleX][middleY] > target) {
+            if (beginX == endX) {
+                return searchMatrix(matrix, target, beginX, beginY, endX, middleY - 1);
+            }
+            if (beginY == endY) {
+                return searchMatrix(matrix, target, beginX, beginY, middleX - 1, endY);
+            }
+            return searchMatrix(matrix, target, beginX, beginY, middleX, middleY) || searchMatrix(matrix, target, beginX, middleY, middleX, endY) || searchMatrix(matrix, target, middleX, beginY, endX, middleY);
+        }
+        if (matrix[middleX][middleY] < target) {
+            if (beginX == endX) {
+                return searchMatrix(matrix, target, beginX, middleY + 1, endX, endY);
+            }
+            if (beginY == endY) {
+                return searchMatrix(matrix, target, middleX + 1, beginY, endX, endY);
+            }
+            return searchMatrix(matrix, target, middleX, middleY, endX, endY) || searchMatrix(matrix, target, beginX, middleY, middleX, endY) || searchMatrix(matrix, target, middleX, beginY, endX, middleY);
+        }
+        return false;
+    }
+
+
+    /**
+     * https://leetcode.com/problems/longest-increasing-subsequence/description/
+     *
+     * @param nums the input array.
+     * @return the longest increasing subsequence.
+     */
+    int maxLIS = -1;
+
+    public int lengthOfLIS(int[] nums) {
+        int[] tails = new int[nums.length];
+        int size = 0;
+        for (int x : nums) {
+            int i = 0, j = size;
+            while (i != j) {
+                int m = (i + j) / 2;
+                if (tails[m] < x)
+                    i = m + 1;
+                else
+                    j = m;
+            }
+            tails[i] = x;
+            if (i == size) ++size;
+        }
+        return size;
+    }
+
+    private void backtraceLIS(int[] nums, int index, List<Integer> list) {
+        maxLIS = Math.max(maxLIS, list.size());
+        if (index == nums.length) return;
+        if (list.size() == 0 || nums[index] > list.get(list.size() - 1)) {
+            list.add(nums[index]);
+            backtraceLIS(nums, index + 1, list);
+            list.remove(list.size() - 1);
+        }
+        backtraceLIS(nums, index + 1, list);
+    }
+
     public static void main(String[] args) {
         MainInMac_2 m = new MainInMac_2();
-        int[] input = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 97, 95};
-//        System.out.println(m.subarraySum2(input, 2));
-//        System.out.println(m.generateMatrix(3));
-//        [1134,-2539]
-//[492,-1255]
-//[-792,-1897]
-//[-150,-3181]
-
-        int[] p1 = {0, 0};
-        int[] p2 = {0, 1};
-        int[] p3 = {0, 2};
-        int[] p4 = {1, 2};
-//        System.out.println(m.validSquare(p1, p2, p3, p4));
-
-        HashSet<Integer> hashSet = new HashSet<>();
-
-        Object o1 = new Object();
-        Object o2 = new Object();
-        System.out.println(o1.equals(o2));
-        System.out.println(o1 == o2);
-        System.out.println();
-        o2 = o1;
-        System.out.println(o1.equals(o2));
-        System.out.println(o1 == o2);
-        System.out.println();
-        String s1 = "abc";
-        String s2 = "abc";
-        String s3 = "ab" + "c";
-        System.out.println(s1.equals(s2));
-        System.out.println(s1 == s2);
-        System.out.println();
-        System.out.println(s1.equals(s3));
-        System.out.println(s1 == s3);
-        System.out.println();
-
-        String s4 = new String("abc");
-        System.out.println(s4 == s1);
-        System.out.println(s4.equals(s1));
-        /**
-         * equals，直接调用"=="去判断指针所指对象是否是堆上同一个地址。
-         * 在重写的情况下，例如在String中，他会去判断内容是否相同，这个就自己定义了。
-         * 而hashcode也是自定义的，需要保证在运行过程中多次调用返回相同值这一特点。
-         */
-        System.out.println(m.canPartition(input));
-
-        String[] sinput = {"10", "0001", "111001", "1", "0"};
-        System.out.println(m.findMaxForm(sinput, 5, 3));
+        int[] input = {10, 9, 2, 5, 3, 4};
+        System.out.println(m.lengthOfLIS(input));
     }
 }
