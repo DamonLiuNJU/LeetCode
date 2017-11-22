@@ -1,5 +1,6 @@
 package com.Liuweiting;
 
+import com.Liuweiting.DataStructure.ListNode;
 import com.Liuweiting.DataStructure.TreeNode;
 
 import java.util.*;
@@ -930,6 +931,7 @@ public class MainInMac_2 {
     /**
      * https://leetcode.com/problems/longest-increasing-subsequence/description/
      *
+     * use the idea of tail array, and because it is sorted, thus we can improve the speed to nlogn.
      * @param nums the input array.
      * @return the longest increasing subsequence.
      */
@@ -962,6 +964,24 @@ public class MainInMac_2 {
             list.remove(list.size() - 1);
         }
         backtraceLIS(nums, index + 1, list);
+    }
+
+
+    /**
+     * https://leetcode.com/problems/swap-nodes-in-pairs/description/
+     * swap each two nodes.
+     * @param head the head of linked list.
+     * @return the swap result linked list head.
+     */
+    public ListNode swapPairs(ListNode head) {
+        if (head==null) return null;
+        if (head.next==null) return head;
+        ListNode originHead = head;
+        ListNode next = head.next;
+        ListNode tmp = swapPairs(next.next);
+        originHead.next = tmp;
+        next.next = originHead;
+        return next;
     }
 
     public static void main(String[] args) {
