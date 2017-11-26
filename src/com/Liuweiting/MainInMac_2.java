@@ -1159,6 +1159,7 @@ public class MainInMac_2 {
      * 652. Find Duplicate Subtrees
      * https://leetcode.com/problems/find-duplicate-subtrees/description/
      *
+     * TODO really solve this.
      * I think this problem is NP-Complete, so the time is not poly.
      * @param root the root of tree.
      * @return a list of duplicate trees.
@@ -1179,27 +1180,28 @@ public class MainInMac_2 {
      */
     private static void dpsFindDuplicateSubtrees(TreeNode root, List<TreeNode> list, TreeNode searchingRange){
         if (root==null || searchingRange==null) return;
-        if (contains(searchingRange,root) && !list.contains(root)){
-            list.add(root);
-        }
+
+//        if (contains(searchingRange,root) && !list.contains(root)){
+//            list.add(root);
+//        }
         dpsFindDuplicateSubtrees(root.left,list,searchingRange);
         dpsFindDuplicateSubtrees(root.right,list,searchingRange);
     }
 
-    private static boolean contains(TreeNode mainTree,TreeNode pattern){
-        if (mainTree==null && pattern==null) return true;
-        if (mainTree==null || pattern==null) return false;
-
-        if (mainTree.val == pattern.val && mainTree!=pattern){
-            boolean searching = contains(mainTree.left,pattern.left) && contains(mainTree.right,pattern.right);
-            if (searching) return true;
-        }
-        if (mainTree==pattern || mainTree.val!=pattern.val){
-            boolean searching = contains(mainTree.left,pattern) || contains(mainTree.right,pattern);
-            if (searching) return true;
-        }
-        return false;
-    }
+//    private static TreeNode contains(TreeNode mainTree,TreeNode pattern){
+//        if (mainTree==null && pattern==null) return true;
+//        if (mainTree==null || pattern==null) return null;
+//
+//        if (mainTree.val == pattern.val && mainTree!=pattern){
+//            TreeNode searching = contains(mainTree.left,pattern.left);
+//            TreeNode searching2 = contains(mainTree.right,pattern.right);
+//        }
+//        if (mainTree==pattern || mainTree.val!=pattern.val){
+//            TreeNode searching = contains(mainTree.left,pattern) || contains(mainTree.right,pattern);
+//            if (searching!=null) return searching;
+//        }
+//        return null;
+//    }
 
     public static void main(String[] args) {
         MainInMac_2 m = new MainInMac_2();
