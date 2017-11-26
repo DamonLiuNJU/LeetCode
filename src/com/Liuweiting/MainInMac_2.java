@@ -2,6 +2,7 @@ package com.Liuweiting;
 
 import com.Liuweiting.DataStructure.ListNode;
 import com.Liuweiting.DataStructure.TreeNode;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.util.*;
 
@@ -1141,54 +1142,53 @@ public class MainInMac_2 {
 
 
     /**
-     *
      * @param nums
      * @return
      */
     public int findPeakElement(int[] nums) {
         for (int i = 0; i < nums.length - 1; i++) {
-            if (nums[i] > nums[i+1]){
+            if (nums[i] > nums[i + 1]) {
                 return i;
             }
         }
-        return nums.length-1;
+        return nums.length - 1;
     }
 
 
     /**
      * 652. Find Duplicate Subtrees
      * https://leetcode.com/problems/find-duplicate-subtrees/description/
-     *
+     * <p>
      * TODO really solve this.
      * I think this problem is NP-Complete, so the time is not poly.
+     *
      * @param root the root of tree.
      * @return a list of duplicate trees.
      */
     public List<TreeNode> findDuplicateSubtrees(TreeNode root) {
         List<TreeNode> list = new ArrayList<>();
-        if (root==null) return list;
-        dpsFindDuplicateSubtrees(root.left,list,root);
-        dpsFindDuplicateSubtrees(root.right,list,root);
+        if (root == null) return list;
+        dpsFindDuplicateSubtrees(root.left, list, root);
+        dpsFindDuplicateSubtrees(root.right, list, root);
         return list;
     }
 
     /**
-     *
-     * @param root the current searching tree.
-     * @param list the result list.
+     * @param root           the current searching tree.
+     * @param list           the result list.
      * @param searchingRange the search range.
      */
-    private static void dpsFindDuplicateSubtrees(TreeNode root, List<TreeNode> list, TreeNode searchingRange){
-        if (root==null || searchingRange==null) return;
+    private static void dpsFindDuplicateSubtrees(TreeNode root, List<TreeNode> list, TreeNode searchingRange) {
+        if (root == null || searchingRange == null) return;
 
 //        if (contains(searchingRange,root) && !list.contains(root)){
 //            list.add(root);
 //        }
-        dpsFindDuplicateSubtrees(root.left,list,searchingRange);
-        dpsFindDuplicateSubtrees(root.right,list,searchingRange);
+        dpsFindDuplicateSubtrees(root.left, list, searchingRange);
+        dpsFindDuplicateSubtrees(root.right, list, searchingRange);
     }
 
-//    private static TreeNode contains(TreeNode mainTree,TreeNode pattern){
+    //    private static TreeNode contains(TreeNode mainTree,TreeNode pattern){
 //        if (mainTree==null && pattern==null) return true;
 //        if (mainTree==null || pattern==null) return null;
 //
@@ -1202,12 +1202,80 @@ public class MainInMac_2 {
 //        }
 //        return null;
 //    }
+    public int nthSuperUglyNumber(int n, int[] primes) {
+        int counter = 0;
+        for (int i = 1;counter < 100 && counter < n; i++) {
+            if (isUgly(i,primes)){
+                counter++;
+                if (counter == n){
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
+    HashMap<Integer, Boolean> isNumberUgly = new HashMap<Integer, Boolean>();
+
+    private boolean isUgly(int m, int[] primes) {
+        if (m == 1) return true;
+        for (int i = 2; i <= m; i++) {
+            if (m % i == 0 && isPrime(i)) {
+                if (!isNumberUgly.getOrDefault(i, true)) {
+                    isNumberUgly.put(m, false);
+                    return false;
+                } else {
+                    boolean isInPrimes = false;
+                    for (int tmp : primes) {
+                        if (tmp == i) {
+                            isInPrimes = true;
+                            break;
+                        }
+                    }
+                    if (isInPrimes) continue;
+                    else {
+                        isNumberUgly.put(m, false);
+                        return false;
+                    }
+                }
+            }
+        }
+        isNumberUgly.put(m, true);
+        return true;
+    }
+
+    /**
+     * 1~10^6's judgement of whether if it's prime.
+     * @param i
+     * @return
+     */
+    HashSet<Integer> prime;
+    private boolean isPrime(int i) {
+        if (prime == null) {
+            prime = new HashSet<>();
+            for (int j = 1; j < 1000000; j++) {
+                System.out.println(j);
+                boolean isPrime = true;
+                for (int k = 2; k < Math.pow(j,0.5); k++) {
+                    if (j%k==0){
+                        isPrime = false;
+                        break;
+                    }
+                }
+                if (isPrime) prime.add(j);
+            }
+        }
+
+        return prime.contains(i);
+    }
 
     public static void main(String[] args) {
         MainInMac_2 m = new MainInMac_2();
         int[] input = {10, 9, 2, 5, 3, 4};
 //        System.out.println(m.knightProbability(3, 2, 0, 0));
 //        System.out.println(m.knightProbability2(3, 2, 0, 0));
-        System.out.println(m.maximumSwap(9973));
+//        System.out.println(m.maximumSwap(9973));
+        boolean tp = m.isPrime(200123);
+        System.out.println(tp);
     }
 }
