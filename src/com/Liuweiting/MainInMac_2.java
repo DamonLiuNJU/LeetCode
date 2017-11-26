@@ -1139,6 +1139,21 @@ public class MainInMac_2 {
         return Integer.parseInt(new String(tmp));
     }
 
+
+    /**
+     *
+     * @param nums
+     * @return
+     */
+    public int findPeakElement(int[] nums) {
+        for (int i = 0; i < nums.length - 1; i++) {
+            if (nums[i] > nums[i+1]){
+                return i;
+            }
+        }
+        return nums.length-1;
+    }
+
     public static void main(String[] args) {
         MainInMac_2 m = new MainInMac_2();
         int[] input = {10, 9, 2, 5, 3, 4};
