@@ -930,8 +930,9 @@ public class MainInMac_2 {
 
     /**
      * https://leetcode.com/problems/longest-increasing-subsequence/description/
-     *
+     * <p>
      * use the idea of tail array, and because it is sorted, thus we can improve the speed to nlogn.
+     *
      * @param nums the input array.
      * @return the longest increasing subsequence.
      */
@@ -970,12 +971,13 @@ public class MainInMac_2 {
     /**
      * https://leetcode.com/problems/swap-nodes-in-pairs/description/
      * swap each two nodes.
+     *
      * @param head the head of linked list.
      * @return the swap result linked list head.
      */
     public ListNode swapPairs(ListNode head) {
-        if (head==null) return null;
-        if (head.next==null) return head;
+        if (head == null) return null;
+        if (head.next == null) return head;
         ListNode originHead = head;
         ListNode next = head.next;
         ListNode tmp = swapPairs(next.next);
@@ -984,9 +986,164 @@ public class MainInMac_2 {
         return next;
     }
 
+
+    /**
+     * https://leetcode.com/problems/knight-probability-in-chessboard/description/
+     *
+     * @param N the board is N * N
+     * @param K total steps
+     * @param r start point row
+     * @param c start point column
+     * @return the possibility that the chess is still on board.
+     */
+    double[][] map;
+
+    public double knightProbability(int N, int K, int r, int c) {
+        //Consider1. if the calculate of
+        map = new double[N][N];
+        double total = totalPossibleSteps(N, r, c, K);
+        return total / Math.pow(8, K);
+    }
+
+    private double totalPossibleSteps(int N, int r, int c, int leftStep) {
+        if (map[r][c] != 0) return map[r][c];
+        if (!isValid(r, c, N)) return 0;
+        if (leftStep == 0) return 1;
+        int counter = 0;
+        if (isValid(r - 1, c - 2, N)) {
+            counter += totalPossibleSteps(N, r - 1, c - 2, leftStep - 1);
+        }
+        if (isValid(r - 2, c - 1, N)) {
+            counter += totalPossibleSteps(N, r - 2, c - 1, leftStep - 1);
+        }
+        if (isValid(r - 2, c + 1, N)) {
+            counter += totalPossibleSteps(N, r - 2, c + 1, leftStep - 1);
+        }
+        if (isValid(r - 1, c + 2, N)) {
+            counter += totalPossibleSteps(N, r - 1, c + 2, leftStep - 1);
+        }
+        if (isValid(r + 1, c + 2, N)) {
+            counter += totalPossibleSteps(N, r + 1, c + 2, leftStep - 1);
+        }
+        if (isValid(r + 2, c + 1, N)) {
+            counter += totalPossibleSteps(N, r + 2, c + 1, leftStep - 1);
+        }
+        if (isValid(r + 2, c - 1, N)) {
+            counter += totalPossibleSteps(N, r + 2, c - 1, leftStep - 1);
+        }
+        if (isValid(r + 1, c - 2, N)) {
+            counter += totalPossibleSteps(N, r + 1, c - 2, leftStep - 1);
+        }
+        map[r][c] = counter;
+        return counter;
+    }
+
+    private static boolean isValid(int r, int c, int N) {
+        return !(r < 0 || r >= N || c < 0 || c >= N);
+    }
+
+    /**
+     * @param args
+     */
+    int[][] moves = {{1, 2}, {1, -2}, {2, 1}, {2, -1}, {-1, 2}, {-1, -2}, {-2, 1}, {-2, -1}};
+
+    public double knightProbability2(int N, int K, int r, int c) {
+        int len = N;
+        double dp0[][] = new double[len][len];
+        for (double[] row : dp0) Arrays.fill(row, 1);
+        for (int l = 0; l < K; l++) {
+            double[][] dp1 = new double[len][len];
+            for (int i = 0; i < len; i++) {
+                for (int j = 0; j < len; j++) {
+                    for (int[] move : moves) {
+                        int row = i + move[0];
+                        int col = j + move[1];
+                        if (isLegal(row, col, len))
+                            dp1[i][j] += dp0[row][col];
+                    }
+                }
+            }
+            dp0 = dp1;
+        }
+        return dp0[r][c] / Math.pow(8, K);
+    }
+
+    private boolean isLegal(int r, int c, int len) {
+        return r >= 0 && r < len && c >= 0 && c < len;
+    }
+
+
+    /**
+     * swap 2 digits in num, to make num increase mostly.
+     * this solution is wrong, because if the max num is just in position,
+     * you cannot deal with this condition.
+     *
+     * @param num the input num.
+     * @return the result.
+     */
+//    public int maximumSwap(int num) {
+//        String tmp = num + "";
+//        char max = 0;
+//        int maxIndex = -1;
+//        int index = 0;
+//        for (char c : tmp.toCharArray() ){
+//            if (c> max){
+//                maxIndex = index;
+//            }
+//            max = (char) Math.max(max,c);
+//            index++;
+//        }
+//        char[] array = tmp.toCharArray();
+//        for (int i = 0; i < Math.min(maxIndex,tmp.length()); i++) {
+//            if (tmp.charAt(i)< max){
+//                array[maxIndex] = tmp.charAt(i);
+//                array[i] = max;
+//                break;
+//            }
+//        }
+//        return Integer.parseInt(new String(array));
+//    }
+    public int maximumSwap(int num) {
+        char[] tmp = (num + "").toCharArray();
+        int[] dp = new int[tmp.length];
+        dp[tmp.length - 1] = 0;
+        for (int i = tmp.length - 2; i >= 0; i--) {
+            if (tmp[i] > tmp[i + 1]) {
+                for (int j = i + 1; j < tmp.length; j++) {
+                    if (tmp[i] < tmp[j]) {
+                        dp[i] = dp[j] + 1;
+                        break;
+                    }
+                }
+            } else if (tmp[i] == tmp[i + 1]) {
+                dp[i] = dp[i + 1];
+            } else {
+                dp[i] = dp[i + 1] + 1;
+            }
+        }
+
+        for (int i = 0; i < dp.length; i++) {
+            if (dp[i] != 0) {
+                int maxIndex = i;
+                for (int j = i + 1; j < tmp.length; j++) {
+                    if (tmp[j] >= tmp[maxIndex]) {
+                        maxIndex = j;
+                    }
+                }
+                tmp[maxIndex] += tmp[i];
+                tmp[i] = (char) (tmp[maxIndex] - tmp[i]);
+                tmp[maxIndex] = (char) (tmp[maxIndex] - tmp[i]);
+                break;
+            }
+        }
+        return Integer.parseInt(new String(tmp));
+    }
+
     public static void main(String[] args) {
         MainInMac_2 m = new MainInMac_2();
         int[] input = {10, 9, 2, 5, 3, 4};
-        System.out.println(m.lengthOfLIS(input));
+//        System.out.println(m.knightProbability(3, 2, 0, 0));
+//        System.out.println(m.knightProbability2(3, 2, 0, 0));
+        System.out.println(m.maximumSwap(9973));
     }
 }
