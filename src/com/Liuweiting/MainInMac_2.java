@@ -3,6 +3,7 @@ package com.Liuweiting;
 import com.Liuweiting.DataStructure.ListNode;
 import com.Liuweiting.DataStructure.TreeNode;
 import com.sun.org.apache.xpath.internal.operations.Bool;
+import sun.awt.image.ImageWatched;
 
 import java.util.*;
 
@@ -1204,10 +1205,10 @@ public class MainInMac_2 {
 //    }
     public int nthSuperUglyNumber(int n, int[] primes) {
         int counter = 0;
-        for (int i = 1;counter < 100 && counter < n; i++) {
-            if (isUgly(i,primes)){
+        for (int i = 1; counter < 100 && counter < n; i++) {
+            if (isUgly(i, primes)) {
                 counter++;
-                if (counter == n){
+                if (counter == n) {
                     return i;
                 }
             }
@@ -1246,18 +1247,20 @@ public class MainInMac_2 {
 
     /**
      * 1~10^6's judgement of whether if it's prime.
+     *
      * @param i
      * @return
      */
     HashSet<Integer> prime;
+
     private boolean isPrime(int i) {
         if (prime == null) {
             prime = new HashSet<>();
             for (int j = 1; j < 1000000; j++) {
                 System.out.println(j);
                 boolean isPrime = true;
-                for (int k = 2; k < Math.pow(j,0.5); k++) {
-                    if (j%k==0){
+                for (int k = 2; k < Math.pow(j, 0.5); k++) {
+                    if (j % k == 0) {
                         isPrime = false;
                         break;
                     }
@@ -1269,13 +1272,96 @@ public class MainInMac_2 {
         return prime.contains(i);
     }
 
+    public int nthSuperUglyNumberI(int n, int[] primes) {
+        int[] ugly = new int[n];
+        int[] idx = new int[primes.length];
+
+        ugly[0] = 1;
+        for (int i = 1; i < n; i++) {
+            //find next
+            ugly[i] = Integer.MAX_VALUE;
+            for (int j = 0; j < primes.length; j++)
+                ugly[i] = Math.min(ugly[i], primes[j] * ugly[idx[j]]);
+
+            System.out.println("");
+            //slip duplicate
+            for (int j = 0; j < primes.length; j++) {
+                while (primes[j] * ugly[idx[j]] <= ugly[i]) idx[j]++;
+            }
+        }
+
+        return ugly[n - 1];
+    }
+
+
+    public int[] asteroidCollision(int[] asteroids) {
+        int size = asteroids.length;
+        while (true) {
+            int oldSize = size;
+            for (int i = 0; i < asteroids.length - 1; i++) {
+                if (asteroids[i] == 0) continue;
+                if (asteroids[i] > 0) {
+                    int j;
+                    for (j = i + 1; j < asteroids.length; j++) {
+                        if (asteroids[j] != 0) {
+                            break;
+                        }
+                    }
+                    if (j == asteroids.length) break;
+                    if (asteroids[j] < 0) {
+                        if (asteroids[i] > -asteroids[j]) {
+                            asteroids[j] = 0;
+                            size--;
+                            break;
+                        } else if (asteroids[i] < -asteroids[j]) {
+                            asteroids[i] = 0;
+                            size--;
+                            break;
+                        } else {
+                            asteroids[i] = 0;
+                            asteroids[j] = 0;
+                            size -= 2;
+                            break;
+                        }
+                    } else if (asteroids[j] > 0) {
+                    } else {
+                    }
+                }
+            }
+            if (oldSize == size) break;
+        }
+        int[] result = new int[size];
+        int index = 0;
+        for (int tmp : asteroids) {
+            if (tmp != 0) {
+                result[index++] = tmp;
+            }
+        }
+        return result;
+    }
+
+
+    /**
+     * 662. Maximum Width of Binary Tree
+     * https://leetcode.com/problems/maximum-width-of-binary-tree/description/
+     *
+     * @param root a binary tree's root.
+     * @return the maxLength of all the levels.
+     */
+    public int widthOfBinaryTree(TreeNode root) {
+        
+        return -1;
+    }
+
     public static void main(String[] args) {
         MainInMac_2 m = new MainInMac_2();
-        int[] input = {10, 9, 2, 5, 3, 4};
+        int[] input = {2, 3, 5};
 //        System.out.println(m.knightProbability(3, 2, 0, 0));
 //        System.out.println(m.knightProbability2(3, 2, 0, 0));
 //        System.out.println(m.maximumSwap(9973));
-        boolean tp = m.isPrime(200123);
-        System.out.println(tp);
+//        boolean tp = m.isPrime(200123);
+//        System.out.println(m.nthSuperUglyNumberI(10,input));
+        int[] ast = {-2, -2, 1, -2};
+        System.out.println(Arrays.toString(m.asteroidCollision(ast)));
     }
 }
