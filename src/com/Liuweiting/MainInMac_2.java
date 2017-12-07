@@ -1349,9 +1349,164 @@ public class MainInMac_2 {
      * @return the maxLength of all the levels.
      */
     public int widthOfBinaryTree(TreeNode root) {
-        
+
         return -1;
     }
+
+
+    /**
+     * 279. Perfect Squares
+     * https://leetcode.com/problems/perfect-squares/description/
+     *
+     * @param n the target sum.
+     * @return total number of square numbers needed to add up to @param(n).
+     */
+    HashMap<Integer, Integer> memory = new HashMap();
+
+    public int numSquares(int n) {
+        if (memory.containsKey(n)) return memory.get(n);
+        if (n <= 3) {
+            return n;
+        }
+        int result = Integer.MAX_VALUE;
+        for (int i = (int) Math.sqrt(n); i >= 1; i--) {
+            if (i * i <= n) {
+                result = Math.min(result, 1 + numSquares(n - i * i));
+            }
+        }
+        memory.put(n, result);
+        return result;
+    }
+
+
+    /**
+     * https://leetcode.com/problems/sum-root-to-leaf-numbers/description/
+     * 129. Sum Root to Leaf Numbers
+     * <p>
+     * consider dfs search.
+     *
+     * @param root
+     * @return
+     */
+    public int sumNumbers(TreeNode root) {
+        if (root == null) return 0;
+        List<Integer> res = new ArrayList<>();
+        int[] sum = new int[1];
+        res.add(root.val);
+        dfs(res, root, sum);
+        return sum[0];
+    }
+
+    private static void dfs(List<Integer> path, TreeNode root, int[] sum) {
+        if (root.left == null && root.right == null) {
+            int base = 1;
+            for (int i = path.size() - 1; i >= 0; i--) {
+                sum[0] += base * path.get(i);
+                base *= 10;
+            }
+        }
+        if (root.left != null) {
+            path.add(root.left.val);
+            dfs(path, root.left, sum);
+            path.remove(path.size() - 1);
+        }
+        if (root.right != null) {
+            path.add(root.right.val);
+            dfs(path, root.right, sum);
+            path.remove(path.size() - 1);
+        }
+    }
+
+
+    /**
+     * 450. Delete Node in a BST
+     * <p>
+     * https://leetcode.com/problems/delete-node-in-a-bst/description/
+     *
+     * @param root root of a binary search tree.
+     * @param key  the node to remove.
+     * @return the result tree.
+     */
+    private static TreeNode treeRoot;
+    public TreeNode deleteNode(TreeNode root, int key) {
+        treeRoot = root;
+        deleteNodeHelper(root,key,null,false);
+        return treeRoot;
+    }
+
+    private void deleteNodeHelper(TreeNode root, int key,TreeNode parent,boolean isleft){
+        if (root==null) return;
+        if (root.val==key){
+            deleteNodeInBST(treeRoot,root,parent,isleft);
+        } else {
+            if (root.val > key){
+                deleteNodeHelper(root.left,key,root,true);
+            } else {
+                deleteNodeHelper(root.right,key,root,false);
+            }
+        }
+    }
+
+    private void deleteNodeInBST(TreeNode treeRoot, TreeNode toDelete,TreeNode toDeleteParent,boolean isLeft) {
+        if (toDelete.left==null){
+            if (toDeleteParent==null){
+                this.treeRoot = toDelete.right;
+                return;
+            }
+            if (isLeft){
+                toDeleteParent.left = toDelete.right;
+            } else {
+                toDeleteParent.right = toDelete.right;
+            }
+        } else if (toDelete.right==null){
+            if (toDeleteParent==null){
+                this.treeRoot = toDelete.left;
+                return;
+            }
+            if (isLeft){
+                toDeleteParent.left = toDelete.left;
+            } else {
+                toDeleteParent.right = toDelete.left;
+            }
+        } else {//to delete's node has two children.
+            //Step1. find the smallest node in toDelete's right branch.
+            TreeNode tmp = toDelete.right;
+            TreeNode tmpParent = toDelete;
+            while (tmp.left!=null){
+                tmpParent = tmp;
+                tmp = tmp.left;
+            }
+
+            // tmp is the node to replace toDelete node.
+            //
+            if (tmpParent!=toDelete){
+                tmpParent.left = tmp.right;
+                tmp.left = toDelete.left;
+                tmp.right = toDelete.right;
+                if (toDeleteParent==null){
+                    this.treeRoot = tmp;
+                    return;
+                }
+                if (isLeft){
+                    toDeleteParent.left = tmp;
+                } else {
+                    toDeleteParent.right = tmp;
+                }
+            } else {
+                tmp.left = toDelete.left;
+                if (toDeleteParent==null){
+                    this.treeRoot = tmp;
+                    return;
+                }
+                if (isLeft){
+                    toDeleteParent.left = tmp;
+                } else {
+                    toDeleteParent.right = tmp;
+                }
+            }
+        }
+    }
+
 
     public static void main(String[] args) {
         MainInMac_2 m = new MainInMac_2();
