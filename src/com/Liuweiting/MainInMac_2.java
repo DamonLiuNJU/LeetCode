@@ -5,6 +5,7 @@ import com.Liuweiting.DataStructure.TreeNode;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import sun.awt.image.ImageWatched;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -1428,42 +1429,43 @@ public class MainInMac_2 {
      * @return the result tree.
      */
     private static TreeNode treeRoot;
+
     public TreeNode deleteNode(TreeNode root, int key) {
         treeRoot = root;
-        deleteNodeHelper(root,key,null,false);
+        deleteNodeHelper(root, key, null, false);
         return treeRoot;
     }
 
-    private void deleteNodeHelper(TreeNode root, int key,TreeNode parent,boolean isleft){
-        if (root==null) return;
-        if (root.val==key){
-            deleteNodeInBST(treeRoot,root,parent,isleft);
+    private void deleteNodeHelper(TreeNode root, int key, TreeNode parent, boolean isleft) {
+        if (root == null) return;
+        if (root.val == key) {
+            deleteNodeInBST(treeRoot, root, parent, isleft);
         } else {
-            if (root.val > key){
-                deleteNodeHelper(root.left,key,root,true);
+            if (root.val > key) {
+                deleteNodeHelper(root.left, key, root, true);
             } else {
-                deleteNodeHelper(root.right,key,root,false);
+                deleteNodeHelper(root.right, key, root, false);
             }
         }
     }
 
-    private void deleteNodeInBST(TreeNode treeRoot, TreeNode toDelete,TreeNode toDeleteParent,boolean isLeft) {
-        if (toDelete.left==null){
-            if (toDeleteParent==null){
+    private void deleteNodeInBST(TreeNode treeRoot, TreeNode toDelete, TreeNode toDeleteParent, boolean isLeft) {
+        if (toDelete.left == null) {
+            if (toDeleteParent == null) {
                 this.treeRoot = toDelete.right;
                 return;
             }
-            if (isLeft){
+            if (isLeft) {
                 toDeleteParent.left = toDelete.right;
             } else {
                 toDeleteParent.right = toDelete.right;
             }
-        } else if (toDelete.right==null){
-            if (toDeleteParent==null){
+        } else if (toDelete.right == null) {
+            if (toDeleteParent == null) {
                 this.treeRoot = toDelete.left;
                 return;
             }
-            if (isLeft){
+            if (isLeft) {
                 toDeleteParent.left = toDelete.left;
             } else {
                 toDeleteParent.right = toDelete.left;
@@ -1472,33 +1474,33 @@ public class MainInMac_2 {
             //Step1. find the smallest node in toDelete's right branch.
             TreeNode tmp = toDelete.right;
             TreeNode tmpParent = toDelete;
-            while (tmp.left!=null){
+            while (tmp.left != null) {
                 tmpParent = tmp;
                 tmp = tmp.left;
             }
 
             // tmp is the node to replace toDelete node.
             //
-            if (tmpParent!=toDelete){
+            if (tmpParent != toDelete) {
                 tmpParent.left = tmp.right;
                 tmp.left = toDelete.left;
                 tmp.right = toDelete.right;
-                if (toDeleteParent==null){
+                if (toDeleteParent == null) {
                     this.treeRoot = tmp;
                     return;
                 }
-                if (isLeft){
+                if (isLeft) {
                     toDeleteParent.left = tmp;
                 } else {
                     toDeleteParent.right = tmp;
                 }
             } else {
                 tmp.left = toDelete.left;
-                if (toDeleteParent==null){
+                if (toDeleteParent == null) {
                     this.treeRoot = tmp;
                     return;
                 }
-                if (isLeft){
+                if (isLeft) {
                     toDeleteParent.left = tmp;
                 } else {
                     toDeleteParent.right = tmp;
@@ -1507,6 +1509,113 @@ public class MainInMac_2 {
         }
     }
 
+
+    /**
+     * https://leetcode.com/problems/longest-absolute-file-path/description/
+     * if match : \n\t then the next string is a directory.
+     * if match : \n\t\t then the next is a file.
+     *
+     * @param input the file system representation
+     * @return the longest file path string length.
+     */
+    HashMap<String, ArrayList<String>> file2content = new HashMap<>();
+
+    public int lengthLongestPath(String input) {
+
+//        String rootDirectory = "";
+//        int i = -1;
+//        for (i = 0; i < input.length(); i++) {
+//            if (input.charAt(i)=='\\'){
+//                rootDirectory = input.substring(0,i);
+//                break;
+//            }
+//        }
+//        file2content.put(rootDirectory,new ArrayList<>());
+        String parentDir = null;
+        Stack<String> currentFilePathStack = new Stack<>();
+        int begin = 0, end = 0;
+        while (end <= input.length()) {
+            while (end + 4 <= input.length() && input.substring(end, end + 4).compareToIgnoreCase("\\n\\t") != 0) {
+                end++;
+            }
+            if (end + 4 == input.length()){
+                String lastFile = input.substring(begin);
+                if (parentDir==null){
+                    parentDir = lastFile;
+                    file2content.put(parentDir,new ArrayList<>());
+                } else {
+                    ArrayList<String> dir = file2content.getOrDefault(parentDir, new ArrayList<>());
+                    dir.add(lastFile);
+                }
+                break;
+            }
+            //current end meet a \n\t.
+            //condition1. if this is just a \n\t not a \n\t\t
+            if (input.substring(end, end + 6).compareToIgnoreCase("\\n\\t\\t") != 0) {
+                String currentDir = input.substring(0, end);
+                if (parentDir==null){
+                    parentDir = currentDir;
+                    file2content.put(parentDir,new ArrayList<>());
+                } else {
+                    ArrayList<String> dir = file2content.getOrDefault(parentDir, new ArrayList<>());
+                    dir.add(currentDir);
+                }
+                parentDir = currentDir;
+                begin = end + 4;
+                end = begin;
+            } else { //meet a file.
+                String fileName = input.substring(0, end);
+                ArrayList<String> dir = file2content.getOrDefault(parentDir, new ArrayList<>());
+                dir.add(fileName);
+                begin = end + 6;
+                end = begin;
+            }
+        }
+        return -1;
+    }
+
+
+    public void gameOfLife(int[][] board) {
+        int m = board.length;
+        int n = board[0].length;
+//        int[][] newBoard = new int[board.length][board[0].length];
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                int sum = 0;
+                sum = getAllLiveNeighbours(board,i,j);
+                if (1==board[i][j]){
+                    if (sum<2){
+                        board[i][j]=1;
+                    } else if (sum <4) {
+                        board[i][j]=3;
+                    } else {
+                        board[i][j]=1;
+                    }
+                } else {
+                    if (sum == 3){
+                        board[i][j]=2;
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                board[i][j] = board[i][j] >> 1;
+            }
+        }
+    }
+
+    private static int getAllLiveNeighbours(int[][] boards,int i,int j){
+        int sum = 0;
+        for (int k = -1; k <= 1 ; k++) {
+            for (int l = -1; l <=1 ; l++) {
+                if (i+k>=0 && i+k <boards.length && j+l >=0 && j+l<boards[0].length && (k!=0 || l!=0)){
+                   sum += boards[i+k][j+l] & 1;
+                }
+            }
+        }
+        return sum;
+    }
 
     public static void main(String[] args) {
         MainInMac_2 m = new MainInMac_2();
@@ -1517,6 +1626,11 @@ public class MainInMac_2 {
 //        boolean tp = m.isPrime(200123);
 //        System.out.println(m.nthSuperUglyNumberI(10,input));
         int[] ast = {-2, -2, 1, -2};
-        System.out.println(Arrays.toString(m.asteroidCollision(ast)));
+//        System.out.println(Arrays.toString(m.asteroidCollision(ast)));
+//        System.out.println(m.lengthLongestPath("dir\\n\\tsub dir1\\n\\t\\tfile1.ext\\n\\t\\tsubsubdir1\\n\\tsubdir2\\n\\t\\tsubsubdir2\\n\\t\\t\\tfile2.ext"));
+
+        int[][] input2 = {{1,1},
+                          {1,0}};
+        m.gameOfLife(input2);
     }
 }
