@@ -1538,11 +1538,11 @@ public class MainInMac_2 {
             while (end + 4 <= input.length() && input.substring(end, end + 4).compareToIgnoreCase("\\n\\t") != 0) {
                 end++;
             }
-            if (end + 4 == input.length()){
+            if (end + 4 == input.length()) {
                 String lastFile = input.substring(begin);
-                if (parentDir==null){
+                if (parentDir == null) {
                     parentDir = lastFile;
-                    file2content.put(parentDir,new ArrayList<>());
+                    file2content.put(parentDir, new ArrayList<>());
                 } else {
                     ArrayList<String> dir = file2content.getOrDefault(parentDir, new ArrayList<>());
                     dir.add(lastFile);
@@ -1553,9 +1553,9 @@ public class MainInMac_2 {
             //condition1. if this is just a \n\t not a \n\t\t
             if (input.substring(end, end + 6).compareToIgnoreCase("\\n\\t\\t") != 0) {
                 String currentDir = input.substring(0, end);
-                if (parentDir==null){
+                if (parentDir == null) {
                     parentDir = currentDir;
-                    file2content.put(parentDir,new ArrayList<>());
+                    file2content.put(parentDir, new ArrayList<>());
                 } else {
                     ArrayList<String> dir = file2content.getOrDefault(parentDir, new ArrayList<>());
                     dir.add(currentDir);
@@ -1582,18 +1582,18 @@ public class MainInMac_2 {
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[0].length; j++) {
                 int sum = 0;
-                sum = getAllLiveNeighbours(board,i,j);
-                if (1==board[i][j]){
-                    if (sum<2){
-                        board[i][j]=1;
-                    } else if (sum <4) {
-                        board[i][j]=3;
+                sum = getAllLiveNeighbours(board, i, j);
+                if (1 == board[i][j]) {
+                    if (sum < 2) {
+                        board[i][j] = 1;
+                    } else if (sum < 4) {
+                        board[i][j] = 3;
                     } else {
-                        board[i][j]=1;
+                        board[i][j] = 1;
                     }
                 } else {
-                    if (sum == 3){
-                        board[i][j]=2;
+                    if (sum == 3) {
+                        board[i][j] = 2;
                     }
                 }
             }
@@ -1605,17 +1605,46 @@ public class MainInMac_2 {
         }
     }
 
-    private static int getAllLiveNeighbours(int[][] boards,int i,int j){
+    private static int getAllLiveNeighbours(int[][] boards, int i, int j) {
         int sum = 0;
-        for (int k = -1; k <= 1 ; k++) {
-            for (int l = -1; l <=1 ; l++) {
-                if (i+k>=0 && i+k <boards.length && j+l >=0 && j+l<boards[0].length && (k!=0 || l!=0)){
-                   sum += boards[i+k][j+l] & 1;
+        for (int k = -1; k <= 1; k++) {
+            for (int l = -1; l <= 1; l++) {
+                if (i + k >= 0 && i + k < boards.length && j + l >= 0 && j + l < boards[0].length && (k != 0 || l != 0)) {
+                    sum += boards[i + k][j + l] & 1;
                 }
             }
         }
         return sum;
     }
+
+    /**
+     * https://leetcode.com/problems/container-with-most-water/description/
+     * 11. Container With Most Water
+     *
+     * @param height
+     * @return
+     */
+    public int maxArea(int[] height) {
+
+
+        return -1;
+    }
+
+
+    /**
+     * constant space complexity.
+     *
+     * Consider record the previous visited node.
+     * Add a label to mark if this node is finished visit.
+     *
+     * TODO: 
+     *
+     * @param root the root of
+     */
+    public void connect(TreeLinkNode root) {
+
+    }
+
 
     public static void main(String[] args) {
         MainInMac_2 m = new MainInMac_2();
@@ -1629,8 +1658,8 @@ public class MainInMac_2 {
 //        System.out.println(Arrays.toString(m.asteroidCollision(ast)));
 //        System.out.println(m.lengthLongestPath("dir\\n\\tsub dir1\\n\\t\\tfile1.ext\\n\\t\\tsubsubdir1\\n\\tsubdir2\\n\\t\\tsubsubdir2\\n\\t\\t\\tfile2.ext"));
 
-        int[][] input2 = {{1,1},
-                          {1,0}};
+        int[][] input2 = {{1, 1},
+                {1, 0}};
         m.gameOfLife(input2);
     }
 }
