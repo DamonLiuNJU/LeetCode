@@ -1633,29 +1633,31 @@ public class MainInMac_2 {
 
     /**
      * constant space complexity.
-     *
+     * <p>
      * Consider record the previous visited node.
      * Add a label to mark if this node is finished visit.
-     *
+     * <p>
      * TODO:
-     *
+     * <p>
      * BFS or DFS? BFS need to record the current level's elements. So the space complexity will not be constant.
      * The only result is DFS.
      * when dfs, we
+     *
      * @param root the root of
      */
 
 
     TreeLinkNode tmp = null;
+
     public void connect(TreeLinkNode root) {
         tmp = null;
         dfs(root);
     }
 
-    private void dfs(TreeLinkNode root){
-        if (root.left!=null){
+    private void dfs(TreeLinkNode root) {
+        if (root.left != null) {
             root.left.next = root.right;
-            root.right.next = root.next==null? null : root.next.left;
+            root.right.next = root.next == null ? null : root.next.left;
         }
         dfs(root.left);
         dfs(root.right);
@@ -1668,6 +1670,59 @@ public class MainInMac_2 {
 //        dfs(root.left);
 //        dfsRightChild(root.right,root.left.right);
 //    }
+
+
+    /**
+     * given a list of number, return the power set of all possible combinations.
+     *
+     * @param nums list of number.
+     * @return all combinations.
+     */
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        Arrays.sort(nums);
+        subsetsWithDup(nums,result,new ArrayList<Integer>(),0);
+        return result;
+    }
+
+    private void subsetsWithDup(int[] nums,List<List<Integer>> result, List<Integer> current,int currentIndex){
+        result.add((List<Integer>) ((ArrayList)current).clone());
+        for (int i=currentIndex;i<nums.length;i++){
+            if (i==currentIndex || nums[i]!=nums[i-1]){
+                current.add(nums[i]);
+                subsetsWithDup(nums,result,current,i+1);
+                current.remove(current.size()-1);
+            }
+        }
+    }
+
+
+    /**
+     * backtrace problem.
+     * 就是不带重复的子集和问题。
+     * @param nums the input nums.
+     * @param k    the k subsets.
+     * @return if array can be partitioned.
+     */
+    static int target;
+    public boolean canPartitionKSubsets(int[] nums, int k) {
+        Arrays.sort(nums);
+        int sum = 0;
+        for(int tmp: nums) sum+=tmp;
+        if(sum % k!=0) return false;
+        int subSetCount = k;
+        int subSetSum = sum / k;
+        target = subSetSum;
+
+        ArrayList<Integer> usingIndex = new ArrayList<>();
+        backTrace(nums,usingIndex,0);
+
+        return false;
+    }
+
+    private void backTrace(int[] nums, ArrayList<Integer> usingIndex, int currentIndex){
+
+    }
 
 
     public static void main(String[] args) {
@@ -1685,5 +1740,9 @@ public class MainInMac_2 {
         int[][] input2 = {{1, 1},
                 {1, 0}};
         m.gameOfLife(input2);
+
+        int[] nums = {1,2,3,4};
+        System.out.println("Subset With Duplication`");
+        System.out.println(m.subsetsWithDup(nums));
     }
 }
