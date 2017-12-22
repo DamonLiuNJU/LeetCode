@@ -1637,13 +1637,37 @@ public class MainInMac_2 {
      * Consider record the previous visited node.
      * Add a label to mark if this node is finished visit.
      *
-     * TODO: 
+     * TODO:
      *
+     * BFS or DFS? BFS need to record the current level's elements. So the space complexity will not be constant.
+     * The only result is DFS.
+     * when dfs, we
      * @param root the root of
      */
-    public void connect(TreeLinkNode root) {
 
+
+    TreeLinkNode tmp = null;
+    public void connect(TreeLinkNode root) {
+        tmp = null;
+        dfs(root);
     }
+
+    private void dfs(TreeLinkNode root){
+        if (root.left!=null){
+            root.left.next = root.right;
+            root.right.next = root.next==null? null : root.next.left;
+        }
+        dfs(root.left);
+        dfs(root.right);
+    }
+
+//    private static void dfsRightChild(TreeLinkNode root,TreeLinkNode tmp){
+//        if (tmp==null || root==null) return;
+//        tmp.next = root.left;
+//        root.left.next = root.right;
+//        dfs(root.left);
+//        dfsRightChild(root.right,root.left.right);
+//    }
 
 
     public static void main(String[] args) {
