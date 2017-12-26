@@ -1681,17 +1681,17 @@ public class MainInMac_2 {
     public List<List<Integer>> subsetsWithDup(int[] nums) {
         List<List<Integer>> result = new ArrayList<>();
         Arrays.sort(nums);
-        subsetsWithDup(nums,result,new ArrayList<Integer>(),0);
+        subsetsWithDup(nums, result, new ArrayList<Integer>(), 0);
         return result;
     }
 
-    private void subsetsWithDup(int[] nums,List<List<Integer>> result, List<Integer> current,int currentIndex){
-        result.add((List<Integer>) ((ArrayList)current).clone());
-        for (int i=currentIndex;i<nums.length;i++){
-            if (i==currentIndex || nums[i]!=nums[i-1]){
+    private void subsetsWithDup(int[] nums, List<List<Integer>> result, List<Integer> current, int currentIndex) {
+        result.add((List<Integer>) ((ArrayList) current).clone());
+        for (int i = currentIndex; i < nums.length; i++) {
+            if (i == currentIndex || nums[i] != nums[i - 1]) {
                 current.add(nums[i]);
-                subsetsWithDup(nums,result,current,i+1);
-                current.remove(current.size()-1);
+                subsetsWithDup(nums, result, current, i + 1);
+                current.remove(current.size() - 1);
             }
         }
     }
@@ -1700,27 +1700,29 @@ public class MainInMac_2 {
     /**
      * backtrace problem.
      * 就是不带重复的子集和问题。
+     *
      * @param nums the input nums.
      * @param k    the k subsets.
      * @return if array can be partitioned.
      */
     static int target;
+
     public boolean canPartitionKSubsets(int[] nums, int k) {
         Arrays.sort(nums);
         int sum = 0;
-        for(int tmp: nums) sum+=tmp;
-        if(sum % k!=0) return false;
+        for (int tmp : nums) sum += tmp;
+        if (sum % k != 0) return false;
         int subSetCount = k;
         int subSetSum = sum / k;
         target = subSetSum;
 
         ArrayList<Integer> usingIndex = new ArrayList<>();
-        backTrace(nums,usingIndex,0);
+        backTrace(nums, usingIndex, 0);
 
         return false;
     }
 
-    private void backTrace(int[] nums, ArrayList<Integer> usingIndex, int currentIndex){
+    private void backTrace(int[] nums, ArrayList<Integer> usingIndex, int currentIndex) {
 
     }
 
@@ -1741,7 +1743,7 @@ public class MainInMac_2 {
                 {1, 0}};
         m.gameOfLife(input2);
 
-        int[] nums = {1,2,3,4};
+        int[] nums = {1, 2, 3, 4};
         System.out.println("Subset With Duplication`");
         System.out.println(m.subsetsWithDup(nums));
     }
