@@ -2,6 +2,7 @@ package com.Liuweiting;
 
 import com.Liuweiting.DataStructure.ListNode;
 import com.Liuweiting.DataStructure.TreeNode;
+import com.sun.deploy.util.ArrayUtil;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import sun.awt.image.ImageWatched;
 
@@ -1726,25 +1727,358 @@ public class MainInMac_2 {
 
     }
 
+    public boolean isValidSerialization(String preorder) {
+        // using a stack, scan left to right
+        // case 1: we see a number, just push it to the stack
+        // case 2: we see #, check if the top of stack is also #
+        // if so, pop #, pop the number in a while loop, until top of stack is not #
+        // if not, push it to stack
+        // in the end, check if stack size is 1, and stack top is #
+        if (preorder == null) {
+            return false;
+        }
+        Stack<String> st = new Stack<>();
+        String[] strs = preorder.split(",");
+        for (int pos = 0; pos < strs.length; pos++) {
+            String curr = strs[pos];
+            while (curr.equals("#") && !st.isEmpty() && st.peek().equals(curr)) {
+                st.pop();
+                if (st.isEmpty()) {
+                    return false;
+                }
+                st.pop();
+            }
+            st.push(curr);
+        }
+        return st.size() == 1 && st.peek().equals("#");
+    }
+
+    public boolean isValidSerialization2(String preorder) {
+        if (preorder == null) return false;
+        List<String> list = new ArrayList<>();
+        String[] nodes = preorder.split(",");
+
+        for (String s : nodes) {
+            list.add(s);
+            while (list.size() >= 2 && list.get(list.size() - 1).compareTo("#") == 0
+                    && list.get(list.size() - 2).compareTo("#") == 0) {
+                list.remove(list.size() - 2);
+                list.remove(list.size() - 2);
+            }
+        }
+        return list.size() == 1;
+    }
+
+    public int removeDuplicates(int[] nums) {
+        if (nums.length < 3) return nums.length;
+        int removed = 0;
+        for (int cursor = 2; cursor < nums.length - removed; cursor++) {
+            if (nums[cursor] == nums[cursor - 1] && nums[cursor] == nums[cursor - 2]) {
+                //shift left.
+
+                for (int i = cursor + 1; i < nums.length - removed; i++) {
+                    nums[i - 1] = nums[i];
+                }
+                removed++;
+                cursor--;
+            }
+        }
+        return nums.length - removed;
+    }
+
+    public boolean isPossible(int[] nums) {
+        Map<Integer, Integer> freq = new HashMap<>(), appendfreq = new HashMap<>();
+        for (int i : nums) freq.put(i, freq.getOrDefault(i, 0) + 1);
+        for (int i : nums) {
+            if (freq.get(i) == 0) continue;
+            else if (appendfreq.getOrDefault(i, 0) > 0) {
+                appendfreq.put(i, appendfreq.get(i) - 1);
+                appendfreq.put(i + 1, appendfreq.getOrDefault(i + 1, 0) + 1);
+            } else if (freq.getOrDefault(i + 1, 0) > 0 && freq.getOrDefault(i + 2, 0) > 0) {
+                freq.put(i + 1, freq.get(i + 1) - 1);
+                freq.put(i + 2, freq.get(i + 2) - 1);
+                appendfreq.put(i + 3, appendfreq.getOrDefault(i + 3, 0) + 1);
+            } else return false;
+            freq.put(i, freq.get(i) - 1);
+        }
+        return true;
+    }
+
+
+    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        boolean isGoingRight = true;
+        LinkedList<TreeNode> curLevel = new LinkedList();
+        LinkedList<TreeNode> nxtLevel = new LinkedList<>();
+        List<List<Integer>> result = new ArrayList<>();
+        curLevel.add(root);
+        while (!curLevel.isEmpty()) {
+            List<Integer> lineContent = new ArrayList<>();
+            for (TreeNode node : curLevel) {
+                lineContent.add(node.val);
+                if (node.left != null) nxtLevel.add(node.left);
+                if (node.right != null) nxtLevel.add(node.right);
+            }
+            if (isGoingRight) {
+                result.add(lineContent);
+            } else {
+                Collections.reverse(lineContent);
+                result.add(lineContent);
+            }
+
+            curLevel = nxtLevel;
+            nxtLevel = new LinkedList<>();
+        }
+        return result;
+    }
+
+
+    public int numIslands(int[][] grid) {
+        int n = 0;
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (grid[i][j] == 0) continue;
+                if (grid[i][j] == 1) {
+                    if (i == 0 && j == 0) {
+                        n++;
+                        continue;
+                    }
+
+                    if (i - 1 >= 0 && grid[i - 1][j] == 1 || j - 1 >= 0 && grid[i][j - 1] == 1) {
+                        continue;
+                    } else {
+                        n++;
+                    }
+                }
+            }
+        }
+        return n;
+    }
+
+    public int longestSubstring(String s, int k) {
+        if (k == 1) return s.length();
+        if (s.length() == 0 || s.length() < k) return 0;
+        int[] times = new int[26];
+        for (char c : s.toCharArray()) {
+            times[c - 'a']++;
+        }
+        for (int i = 0; i < times.length; i++) {
+            if (times[i] < k && times[i] != 0) {
+                char pivot = (char) (i + 'a');
+                String[] substrings = s.split(String.valueOf(pivot));
+                int max = -1;
+                for (String shorter : substrings) {
+                    max = Math.max(max, longestSubstring(shorter, k));
+                }
+                return max;
+            }
+        }
+        return s.length();
+    }
+
+    public String getHint(String secret, String guess) {
+        int bulls = 0, cows = 0;
+        int[] counter = new int[10];
+        int n = secret.length();
+        for (int i = 0; i < n; i++) {
+            int s = secret.charAt(i) - '0';
+            int g = guess.charAt(i) - '0';
+            if (s == g)
+                bulls++;
+            else {
+                if (counter[g] > 0) cows++;
+                if (counter[s] < 0) cows++;
+                counter[s]++;
+                counter[g]--;
+            }
+        }
+        return bulls + "A" + cows + "B";
+
+    }
+
+    public List<Integer> findClosestElements(int[] arr, int k, int x) {
+        List<Integer> res = new ArrayList<>();
+        int start = 0, end = arr.length - k;
+        while (start < end) {
+            int mid = start + (end - start) / 2;
+            if (Math.abs(arr[mid] - x) > Math.abs(arr[mid + k] - x)) { //this also ensure smaller is prefer if equals
+                start = mid + 1;
+            } else {
+                end = mid;
+            }
+        }
+        for (int i = start; i < start + k; i++) {
+            res.add(arr[i]);
+        }
+        return res;
+    }
+
+
+//    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+//        //typical backtrace problem.
+//        List<List<Integer>> result = new ArrayList<>();
+//        Arrays.sort(candidates);
+//        backTrace(result,new ArrayList<>(),candidates,0,target);
+//        return result;
+//    }
+//
+//    private List<List<Integer>> backTrace(List<List<Integer>> result,
+//                                          List<Integer> currentList,
+//                                          int[] candidates,
+//                                          int currentIndex,
+//                                          int target)
+//    {
+//        if(currentIndex==candidates.length){
+//            return result;
+//        }
+//        if(candidates[currentIndex] < target){
+//            currentList.add(candidates[currentIndex]);
+//            backTrace(result,currentList,candidates,currentIndex+1,target - candidates[currentIndex]);
+//            currentList.remove(currentList.size()-1);
+//            backTrace(result,currentList,candidates,currentIndex+1,target);
+//        } else if(candidates[currentIndex] == target){
+//            currentList.add(candidates[currentIndex]);
+////            List<Integer> tmp = new ArrayList<>(currentList);
+////            tmp.sort((o1, o2) -> o1-o2);
+////            if(!result.contains(tmp)) {
+////                result.add(tmp);
+////            }
+//            if (!result.contains(currentList)){
+//                result.add(new ArrayList<>(currentList));
+//            }
+//            currentList.remove(currentList.size()-1);
+//            backTrace(result,currentList,candidates,currentIndex+1,target);
+//        } else if(candidates[currentIndex] > target){
+//            backTrace(result,currentList,candidates,currentIndex+1,target);
+//        }
+//        return result;
+//    }
+
+
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        List<List<Integer>> result = new ArrayList<>();
+        Arrays.sort(candidates);
+        permute(result, 0, new ArrayList<>(), target, candidates, 0);
+        return result;
+    }
+
+    public void permute(List<List<Integer>> result, int sum, List<Integer> tempList, int target, int[] candidates, int start) {
+        if (sum >= target) {
+            if (sum == target)
+                result.add(new ArrayList<>(tempList));
+            return;
+        }
+        for (int i = start; i < candidates.length; i++) {
+            if (sum + candidates[i] <= target) {
+                if (i > start && candidates[i] == candidates[i - 1]) continue;
+                tempList.add(candidates[i]);
+                permute(result, sum + candidates[i], tempList, target, candidates, i + 1);
+                tempList.remove(tempList.size() - 1);
+            } else {
+                break;
+            }
+        }
+    }
+
+
+    public TreeNode sortedListToBST(ListNode head) {
+        if (head == null) return null;
+        if (head.next == null) return new TreeNode(head.val);
+        ListNode slow = head, fast = head, prevSlow = null;
+        while (fast != null && fast.next != null) {
+            prevSlow = slow;
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        prevSlow.next = null;
+        TreeNode node = new TreeNode(slow.val);
+        node.left = sortedListToBST(head);
+        node.right = sortedListToBST(slow.next);
+        return node;
+    }
+
+
+    private void reverse(int[] nums) {
+        int i = 0, j = nums.length - 1;
+        while (i < j) {
+            int temp = nums[i];
+            nums[i] = nums[j];
+            nums[j] = temp;
+            i++;
+            j--;
+        }
+    }
+
+    public boolean makesquare(int[] nums) {
+        if (nums == null || nums.length < 4) return false;
+        int sum = 0;
+        for (int num : nums) sum += num;
+        if (sum % 4 != 0) return false;
+
+        Arrays.sort(nums);
+        reverse(nums);
+
+        List<List<Integer>> list = new ArrayList<>();
+        list.add(new ArrayList<>());
+        list.add(new ArrayList<>());
+        list.add(new ArrayList<>());
+        list.add(new ArrayList<>());
+        int[] sums = new int[4];
+        return dfs(nums, 0, sums, sum / 4);
+    }
+
+
+    private boolean dfs(int[] nums, int currentIndex, int[] currentSum, int target) {
+        if (currentIndex == nums.length) {
+            if (currentSum[0] == target &&
+                    currentSum[1] == target &&
+                    currentSum[2] == target
+                    ) {
+                return true;
+            }
+        }
+        for (int i = 0; i < 4; i++) {
+            if (currentSum[i] + nums[currentIndex] <= target) {
+                currentSum[i] += nums[currentIndex];
+                if (dfs(nums, currentIndex + 1, currentSum, target)) return true;
+                currentSum[i] -= nums[currentIndex];
+            }
+        }
+        return false;
+    }
+
+
+    public boolean searchMatrix2(int[][] matrix, int target) {
+        int m = matrix.length;
+        if (m == 0) return false;
+        int n = matrix[0].length;
+        if (m == 0 || n == 0) return false;
+        int left = 0;
+        int right = m * n - 1;
+        if (right == 0) return matrix[0][0] == target;
+        int mid;
+        while (left < right) {
+            if (right - left == 1) {
+                return matrix[left / n][left % n] == target || matrix[right / n][right % n] == target;
+            }
+            mid = (int) (left * .5 + right * .5);
+            if (matrix[mid / n][mid % n] < target) {
+                left = mid;
+            } else if (matrix[mid / n][mid % n] > target) {
+                right = mid;
+            } else {
+                return true;
+            }
+        }
+        if (matrix[left / n][left % n] == target) {
+            return true;
+        }
+        return false;
+    }
 
     public static void main(String[] args) {
         MainInMac_2 m = new MainInMac_2();
-        int[] input = {2, 3, 5};
-//        System.out.println(m.knightProbability(3, 2, 0, 0));
-//        System.out.println(m.knightProbability2(3, 2, 0, 0));
-//        System.out.println(m.maximumSwap(9973));
-//        boolean tp = m.isPrime(200123);
-//        System.out.println(m.nthSuperUglyNumberI(10,input));
-        int[] ast = {-2, -2, 1, -2};
-//        System.out.println(Arrays.toString(m.asteroidCollision(ast)));
-//        System.out.println(m.lengthLongestPath("dir\\n\\tsub dir1\\n\\t\\tfile1.ext\\n\\t\\tsubsubdir1\\n\\tsubdir2\\n\\t\\tsubsubdir2\\n\\t\\t\\tfile2.ext"));
-
-        int[][] input2 = {{1, 1},
-                {1, 0}};
-        m.gameOfLife(input2);
-
-        int[] nums = {1, 2, 3, 4};
-        System.out.println("Subset With Duplication`");
-        System.out.println(m.subsetsWithDup(nums));
+        int[][] input = {{1,3}};
+        System.out.println(m.searchMatrix2(input,3));
     }
+
 }
