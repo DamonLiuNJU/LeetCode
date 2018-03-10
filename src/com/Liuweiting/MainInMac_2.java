@@ -2,7 +2,9 @@ package com.Liuweiting;
 
 import com.Liuweiting.DataStructure.ListNode;
 import com.Liuweiting.DataStructure.TreeNode;
+import com.sun.corba.se.impl.orbutil.graph.Graph;
 import com.sun.deploy.util.ArrayUtil;
+import com.sun.jdi.IntegerValue;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import sun.awt.image.ImageWatched;
 
@@ -206,7 +208,7 @@ public class MainInMac_2 {
     }
 
 
-    public class Interval {
+    public static class Interval {
         int start;
         int end;
 
@@ -2075,10 +2077,1204 @@ public class MainInMac_2 {
         return false;
     }
 
+    public int hIndex(int[] citations) {
+        Arrays.sort(citations);
+        if (citations.length == 0) return 0;
+        if (citations.length == 1) return Math.min(1, citations[0]);
+        int left = 0;
+        int right = Math.min(citations.length, citations[citations.length - 1]);
+        int H;
+        while (left < right - 1) {
+            H = (int) (0.5 * left + .5 * right);
+            int[] result = countForNumbers(citations, H);
+            if (result[0] > citations.length - H || result[1] < H) {
+                right = H;
+            } else {
+                left = H;
+            }
+        }
+        if (isValidHValue(citations, right)) {
+            return right;
+        } else {
+            return left;
+        }
+    }
+
+    private boolean isValidHValue(int[] citations, int H) {
+        int[] result = countForNumbers(citations, H);
+        return result[0] <= citations.length - H && result[1] >= H;
+    }
+
+
+    private int[] countForNumbers(int[] citations, int h) {
+        int[] re = new int[2];
+        for (int tmp : citations) {
+            if (tmp <= h) re[0]++;
+            if (tmp >= h) re[1]++;
+        }
+        return re;
+    }
+
+
+    public int rangeBitwiseAnd(int m, int n) {
+        int result = 0;
+        int tmpN = m;
+        int maxBit = 0;
+        while (tmpN > 0) {
+            maxBit++;
+            tmpN = tmpN >>> 1;
+        }
+        boolean bit[] = new boolean[maxBit];
+        for (int i = 0; i < maxBit; i++) {
+            int base = 1 << (i);
+            bit[i] = true;
+            for (int tmp = m; tmp <= n; tmp++) {
+                if ((tmp & base) == 0) {
+                    bit[i] = false;
+                    break;
+                }
+            }
+        }
+        for (int i = 0; i < maxBit; i++) {
+            if (bit[i]) {
+                result |= 1 << i;
+            }
+        }
+        return result;
+    }
+
+
+    HashMap<Integer, Integer> robMap = new HashMap<>();
+
+    public int rob(int[] nums) {
+        int max = 0;
+        for (int i = 0; i < nums.length; i++) {
+            int val = robHelper(shiftNums(nums, i), 0, new boolean[nums.length]);
+            max = Math.max(max, val);
+        }
+        return max;
+    }
+
+    private int[] shiftNums(int[] nums, int shift) {
+        int[] newNums = new int[nums.length];
+        for (int i = 0; i < newNums.length; i++) {
+            newNums[i] = nums[(i + shift) % nums.length];
+        }
+        return newNums;
+    }
+
+    private int robHelper(int[] nums, int begin, boolean visited[]) {
+        if (begin == nums.length) return 0;
+        if (begin == nums.length - 1) return nums[nums.length - 1];
+        if (robMap.containsKey(begin)) {
+            return robMap.get(begin);
+        } else {
+            int val = robHelper(nums, begin + 1, visited);
+
+            if ((!visited[(begin - 1 + nums.length) % nums.length] && !visited[(begin + 1) % nums.length])) {
+                visited[begin] = true;
+                val = Math.max(val, nums[begin] + robHelper(nums, begin + 2, visited));
+            }
+            robMap.put(begin, val);
+            return val;
+        }
+    }
+
+    HashMap<Integer, Integer> amount2plans = new HashMap<>();
+
+    public int change(int amount, int[] coins, List<Integer> prevCoins) {
+//        if (amount2plans.containsKey(amount)) return amount2plans.get(amount);
+        if (amount == 0) return 1;
+        int sum = 0;
+        for (int coin : coins) {
+            if (coin > amount) {
+                continue;
+            }
+            if (prevCoins.size() == 0 && amount >= coin) {
+                prevCoins.add(coin);
+                sum += change(amount - coin, coins, prevCoins);
+                prevCoins.remove(prevCoins.size() - 1);
+            } else {
+                if (coin >= prevCoins.get(prevCoins.size() - 1)) {
+                    prevCoins.add(coin);
+                    sum += change(amount - coin, coins, prevCoins);
+                    prevCoins.remove(prevCoins.size() - 1);
+                }
+            }
+        }
+        amount2plans.put(amount, sum);
+        return sum;
+    }
+
+
+    public int evalRPN(String[] tokens) {
+        Stack<Integer> stack = new Stack<>();
+        for (String s : tokens) {
+            if (s.compareTo("+") == 0
+                    || s.compareTo("-") == 0
+                    || s.compareTo("*") == 0
+                    || s.compareTo("/") == 0) {
+                int op2 = stack.pop();
+                int op1 = stack.pop();
+                switch (s) {
+                    case "+":
+                        stack.push(op1 + op2);
+                        break;
+                    case "-":
+                        stack.push(op1 - op2);
+                        break;
+                    case "*":
+                        stack.push(op1 * op2);
+                        break;
+                    case "/":
+                        stack.push(op1 / op2);
+                        break;
+                }
+            } else {
+                stack.push(Integer.parseInt(s));
+            }
+        }
+        return stack.pop();
+    }
+
+
+    boolean[][] map2;
+
+    public boolean exist(char[][] board, String word) {
+        char[] wordArray = word.toCharArray();
+        map2 = new boolean[board.length][board[0].length];
+        boolean exist = false;
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (board[i][j] == wordArray[0]) {
+                    //find a possible start point.
+                    int[] beginPoint = {i, j};
+//                    List<int[]> forbiddenList = new ArrayList<>();
+//                    forbiddenList.add(beginPoint);
+                    map2[i][j] = true;
+                    exist |= dfs(board, i, j, null, wordArray, 1);
+                    map2[i][j] = false;
+                    if (exist) return true;
+                }
+            }
+        }
+
+        return exist;
+    }
+
+    private boolean dfs(char[][] board, int x, int y, List<int[]> forbidden1, char[] word, int currenIndex) {
+
+        if (currenIndex == word.length) {
+            return true;
+        }
+
+        if (x - 1 >= 0 && board[x - 1][y] == word[currenIndex] && !map2[x - 1][y]) {
+//            forbidden.add(new int[]{x - 1,y});
+            boolean can = subTaks(x - 1, y, board, word, currenIndex + 1);
+            if (can) {
+                return true;
+            }
+        }
+
+        if (x + 1 < board.length && board[x + 1][y] == word[currenIndex] && !map2[x + 1][y]) {
+            boolean can = subTaks(x + 1, y, board, word, currenIndex + 1);
+            if (can) {
+                return true;
+            }
+        }
+
+        if (y - 1 >= 0 && board[x][y - 1] == word[currenIndex] && !map2[x][y - 1]) {
+            boolean can = subTaks(x, y - 1, board, word, currenIndex + 1);
+            if (can) {
+                return true;
+            }
+        }
+
+        if (y + 1 < board[0].length && board[x][y + 1] == word[currenIndex] && !map2[x][y + 1]) {
+            boolean can = subTaks(x, y + 1, board, word, currenIndex + 1);
+            if (can) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean subTaks(int x, int y, char[][] board, char[] word, int currenIndex) {
+        map2[x][y] = true;
+        boolean can = dfs(board, x, y, null, word, currenIndex);
+        map2[x][y] = false;
+        return can;
+    }
+
+    public boolean isPalindrome(ListNode head) {
+
+        if (head == null || head.next == null) return true;
+        ListNode dumbHead = new ListNode(-1);
+        dumbHead.next = head;
+        ListNode slow = dumbHead, fast = dumbHead;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next;
+            fast = fast.next;
+        }
+        ListNode tmp = slow.next;
+        ListNode prv = slow;
+        while (tmp.next != null) {
+            ListNode nxt = tmp.next;
+            tmp.next = prv;
+            prv = tmp;
+            tmp = nxt;
+        }
+        while (tmp != null || head != null) {
+            if (tmp == null && head != null || tmp != null && head == null) {
+                return false;
+            }
+            if (tmp.val != head.val) {
+                return false;
+            }
+            tmp = tmp.next;
+            head = head.next;
+        }
+        return true;
+    }
+
+
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        return buildTree(preorder, inorder, 0, preorder.length, 0, inorder.length);
+    }
+
+    public TreeNode buildTree(int[] preorder, int[] inorder, int beginIndex, int endIndex, int beginIndex2, int endIndex2) {
+        if (endIndex <= beginIndex) {
+            return null;
+        }
+
+        int rootVal = preorder[beginIndex];
+        TreeNode root = new TreeNode(rootVal);
+        if (endIndex - beginIndex == 1) {
+            return root;
+        }
+        int index = -1;
+        for (int i = beginIndex2; i < endIndex2; i++) {
+            if (inorder[i] == rootVal) {
+                index = i;
+                break;
+            }
+        }
+        int leftSize = index - beginIndex2;
+        int rightSize = endIndex2 - index - 1;
+        if (leftSize > 0)
+            root.left = buildTree(preorder, inorder, beginIndex + 1, beginIndex + leftSize + 1, beginIndex2, beginIndex2 + leftSize);
+        if (rightSize > 0)
+            root.right = buildTree(preorder, inorder, beginIndex + leftSize + 1, endIndex, index + 1, index + 1 + rightSize);
+        return root;
+    }
+
+
+    int pivot = -1;
+
+    public int search(int[] nums, int target) {
+        if (nums.length == 0) return -1;
+        if (nums.length == 1) return target == nums[0] ? 0 : -1;
+        findPivot(nums);
+        //do binary search.
+        int left = pivot;
+        int right = (pivot + nums.length - 1);
+        while (Math.abs(left - right) > 1) {
+            int middle = ((right + left) / 2);
+            if (nums[middle % nums.length] == target) {
+                return middle % nums.length;
+            } else if (nums[middle % nums.length] > target) {
+                right = middle - 1;
+            } else {
+                left = middle + 1;
+            }
+        }
+        int re = nums[left % nums.length] == target ? left % nums.length : -1;
+        if (re >= 0) return re;
+        return nums[right % nums.length] == target ? right % nums.length : -1;
+    }
+
+    private void findPivot(int[] nums) {
+        if (pivot < 0) {
+            for (int i = 0; i < nums.length; i++) {
+                int left = nums[(i - 1 + nums.length) % nums.length];
+                int right = nums[(i + 1) % nums.length];
+                if (nums[i] < left && nums[i] < right) {
+                    pivot = i;
+                    return;
+                }
+            }
+        }
+    }
+
+
+    public int[] searchRange(int[] nums, int target) {
+        int[] re = {-1, -1};
+        //binary search for leftIndex.
+        re = binarySearchLeft(nums, target);
+        //binary serach for rightIndex.
+        return re;
+    }
+
+    private int[] binarySearchLeft(int[] nums, int target) {
+        int index = Arrays.binarySearch(nums, target);
+        int[] re = {-1, -1};
+        if (index >= 0) {
+            while (index >= 1 && nums[index] == nums[index - 1]) {
+                index--;
+            }
+            re[0] = index;
+            while (index < nums.length - 1 && nums[index] == nums[index + 1]) {
+                index++;
+            }
+            re[1] = index;
+        }
+        return re;
+    }
+
+    public List<Interval> merge(List<Interval> intervals) {
+        if (intervals.size() == 1) return intervals;
+        intervals.sort((o1, o2) -> (o1.start - o2.start));
+        for (int i = 0; i < intervals.size() - 1; i++) {
+            if (intervals.get(i).end < intervals.get(i + 1).start) {
+//                re.add(intervals.get(i));
+//                if (i==intervals.size()-2){
+//                    re.add(intervals.get(i+1));
+//                }
+                continue;
+            } else if (intervals.get(i).end >= intervals.get(i + 1).start && intervals.get(i).end <= intervals.get(i + 1).end) {
+//                re.add(new Interval(intervals.get(i).start,intervals.get(i+1).end));
+                intervals.get(i).end = intervals.get(i + 1).end;
+                intervals.remove(i + 1);
+                continue;
+            } else {
+                intervals.remove(i + 1);
+                i = i - 1;
+                continue;
+            }
+        }
+        return intervals;
+    }
+
+    public boolean wordBreak(String s, List<String> wordDict) {
+        wordDict.sort((o1, o2) -> (o2.length() - o1.length()));
+        if (s.length() == 0) return true;
+        for (String word : wordDict) {
+            if (s.startsWith(word)) {
+                boolean subPart = wordBreak(s.substring(word.length()), wordDict);
+                if (subPart) return true;
+                else continue;
+            }
+        }
+        return false;
+    }
+
+    enum NODECOLOR {
+        WHITE,
+        GRAY,
+        BLACK,
+    }
+
+    class GraphNode {
+        int d = 0, f = 0;
+        NODECOLOR color;
+
+        GraphNode() {
+
+        }
+
+    }
+
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        boolean result = false;
+        HashMap<Integer, GraphNode> int2node = new HashMap<>();
+        for (int i = 0; i < numCourses; i++) {
+            int2node.put(i, new GraphNode());
+        }
+        int[][] map = new int[numCourses][numCourses];
+        for (int[] requisit : prerequisites) {
+            map[requisit[0]][requisit[1]] = 1;
+        }
+        //计算图上的强连通分量
+
+        return result;
+    }
+
+    HashMap<Integer, Boolean> int2bool = new HashMap<>();
+
+
+    /**
+     * return if the given input can jump to the end of this array.
+     * problem : stack over flow.
+     * solution?
+     *
+     * @param nums
+     * @return
+     */
+    public boolean canJump(int[] nums) {
+        return canJump(nums, 0, -1, 0);
+    }
+
+    private boolean canJump(int[] nums, int index, int commingFromIndex, int depth) {
+        if (depth == nums.length) {
+            return index == nums.length - 1;
+        }
+//        System.out.println("visiting index at : " + index);
+        if (int2bool.containsKey(index)) return int2bool.get(index);
+        if (index == nums.length - 1) return true;
+        if (nums[index] == 0) return index == nums.length - 1;
+        boolean re = false;
+
+        if (index + nums[index] < nums.length && index + nums[index] != commingFromIndex) {
+            re |= canJump(nums, index + nums[index], index, depth + 1);
+        }
+
+        if (re) {
+            int2bool.put(index, true);
+            return true;
+        }
+
+        if (index - nums[index] >= 0 && index - nums[index] != commingFromIndex) {
+            re |= canJump(nums, index - nums[index], index, depth + 1);
+        }
+
+        int2bool.put(index, re);
+        return re;
+    }
+
+
+    public boolean canJump_Solution(int[] nums) {
+        int reachable = 0;
+        for (int i = 0; i < nums.length; ++i) {
+            if (i > reachable) return false;
+            reachable = Math.max(reachable, i + nums[i]);
+        }
+        return true;
+    }
+
+
+    /**
+     * this method returns the SCC's in graph, represented in a list of nodes.
+     * a SCC is represented by a list of nodes.
+     *
+     * @param graph the DAG represented in adjacent matrix.
+     * @return the SCCs.
+     */
+    public List<List<Integer>> getStrongConnectedComponent(int[][] graph) {
+        List<List<Integer>> result = new ArrayList<>();
+
+        return result;
+    }
+
+
+    public void wiggleSort(int[] nums) {
+        int max_index = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] > nums[max_index]) {
+                max_index = i;
+            }
+        }
+
+        swap(nums, max_index, 0);
+        boolean lookingForBiggerOne = true;
+        for (int i = 1; i < nums.length; i++) {
+            lookingForBiggerOne = i % 2 == 1;
+            if (lookingForBiggerOne) {
+                if (nums[i] > nums[i - 1]) {
+                    continue;
+                } else if (nums[i] < nums[i - 1]) {
+                    swap(nums, i, i - 1);
+                } else {
+                    boolean can = false;
+                    for (int j = i; j >= 0; j--) {
+                        if (nums[j] > nums[i] && nums[j] < nums[j + 1]) {
+                            swap(nums, j, i);
+                            can = true;
+                            break;
+                        }
+                        if (nums[j] < nums[i] && nums[j] > nums[j + 1]) {
+                            swap(nums, j, i);
+                            can = true;
+                            break;
+                        }
+                    }
+                    if (can) {
+                        continue;
+                    }
+                    for (int j = i; j < nums.length; j++) {
+                        if (nums[j] > nums[i]) {
+                            swap(nums, j, i);
+                            can = true;
+                            break;
+                        }
+                    }
+
+                    if (can) {
+                        continue;
+                    }
+
+
+                }
+            } else {
+                if (nums[i] < nums[i - 1]) {
+                    continue;
+                } else if (nums[i] > nums[i - 1]) {
+                    swap(nums, i, i - 1);
+                } else {
+                    boolean can = false;
+                    for (int j = i; j >= 0; j--) {
+                        if (nums[j] > nums[i] && nums[j] < nums[j + 1]) {
+                            swap(nums, j, i);
+                            can = true;
+                            break;
+                        }
+                        if (nums[j] < nums[i] && nums[j] > nums[j + 1]) {
+                            swap(nums, j, i);
+                            can = true;
+                            break;
+                        }
+                    }
+                    if (can) {
+                        continue;
+                    }
+                    for (int j = i; j < nums.length; j++) {
+                        if (nums[j] < nums[i]) {
+                            swap(nums, j, i);
+                            can = true;
+                            break;
+                        }
+                    }
+
+                    if (can) {
+                        continue;
+                    }
+
+
+                }
+            }
+
+            lookingForBiggerOne = !lookingForBiggerOne;
+        }
+    }
+
+
+    private static void swap(int[] a, int i, int j) {
+        int tmp = a[i];
+        a[i] = a[j];
+        a[j] = tmp;
+    }
+
+
+    public int findKthLargest2(int[] nums, int k) {
+        int kNumbers[] = new int[k];
+        Arrays.fill(kNumbers, 0);
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = 0; j < kNumbers.length; j++) {
+                if (nums[i] >= kNumbers[j]) {
+                    for (int tmp = kNumbers.length - 1; tmp > j; tmp--) {
+                        kNumbers[tmp] = kNumbers[tmp - 1];
+                    }
+                    kNumbers[j] = nums[i];
+                    break;
+                }
+            }
+        }
+        return kNumbers[k - 1];
+    }
+
+
+    public int maximalSquare(char[][] matrix) {
+        int maxArea = 0;
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                char centerPoint = matrix[i][j];
+                if (centerPoint == '0') continue;
+                else {
+                    if (maxArea == 0) maxArea = 1;
+                }
+                for (int r = 1; r < matrix.length && i + r <= matrix.length && j + r <= matrix[0].length; r++) {
+                    if (!containSquareWithRadius(matrix, r, i, j)) {
+                        break;
+                    } else {
+                        maxArea = Math.max(maxArea, r + 1);
+                    }
+                }
+            }
+        }
+        return maxArea * maxArea;
+    }
+
+
+    public ListNode sortList(ListNode head) {
+        return null;
+    }
+
+    private static boolean containSquareWithRadius(char[][] map, int r, int x, int y) {
+        for (int i = x; i < x + r && i < map.length; i++) {
+            for (int j = y; j < y + r && j < map[0].length; j++) {
+                if (map[i][j] != '1') {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+
+    public double myPow(double x, int n) {
+        return Math.pow(x, n);
+
+    }
+
+    class RandomListNode {
+        int label;
+        RandomListNode next, random;
+
+        RandomListNode(int x) {
+            this.label = x;
+        }
+    }
+
+
+    ;
+
+
+    public int lengthOfLongestSubstring(String s) {
+        if (s.length() <= 1) return s.length();
+        HashMap<Character, Integer> map = new HashMap<>();
+        int left = 0;
+        int right = 1;
+        map.put(s.charAt(left), 0);
+        int MAX_LENGTH = -1;
+        while (right < s.length()) {
+            MAX_LENGTH = Math.max(MAX_LENGTH, right - left);
+            if (!map.containsKey(s.charAt(right))) {
+                map.put(s.charAt(right), right);
+                right++;
+                continue;
+            }
+
+            //if the right pointer's char is already in the string.
+            int previousIndex = map.get(s.charAt(right));
+            for (int i = left; i <= previousIndex; i++) {
+                map.remove(s.charAt(i));
+            }
+            left = previousIndex + 1;
+
+            map.put(s.charAt(right), right);
+            right++;
+        }
+
+        return Math.max(MAX_LENGTH, right - left);
+    }
+
+    HashMap<RandomListNode, RandomListNode> old2new = new HashMap<>();
+
+    public RandomListNode copyRandomList(RandomListNode head) {
+        if (head == null) return null;
+        String s = null;
+
+        if (old2new.containsKey(head)) {
+            return old2new.get(head);
+        }
+        RandomListNode copyHead = new RandomListNode(head.label);
+        old2new.put(head, copyHead);
+        copyHead.next = copyRandomList(head.next);
+        copyHead.random = copyRandomList(head.random);
+        return copyHead;
+    }
+
+
+    public boolean isValidBST(TreeNode root) {
+        if (root == null) return true;
+        boolean left = true, right = true;
+
+        if ((root.right != null)) {
+            right = root.val < root.right.val && isValidBST(root.right, root.val + 1, Integer.MAX_VALUE);
+        }
+        if (root.left != null) {
+            left = root.val > root.left.val && isValidBST(root.left, Integer.MIN_VALUE, root.val - 1);
+        }
+
+        return left && right;
+    }
+
+
+    private boolean isValidBST(TreeNode root, int lo, int high) {
+
+        if (root == null) return true;
+//        if (!(root.val < high && root.val > lo)){
+//            return false;
+//        }
+//        if(root.val==Integer.MAX_VALUE){
+//            return root.right==null && (root.left==null || (root.val > root.left.val && isValidBST(root.left,lo,root.val)));
+//        }
+//
+//        if(root.val==Integer.MIN_VALUE){
+//            return root.left==null && (root.right==null || (root.val < root.right.val && isValidBST(root.right,root.val,high)));
+//        }
+        if (root.val < lo || root.val > high) return false;
+        boolean left = true, right = true;
+
+        if ((root.right != null)) {
+            right = root.val < root.right.val && isValidBST(root.right, root.val, high);
+        }
+        if (root.left != null) {
+            left = root.val > root.left.val && isValidBST(root.left, lo, root.val);
+        }
+
+        return left && right;
+    }
+
+    public String largestNumber(int[] nums) {
+        String[] numsString = new String[nums.length];
+        for (int i = 0; i < nums.length; i++) {
+            numsString[i] = nums[i] + "";
+        }
+        Arrays.sort(numsString, (o1, o2) -> {
+            if (o1.startsWith(o2)) {
+                return (o2 + o1).compareTo(o1 + o2);
+            } else if (o2.startsWith(o1)) {
+                return (o1 + o2).compareTo(o2 + o1);
+            } else {
+                return (o2.compareTo(o1));
+            }
+        });
+        StringBuilder sb = new StringBuilder();
+        for (String s : numsString) {
+            sb.append(s);
+        }
+        return sb.toString();
+    }
+
+
+//    public int numDecodings(String s) {
+//        char[] charArray = s.toCharArray();
+//        int totalNumberOfEncodings = 0;
+//        if (charArray.length >= 2 && ((int)(charArray[0] - 'A') + 1) * 10 + ((int)(charArray[1] - 'A') + 1)  <= 26){
+//            totalNumberOfEncodings += (1 + numDecodings(s.substring(2)));
+//        }
+//        if (charArray.length >= 1)
+//            totalNumberOfEncodings+= (1 + numDecodings(s.substring(1)));
+//
+//        return totalNumberOfEncodings;
+//    }
+
+
+    HashMap<Integer, Integer> mapForNumDecoding = new HashMap<>();
+
+    public int numDecodings(String s) {
+        mapForNumDecoding.clear();
+        if (s.length() == 0) return 0;
+        if (s.length() == 1) return s.charAt(0) <= '9' && s.charAt(0) >= '1' ? 1 : 0;
+        return numDecodingsHelper(s, 0);
+    }
+
+    public int numDecodingsHelper(String s, int beginIndex) {
+        if (mapForNumDecoding.containsKey(beginIndex)) {
+            return mapForNumDecoding.get(beginIndex);
+        }
+        if (beginIndex == s.length()) return 1;
+        if (beginIndex == s.length() - 1) return s.charAt(beginIndex) <= '9' && s.charAt(beginIndex) >= '1' ? 1 : 0;
+        if (s.charAt(beginIndex) == '0') {
+            return 0;
+        }
+        char[] charArray = s.toCharArray();
+        int totalNumberOfEncodings = 0;
+        if ((charArray[beginIndex] - '0') * 10 + (charArray[beginIndex + 1] - '0') <= 26 && (charArray[beginIndex] - '0') * 10 + (charArray[beginIndex + 1] - '0') > 0) {
+            totalNumberOfEncodings += (numDecodingsHelper(s, beginIndex + 2));
+        }
+        if (charArray.length >= 1 && charArray[beginIndex] - '1' >= 0 && charArray[beginIndex] - '1' <= 25)
+            totalNumberOfEncodings += (numDecodingsHelper(s, beginIndex + 1));
+        mapForNumDecoding.put(beginIndex, totalNumberOfEncodings);
+        return totalNumberOfEncodings;
+    }
+
+
+    /**
+     * Given two words (beginWord and endWord), and a dictionary's word list, find the length of shortest transformation sequence from beginWord to endWord, such that:
+     * <p>
+     * Only one letter can be changed at a time.
+     * Each transformed word must exist in the word list. Note that beginWord is not a transformed word.
+     * For example,
+     * <p>
+     * Given:
+     * beginWord = "hit"
+     * endWord = "cog"
+     * wordList = ["hot","dot","dog","lot","log","cog"]
+     * As one shortest transformation is "hit" -> "hot" -> "dot" -> "dog" -> "cog",
+     * return its length 5.
+     *
+     * @param beginWord
+     * @param endWord
+     * @param wordList
+     * @return
+     */
+    int minLength = Integer.MAX_VALUE;
+
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        List<String> tmp = new ArrayList<>();
+        tmp.add(beginWord);
+        List<List<String>> emm = new ArrayList<>();
+        emm.add(tmp);
+        int length = ladderLengthHelperBFS(beginWord, endWord, wordList, emm);
+        return length < Integer.MAX_VALUE ? length : 0;
+    }
+
+
+    /**
+     * 广度优先会好一点。
+     *
+     * @param beginWord
+     * @param endWord
+     * @param wordList
+     * @param path
+     * @return
+     */
+    public int ladderLengthHelper(String beginWord, String endWord, List<String> wordList, List<String> path) {
+        if (beginWord.compareTo(endWord) == 0) {
+            minLength = Math.min(minLength, path.size());
+            System.out.println(minLength);
+            return minLength;
+        }
+        for (String word : wordList) {
+            if (path.contains(word)) continue;
+            if (distance(word, beginWord) == 1) {
+                path.add(word);
+                ladderLengthHelper(word, endWord, wordList, path);
+                path.remove(path.size() - 1);
+            }
+        }
+
+        return minLength;
+    }
+
+    public int ladderLengthHelperBFS(String beginWord, String endWord, List<String> wordList, List<List<String>> pathSet) {
+        int max = wordList.size();
+
+        while (max-- >= 0) {
+            List<List<String>> newPathSet = new ArrayList<>();
+            for (List<String> singlePath : pathSet) {
+                List<String> possibleChoice = new ArrayList<>();
+                for (String word : wordList) {
+                    if (singlePath.contains(word)) continue;
+                    int distance = distance(word, singlePath.get(singlePath.size() - 1));
+
+                    if (distance == 1) {
+                        if (word.compareTo(endWord) == 0) {
+                            return singlePath.size() + 1;
+                        }
+                        possibleChoice.add(word);
+                    }
+                }
+                for (String s : possibleChoice) {
+                    List<String> tmp = new ArrayList<>();
+                    tmp.addAll(singlePath);
+                    tmp.add(s);
+                    newPathSet.add(tmp);
+                }
+            }
+            pathSet = newPathSet;
+        }
+
+        return Integer.MAX_VALUE;
+    }
+
+
+    public int ladderLength3(String beginWord, String endWord, List<String> wordList) {
+        if (!wordList.contains(endWord)) return 0;
+        Set<String> beginSet = new HashSet<>(), endSet = new HashSet<>();
+        int len = 1;
+        HashSet<String> visited = new HashSet<>();
+        beginSet.add(beginWord);
+        endSet.add(endWord);
+        while (!beginSet.isEmpty() && !endSet.isEmpty()) {
+            if (beginSet.size() > endSet.size()) {
+                Set<String> set = beginSet;
+                beginSet = endSet;
+                endSet = set;
+            }
+            Set<String> temp = new HashSet<>();
+            for (String word : beginSet) {
+                for (String option : wordList) {
+                    if (distance(word, option) == 1) {
+                        if (endSet.contains(option)) {
+                            return len + 1;
+                        }
+
+                        if (!visited.contains(option)) {
+                            temp.add(option);
+                            visited.add(option);
+                        }
+                    }
+                }
+            }
+
+            beginSet = temp;
+            len++;
+        }
+
+        return 0;
+    }
+
+    public int distance(String s1, String s2) {
+        int re = 0;
+        for (int i = 0; i < s1.length(); i++) {
+            if (s1.charAt(i) != s2.charAt(i)) re++;
+        }
+        return re;
+    }
+
+
+    /**
+     * 130. Surrounded Regions
+     * Given a 2D board containing 'X' and 'O' (the letter O), capture all regions surrounded by 'X'.
+     * A region is captured by flipping all 'O's into 'X's in that surrounded region.
+     *
+     * @param board
+     */
+    public void solve(char[][] board) {
+        if (board.length == 0 || board[0].length == 0) return;
+        boolean[][] visited = new boolean[board.length][board[0].length];
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (visited[i][j] || board[i][j] == 'X') continue;
+                List<int[]> points = new ArrayList<>();
+                boolean isTrapped = explore(board, i, j, visited, points);
+                if (isTrapped) {
+                    for (int[] point : points) {
+                        board[point[0]][point[1]] = 'X';
+                    }
+                }
+            }
+        }
+        return;
+    }
+
+    /**
+
+     */
+    private boolean explore(char[][] board, int i, int j, boolean[][] visited, List<int[]> points) {
+        if (board[i][j] == 'X') return true;
+        int[] cur = {i, j};
+        if (board[i][j] == 'O' && visited[i][j]) return false;
+        if (board[i][j] == 'O') points.add(cur);
+        visited[i][j] = true;
+        if (i == 0 || j == 0 || i == board.length - 1 || j == board[0].length - 1) {
+            return false;
+        }
+
+        int[] left = {i, j - 1};
+        int[] right = {i, j + 1};
+        int[] up = {i - 1, j};
+        int[] down = {i + 1, j};
+
+        int[][] around = {left, right, up, down};
+        boolean isTrapped = true;
+        for (int[] tmp : around) {
+            if (!visited[tmp[0]][tmp[1]])
+                isTrapped &= explore(board, tmp[0], tmp[1], visited, points);
+        }
+        return isTrapped;
+    }
+
+
+    /**
+     * Given two integers representing the numerator and denominator of a fraction, return the fraction in string format.
+     * If the fractional part is repeating, enclose the repeating part in parentheses.
+     * For example,
+     * Given numerator = 1, denominator = 2, return "0.5".
+     * Given numerator = 2, denominator = 1, return "2".
+     * Given numerator = 2, denominator = 3, return "0.(6)".
+     *
+     * @param numerator
+     * @param denominator
+     * @return
+     */
+    public String fractionToDecimal(int numerator, int denominator) {
+        if (denominator == 1) return String.valueOf(numerator);
+        if (numerator == denominator) return String.valueOf(1);
+        int integerPart = 0;
+        String fractionPart = "";
+        if (numerator > denominator) {
+            integerPart = numerator / denominator;
+            numerator -= integerPart * denominator;
+        }
+
+        int beginNum = numerator;
+        do {
+            String tmpToAdd = "";
+            int pivot = beginNum;
+            beginNum = beginNum * 10;
+
+            while (beginNum < denominator) {
+                beginNum *= 10;
+                tmpToAdd += "0";
+            }
+            int tmp = beginNum / denominator;
+            tmpToAdd += tmp;
+            int nextBeginNum = beginNum % denominator;
+
+
+            beginNum = nextBeginNum;
+            if (pivot == nextBeginNum) {
+                fractionPart += "(" + tmpToAdd + ")";
+                break;
+            } else {
+                fractionPart += tmpToAdd;
+            }
+        } while (beginNum != 0);
+        return integerPart + "." + fractionPart;
+    }
+
+
+    public String fractionToDecimal2(int numerator, int denominator) {
+        if (numerator == 0) {
+            return "0";
+        }
+        StringBuilder res = new StringBuilder();
+        // "+" or "-"
+        res.append(((numerator > 0) ^ (denominator > 0)) ? "-" : "");
+        long num = Math.abs((long) numerator);
+        long den = Math.abs((long) denominator);
+
+        // integral part
+        res.append(num / den);
+        num %= den;
+        if (num == 0) {
+            return res.toString();
+        }
+
+        // fractional part
+        res.append(".");
+        HashMap<Long, Integer> map = new HashMap<>();
+        map.put(num, res.length());
+        while (num != 0) {
+            num *= 10;
+            res.append(num / den);
+            num %= den;
+            if (map.containsKey(num)) {
+                int index = map.get(num);
+                res.insert(index, "(");
+                res.append(")");
+                break;
+            } else {
+                map.put(num, res.length());
+            }
+        }
+        return res.toString();
+    }
+
+
+    public int longestConsecutive(int[] nums) {
+        if (nums.length < 2) {
+            return nums.length;
+        }
+        OptionalInt min;
+        OptionalInt max;
+        max = Arrays.stream(nums).max();
+        min = Arrays.stream(nums).min();
+        int[] dp = new int[max.getAsInt() - min.getAsInt() + 1];
+        Arrays.stream(nums).forEach((i) -> dp[i] = 1);
+        for (int tmp : nums) {
+
+        }
+
+        return -1;
+    }
+
+    class Point {
+        int x;
+        int y;
+
+        Point() {
+            x = 0;
+            y = 0;
+        }
+
+        Point(int a, int b) {
+            x = a;
+            y = b;
+        }
+    }
+
+    public int maxPoints(Point[] points) {
+        return -1;
+    }
+
+    int ans = -1;
+    int[][] mapForLII;
+    public int longestIncreasingPath(int[][] matrix) {
+        ans = 0;
+
+        int m = matrix.length;
+        if (m == 0) return 0;
+        int n = matrix[0].length;
+        if (n == 0) return 0;
+        mapForLII = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+               int path = startFrom(matrix, i, j);
+                ans = Math.max(ans,path);
+            }
+        }
+        return ans + 1;
+    }
+
+    private int startFrom(int[][] matrix, int i, int j) {
+        if (mapForLII[i][j] > 0) return mapForLII[i][j];
+        int cur = matrix[i][j];
+        int v1=0,v2=0,v3=0,v4=0;
+        if (i - 1 >= 0 && cur > matrix[i - 1][j]) {
+            v1 = 1 + startFrom(matrix, i - 1, j);
+        }
+        if (j - 1 >= 0 && cur > matrix[i][j - 1]) {
+            v2 = 1 + startFrom(matrix, i, j - 1);
+        }
+        if (i + 1 < matrix.length && cur > matrix[i + 1][j]) {
+            v3 = 1 + startFrom(matrix, i + 1, j);
+        }
+        if (j + 1 < matrix[0].length && cur > matrix[i][j + 1]) {
+            v4 = 1 + startFrom(matrix, i, j + 1);
+        }
+        mapForLII[i][j] = Math.max(Math.max(v1,v2),Math.max(v3,v4));
+        return mapForLII[i][j];
+    }
+
+
+    /**
+     * version1. obviously wrong.
+     * @param nums
+     * @return
+     */
+    public List<Integer> countSmaller(int[] nums) {
+        if(nums.length==0) return new ArrayList<>();
+        Integer[] dp = new Integer[nums.length];
+        Arrays.fill(dp,0);
+        dp[nums.length-1] = 0;
+        for (int i=nums.length-1;i>=0;i--){
+            for (int j= i+1;j < nums.length;j++){
+                if (nums[j] < nums[i]){
+                    dp[i]++;
+                }
+            }
+        }
+        List<Integer> re = new ArrayList<>();
+        Collections.addAll(re, dp);
+        return re;
+    }
+
     public static void main(String[] args) {
         MainInMac_2 m = new MainInMac_2();
-        int[][] input = {{1,3}};
-        System.out.println(m.searchMatrix2(input,3));
+
+        int[][] input= {
+            {9,9,4},
+            {6,6,8},
+            {2,1,1},
+        };
+        System.out.println(m.longestIncreasingPath(input));
     }
 
 }
