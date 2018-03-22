@@ -3245,7 +3245,9 @@ public class MainInMac_2 {
 
 
     /**
-     * version1. obviously wrong.
+     * version1. obviously wrong. Complexity is O(n^2).
+     *
+     *
      * @param nums
      * @return
      */
@@ -3255,9 +3257,12 @@ public class MainInMac_2 {
         Arrays.fill(dp,0);
         dp[nums.length-1] = 0;
         for (int i=nums.length-1;i>=0;i--){
+            int upperBound = nums[i] - 1;
+            int lowerBound = Integer.MIN_VALUE;
             for (int j= i+1;j < nums.length;j++){
-                if (nums[j] < nums[i]){
-                    dp[i]++;
+                if (nums[j] <= upperBound && nums[j] >= lowerBound){
+                    dp[i] += dp[j] + 1;
+                    lowerBound = Math.max(lowerBound, nums[j]);
                 }
             }
         }
@@ -3266,15 +3271,41 @@ public class MainInMac_2 {
         return re;
     }
 
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        int[] numsInWindow = new int[k];
+        int[] max = new int[nums.length - k + 1];
+        Arrays.fill(max,Integer.MIN_VALUE);
+        for(int i=0;i<k;i++){
+            max[0] = Math.max(max[0],nums[i]);
+            numsInWindow[i] = nums[i];
+        }
+
+        for(int i=k;i<nums.length;i++){
+            int index = i % k;
+            if(nums[i] >= max[i-k]){
+                max[i-k+1] = nums[i];
+            } else if(nums[i] == numsInWindow[index]){
+                max[i-k+1] = max[i-k];
+            } else if(nums[i] > numsInWindow[index] && nums[i] < max[i-k]){
+                max[i-k+1] = max[i-k];
+            } else if(nums[i] < numsInWindow[index] && numsInWindow[index] < max[i-k]){
+                max[i-k+1] = max[i-k];
+            } else if(nums[i] < numsInWindow[index] && numsInWindow[index] == max[i-k]){
+                numsInWindow[index] = nums[i];
+                for(int tmp=0;tmp<k;tmp++){
+                    max[i-k+1] = Math.max(max[i-k+1],numsInWindow[tmp]);
+                }
+            }
+
+            numsInWindow[index] = nums[i];
+        }
+        return max;
+    }
+
     public static void main(String[] args) {
         MainInMac_2 m = new MainInMac_2();
-
-        int[][] input= {
-            {9,9,4},
-            {6,6,8},
-            {2,1,1},
-        };
-        System.out.println(m.longestIncreasingPath(input));
+        int[] inpt = {1,-1};
+        m.maxSlidingWindow(inpt,1);
     }
 
 }
