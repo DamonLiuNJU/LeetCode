@@ -1,5 +1,7 @@
 package niuke.A;
 
+import niuke.B.B1;
+
 import java.lang.reflect.Array;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -11,6 +13,7 @@ import java.util.Scanner;
 public class p1 {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
+
         int n = sc.nextInt();
         double v = sc.nextDouble();
         double u = sc.nextDouble();

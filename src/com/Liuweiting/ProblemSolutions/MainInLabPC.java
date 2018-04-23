@@ -1065,6 +1065,9 @@ public class MainInLabPC {
 //        m.reverseVowels("hello");
 //        m.isPerfectSquare(2147395600);
 //        System.out.println(m.repeatedSubstringPattern("abababaabababaabababa"));
-        System.out.println(m.getMaxSubsequenceLength("asdfvxzcv", "svv"));
+//        System.out.println(m.getMaxSubsequenceLength("asdfvxzcv", "svv"));
+
+        Long alone = 9876543210L;
+        Integer  aI = new Integer("9876543220");
     }
 }
